@@ -8,7 +8,7 @@ import QR_Code from '../components/Banner/QR_Code.jpeg'
 
 const STEPS = ['Your Cart', 'Your Details', 'Payment', 'Confirm']
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOvA_FBD6HO2a57oAZe6SWbErm1HRtMYbKw7Ish_-2a0RbaViP7ZBxwYMNBtqLITzIqg/exec"
+const SCRIPT_URL = import.meta.env.VITE_SHEET_API_URL || ''
 
 export default function Checkout() {
   const [step, setStep] = useState(0)

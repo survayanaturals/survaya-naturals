@@ -1,8 +1,6 @@
 // Change these strings to match your two different deployments!
-const CHECKOUT_API_URL =
-  "https://script.google.com/macros/s/AKfycbxOvA_FBD6HO2a57oAZe6SWbErm1HRtMYbKw7Ish_-2a0RbaViP7ZBxwYMNBtqLITzIqg/exec";
-const TRACKING_API_URL =
-  "https://script.google.com/macros/s/AKfycbxOvA_FBD6HO2a57oAZe6SWbErm1HRtMYbKw7Ish_-2a0RbaViP7ZBxwYMNBtqLITzIqg/exec";
+const CHECKOUT_API_URL = import.meta.env.VITE_SHEET_API_URL || "";
+const TRACKING_API_URL = import.meta.env.VITE_SHEET_API_URL || "";
 
 // Generate Order ID on frontend
 export const generateOrderId = () => {
