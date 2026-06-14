@@ -28,19 +28,22 @@ export default function ProductSection({ title, emoji, products, viewAllPath }) 
           >
             View All →
           </motion.button>
-        </div>
+</div>
 
         {/* Products grid */}
-        <div
-          className="grid gap-4"
-          style={{
-            gridTemplateColumns: `repeat(auto-fill, minmax(${
-              products.length > 5 ? '250px' : '100px'
-            }, 1fr))`,
-          }}
-        >
+        {/* 
+          WE REMOVED THE FIXED INLINE STYLE:
+          - 'grid-cols-2' strictly forces 2 columns on ALL mobile dimensions/pixel ratios (no more dropping to 1 column!).
+          - 'sm:grid-cols-3 md:grid-cols-3' handles tablets and forced mobile "Desktop site" modes perfectly.
+          - 'lg:grid-cols-4' handles actual laptop screens dynamically.
+        */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {products.map(product => (
-            <ProductCard key={product.id} product={product} compact={products.length > 5} />
+            <ProductCard 
+              key={product.id} 
+              product={product} 
+              compact={products.length > 5} 
+            />
           ))}
         </div>
       </div>
