@@ -490,18 +490,18 @@ export default function Checkout() {
                     <p className="text-xs text-bark-400 font-lato mt-1">Tap UPI ID to copy</p>
                   </div>
 
-                  <div>
+                  <div className="bg-cream-50 border border-cream-200 rounded-xl p-4">
                     <label className="block text-sm font-lato font-bold text-bark-700 mb-2">
                       Enter 12-Digit UPI Ref / UTR Number *
                     </label>
-                    <input
-                      type="text"
-                      maxLength={12}
-                      placeholder="e.g. 612345678901"
-                      value={upiRefNo}
-                      onChange={e => setUpiRefNo(e.target.value.replace(/\D/g, ''))}
-                      className="w-full border-2 border-cream-300 rounded-xl px-4 py-3 font-lato text-base text-bark-800 bg-white focus:outline-none focus:ring-2 focus:ring-olive-300 tracking-widest font-bold"
-                    />
+                    <input type="text" maxLength={12} placeholder="e.g. 612345678901" value={upiRefNo}
+                      onChange={e => setUpiRefNo(e.target.value.replace(/\D/g,''))}
+                      className={`w-full border-2 rounded-xl px-4 py-3 font-lato text-lg text-bark-800 bg-white focus:outline-none focus:ring-2 tracking-widest font-bold transition-all ${
+                        upiRefNo.length===12 ? 'border-green-400 focus:ring-green-200 bg-green-50' : 'border-cream-300 focus:ring-olive-300'
+                      }`}/>
+                    {upiRefNo.length>0 && upiRefNo.length<12 && <p className="text-bark-400 text-xs mt-1.5 font-lato">{12-upiRefNo.length} more digits needed</p>}
+                    {upiRefNo.length===12 && <p className="text-green-600 text-xs mt-1.5 font-lato font-semibold">✅ Valid UPI reference</p>}
+                    <p className="text-bark-400 text-xs mt-2 font-lato">📱 Find in PhonePe / GPay → History → Transaction ID</p>
                   </div>
                 </div>
               )}
