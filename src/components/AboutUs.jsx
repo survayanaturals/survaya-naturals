@@ -78,10 +78,18 @@ export default function AboutUs() {
             </div>
 
             <p className="text-amber-900/90 font-lato leading-relaxed">
-              My name is Sandhya Siva Parvathi. While managing a demanding corporate career, a severe health crisis forced me to pause. Seeking healing, I remembered my childhood in Rajahmundry, Andhra Pradesh—an era of vibrant health built on traditional foods like Ragi (Solu), Badam, and Coconut. Realizing that modern convenience foods trade away this natural strength for heavy processing and preservatives, I quit my job to reclaim my well-being and revive ancestral food wisdom. That is how Survaya Naturals was born.
+              My name is Sandhya Siva Parvathi, and the journey of Survaya Naturals began not as a business, but as a mother's love.
+
+After completing my graduation and embracing motherhood, my absolute priority became providing clean, nourishing food for my son. I have always been passionate about cooking and baking, finding joy in creating treats that were both delicious and wholesome.
+
+Rather than relying on packaged snacks packed with maida, preservatives, and artificial ingredients, I began crafting traditional recipes in our home kitchen using natural powerhouses like ragi, almonds, and coconut. Seeing my dedication, my brother encouraged me to share these creations with others. His belief gave me the confidence to bake for extended family and friends, and the overwhelming appreciation we received inspired us to dream bigger.
             </p>
             <p className="text-amber-900/90 font-lato leading-relaxed">
-              We believe food should nourish your body and delight your taste buds without compromise. Our kitchen uses only 100% whole, natural ingredients, ensuring zero maida, zero artificial flavors, and zero preservatives. Every biscuit, cake, and chocolate is handcrafted fresh in small batches using generational recipes. From our signature Ragi Badam Biscuits to custom Birthday Cakes, each product is a labor of love made to bring traditional health back to your family’s table.
+What started as a simple act of love has now grown into Survaya Naturals—a brand built on family values, traditional wisdom, and honest ingredients.
+
+Through this website, we are expanding our mission to make handcrafted, nutritious options accessible to every family. Prepared in small batches using carefully selected ingredients, we proudly follow a simple promise: Zero Maida. Zero Artificial Flavours. Zero Preservatives. Just real food, traditional recipes, and homemade goodness made with love.
+
+Our dream is simple—to bring healthier, tastier, and more trustworthy food back to your family’s table, one bite at a time.
             </p>
 
             {/* Trust Badges Grid */}

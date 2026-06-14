@@ -345,7 +345,7 @@ export default function Checkout() {
                         <input
                           value={form.phone}
                           onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                          placeholder="10-digit number"
+                          placeholder="Your Whatsapp Number"
                           type="tel"
                           maxLength={10}
                           className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
@@ -358,7 +358,7 @@ export default function Checkout() {
                       <input
                         value={form.email}
                         onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                        placeholder="you@email.com"
+                        placeholder="your@email.com"
                         type="email"
                         className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
                       />
@@ -407,17 +407,27 @@ export default function Checkout() {
                       </div>
 
                       {/* Display Messages verbatim matching layout in image_481121.png */}
-                      <div className="mt-2 space-y-1 text-xs font-lato">
-                        {pincodeError && (
-                          <p className="text-red-500 flex items-center gap-1 font-semibold animate-pulse">
-                            <span>❌</span> PIN code not found — please check and retry
-                          </p>
-                        )}
-                        <p className="text-bark-500 flex items-center gap-1">
-                          <MapPin size={12} className="text-red-400" /> City & State auto-fill after PIN verification
-                        </p>
-                      </div>
+                    <div className="mt-3 space-y-2">
+  {/* Error Message */}
+  {pincodeError && (
+    <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 animate-pulse">
+      <span className="text-red-500 text-base">⚠️</span>
+      <p className="text-xs font-medium text-red-700">
+        PIN code not found. Please check the number and try again.
+      </p>
+    </div>
+  )}
+
+  {/* Info Message */}
+  <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+    <MapPin size={15} className="mt-0.5 text-amber-600 shrink-0" />
+    <p className="text-xs text-amber-800">
+      <span className="font-semibold">City & State</span> will be automatically
+      filled after successful PIN verification.
+    </p>
+  </div>
                     </div>
+                      </div>
 
                     <div className="grid grid-cols-2 gap-3 pt-1">
                       <div>
