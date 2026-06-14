@@ -31,6 +31,7 @@ export const biscuits = [
     id: "b1",
     name: "Golden Almond Ragi Cookies",
     category: "biscuits",
+    deliveryZone: "Rajahmundry",
     emoji: "🌰",
     startingPrice: 169,
     description:
@@ -47,6 +48,7 @@ export const biscuits = [
     id: "b2",
     name: "Rustic Ragi Delights ( Biscuits )",
     category: "biscuits",
+    deliveryZone: "Rajahmundry",
     emoji: "🍪",
     startingPrice: 149,
     description:
@@ -62,6 +64,7 @@ export const biscuits = [
     id: "b3",
     name: "Coconut Millet Crunch",
     category: "biscuits",
+    deliveryZone: "Rajahmundry",
     emoji: "🥥",
     startingPrice: 149,
     description:
@@ -77,6 +80,7 @@ export const biscuits = [
     id: "b4",
     name: "Choco Millet Magic",
     category: "biscuits",
+    deliveryZone: "Rajahmundry",
     emoji: "🍫",
     startingPrice: 149,
     description:
@@ -92,6 +96,7 @@ export const biscuits = [
     id: "b5",
     name: "All in one Packet",
     category: "biscuits",
+    deliveryZone: "Rajahmundry",
     emoji: "🎁",
     startingPrice: 149,
     description:
@@ -101,12 +106,13 @@ export const biscuits = [
       { label: "250g", price: 149 },
       { label: "500g", price: 298 },
     ],
-    badge: "Combo",
+    badge: "Combo Special Offer 15% off",
   },
   {
     id: "b11",
     name: "Aam Papad",
     category: "chocolates",
+    deliveryZone: "Rajahmundry",
     emoji: "💝",
     startingPrice: 169,
     description: "The Taste of Real Mangos.",
@@ -130,7 +136,7 @@ export const biscuits = [
       { label: "250g", price: 149 },
       { label: "500g", price: 298 },
     ],
-    badge: null,
+    badge: "Coming Soon",
   },
   {
     id: "b8",
@@ -145,7 +151,7 @@ export const biscuits = [
       { label: "250g", price: 149 },
       { label: "500g", price: 298 },
     ],
-    badge: null,
+    badge: "Coming Soon",
   },
   {
     id: "b9",
@@ -160,7 +166,7 @@ export const biscuits = [
       { label: "1Kg", price: 1049 },
       { label: "2Kg", price: 1889 },
     ],
-    badge: "Special Offer 15% off",
+    badge: "Coming Soon",
   },
   {
     id: "b10",
@@ -175,7 +181,7 @@ export const biscuits = [
       { label: "1Kg", price: 1049 },
       { label: "2Kg", price: 1889 },
     ],
-    badge: "Special Offer 15% off",
+    badge: "Coming Soon",
   },
 ];
 
@@ -187,7 +193,7 @@ export const cakes = [
     category: "cakes",
     emoji: "☕",
     startingPrice: 129,
-    deliveryZone: "Rajamahendravari",
+    deliveryZone: "Rajahmundry",
     description:
       "Light, soft tea cakes perfect for your evening chai time. Mildly sweet and homemade.",
     image: C1, // Matches Tea Time Cakes.webp
@@ -210,7 +216,7 @@ export const cakes = [
       { label: "500g", price: 179 },
       { label: "1kg", price: 358 },
     ],
-    badge: "Popular",
+    badge: "Coming Soon",
   },
   {
     id: "c3",
@@ -225,7 +231,7 @@ export const cakes = [
       { label: "500g", price: 229 },
       { label: "1kg", price: 458 },
     ],
-    badge: "Healthy",
+    badge: "Coming Soon",
   },
   {
     id: "c4",
@@ -240,7 +246,7 @@ export const cakes = [
       { label: "250g", price: 120 },
       { label: "500g", price: 230 },
     ],
-    badge: "Healthy",
+    badge: "Coming Soon",
   },
   {
     id: "c5",
@@ -255,7 +261,7 @@ export const cakes = [
       { label: "500g", price: 220 },
       { label: "1kg", price: 420 },
     ],
-    badge: "No Maida",
+    badge: "Coming Soon",
   },
   {
     id: "c6",
@@ -270,7 +276,7 @@ export const cakes = [
       { label: "250g", price: 115 },
       { label: "500g", price: 220 },
     ],
-    badge: "No Maida",
+    badge: "Coming Soon",
   },
   {
     id: "c7",
@@ -285,7 +291,7 @@ export const cakes = [
       { label: "500g", price: 550 },
       { label: "1kg", price: 999 },
     ],
-    badge: "Bestseller",
+    badge: "Coming Soon",
   },
   {
     id: "c8",
@@ -299,7 +305,7 @@ export const cakes = [
       { label: "500g", price: 320 },
       { label: "1kg", price: 620 },
     ],
-    badge: "Special",
+    badge: "Coming Soon",
   },
   {
     id: "c9",
@@ -314,7 +320,7 @@ export const cakes = [
       { label: "500g", price: 300 },
       { label: "1kg", price: 580 },
     ],
-    badge: "Bestseller",
+    badge: "Coming Soon",
   },
   {
     id: "c10",
@@ -329,7 +335,7 @@ export const cakes = [
       { label: "250g", price: 150 },
       { label: "500g", price: 290 },
     ],
-    badge: null,
+    badge: "Coming Soon",
   },
   {
     id: "c11",
@@ -344,7 +350,7 @@ export const cakes = [
       { label: "500g", price: 280 },
       { label: "1kg", price: 540 },
     ],
-    badge: "New Launch",
+    badge: "Coming Soon",
   },
   {
     id: "c12",
@@ -359,7 +365,7 @@ export const cakes = [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
     ],
-    badge: "New Launch",
+    badge: "Coming Soon",
   },
 ];
 
