@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: 'Contact', href: '/contact' },
 ]
 
-const CALL_NUMBER = import.meta.env.VITE_CALL_NUMBER || ''
+const CALL_NUMBER = import.meta.env.VITE_WHATSAPP_DISPLAY || ''
 const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || ''
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
 
