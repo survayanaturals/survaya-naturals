@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, ChevronRight, ChevronLeft, Copy, CheckCircle, ShoppingBag } from 'lucide-react'
+import { Check, ChevronRight, ChevronLeft, Copy, CheckCircle, ShoppingBag, Trash2, X, MapPin } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -16,6 +16,8 @@ export default function Checkout() {
   const [orderId, setOrderId] = useState(null)
   const [upiRefNo, setUpiRefNo] = useState('')
   const [copied, setCopied] = useState(false)
+  const [fetchingPincode, setFetchingPincode] = useState(false)
+  const [pincodeError, setPincodeError] = useState(false) // Tracks inline error state from image_481121.png
   const [form, setForm] = useState({
     name: '', phone: '', email: '',
     street: '', city: '', state: '', pincode: '',
@@ -26,6 +28,60 @@ export default function Checkout() {
 
   const deliveryCharge = subtotal < 500 ? 60 : 0
   const total = subtotal + deliveryCharge
+
+  // ── Auto-fill City & State via PIN Code ─────────────────────────────────────
+  const handlePincodeChange = async (val) => {
+    const cleaned = val.replace(/\D/g, '').slice(0, 6)
+    setForm(f => ({ ...f, pincode: cleaned }))
+    setPincodeError(false) // Reset error state on type
+
+    if (cleaned.length === 6) {
+      setFetchingPincode(true)
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${cleaned}`)
+        const data = await res.json()
+
+        if (data && data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
+          const { District, State } = data[0].PostOffice[0]
+          setForm(f => ({
+            ...f,
+            city: District,
+            state: State
+          }))
+          setPincodeError(false)
+          toast.success('Location auto-filled!')
+        } else {
+          setForm(f => ({ ...f, city: '', state: '' }))
+          setPincodeError(true)
+          toast.error('PIN code not found!')
+        }
+      } catch (err) {
+        console.error('Pincode fetch error:', err)
+        setPincodeError(true)
+      } finally {
+        setFetchingPincode(false)
+      }
+    } else {
+      // Clear city and state if they change away from a 6-digit PIN
+      setForm(f => ({ ...f, city: '', state: '' }))
+    }
+  }
+
+  // Clear just the PIN field inline
+  const handleClearPincode = () => {
+    setForm(f => ({ ...f, pincode: '', city: '', state: '' }))
+    setPincodeError(false)
+  }
+
+  // Clear all step 1 form details
+  const handleClearAllDetails = () => {
+    setForm({
+      name: '', phone: '', email: '',
+      street: '', city: '', state: '', pincode: '',
+    })
+    setPincodeError(false)
+    toast.success('Form cleared! You can now re-enter your details.')
+  }
 
   // ── Empty cart guard ───────────────────────────────────────────────────────
   if (items.length === 0 && !orderId) {
@@ -48,8 +104,10 @@ export default function Checkout() {
     if (!form.name.trim())                                { toast.error('Please enter your name'); return false }
     if (!form.phone.trim() || form.phone.length < 10)    { toast.error('Please enter a valid phone number'); return false }
     if (!form.street.trim())                              { toast.error('Please enter your address'); return false }
+    if (!form.pincode.trim() || form.pincode.length < 6) { toast.error('Please enter a valid 6-digit PIN code'); return false }
+    if (pincodeError)                                     { toast.error('Please fix the invalid PIN code'); return false }
     if (!form.city.trim())                                { toast.error('Please enter your city'); return false }
-    if (!form.pincode.trim() || form.pincode.length < 6) { toast.error('Please enter a valid PIN code'); return false }
+    if (!form.state.trim())                               { toast.error('Please enter your state'); return false }
     return true
   }
 
@@ -98,7 +156,7 @@ export default function Checkout() {
 
       if (data && data.success && data.orderId) {
         setOrderId(data.orderId)
-        clearCart()  // ✅ clears cart + resets badge to 0
+        clearCart()
         toast.success('Order placed successfully! 🎉', { duration: 3000 })
       } else {
         throw new Error(data.error || 'No order ID returned from server.')
@@ -112,7 +170,6 @@ export default function Checkout() {
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-cream-100 py-8 px-4">
       <div className="max-w-lg mx-auto">
@@ -143,7 +200,7 @@ export default function Checkout() {
         {/* Card */}
         <AnimatePresence mode="wait">
 
-          {/* ── Order Success Screen ── */}
+          {/* Order Success Screen */}
           {orderId ? (
             <motion.div
               key="success"
@@ -168,30 +225,29 @@ export default function Checkout() {
               <div className="bg-olive-50 border-2 border-olive-200 rounded-2xl p-5 mb-6">
                 <p className="text-olive-600 font-lato font-bold text-xs uppercase tracking-widest mb-1">Your Order ID</p>
                 <p className="font-playfair font-bold text-olive-800 text-3xl tracking-wide mb-3">{orderId}</p>
-<button
-  onClick={async () => {
-    try {
-      await navigator.clipboard.writeText(orderId)
-      setCopied(true)
-    } catch {
-      // fallback for mobile browsers that block clipboard API
-      const el = document.createElement('textarea')
-      el.value = orderId
-      el.style.position = 'fixed'
-      el.style.opacity = '0'
-      document.body.appendChild(el)
-      el.focus()
-      el.select()
-      document.execCommand('copy')
-      document.body.removeChild(el)
-      setCopied(true)
-    }
-  }}
-  className="flex items-center gap-2 mx-auto text-olive-600 font-lato font-semibold text-sm hover:text-olive-800 transition-colors"
->
-  {copied ? <Check size={15} /> : <Copy size={15} />}
-  {copied ? 'Copied!' : 'Copy Order ID'}
-</button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(orderId)
+                      setCopied(true)
+                    } catch {
+                      const el = document.createElement('textarea')
+                      el.value = orderId
+                      el.style.position = 'fixed'
+                      el.style.opacity = '0'
+                      document.body.appendChild(el)
+                      el.focus()
+                      el.select()
+                      document.execCommand('copy')
+                      document.body.removeChild(el)
+                      setCopied(true)
+                    }
+                  }}
+                  className="flex items-center gap-2 mx-auto text-olive-600 font-lato font-semibold text-sm hover:text-olive-800 transition-colors"
+                >
+                  {copied ? <Check size={15} /> : <Copy size={15} />}
+                  {copied ? 'Copied!' : 'Copy Order ID'}
+                </button>
               </div>
 
               <div className="bg-cream-100 rounded-xl p-4 text-left mb-6 text-sm font-lato text-bark-600 space-y-1.5">
@@ -208,7 +264,7 @@ export default function Checkout() {
                   Track My Order
                 </button>
                 <button
-                  onClick={() => navigate('/')}   // ✅ goes to Home
+                  onClick={() => navigate('/')}
                   className="btn-outline w-full py-3 rounded-xl"
                 >
                   Continue Shopping
@@ -218,7 +274,7 @@ export default function Checkout() {
 
           ) : (
 
-            /* ── Multi-Step Form ── */
+            /* Multi-Step Form */
             <motion.div
               key={step}
               initial={{ opacity: 0, x: 40 }}
@@ -291,6 +347,7 @@ export default function Checkout() {
                           onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                           placeholder="10-digit number"
                           type="tel"
+                          maxLength={10}
                           className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
                         />
                       </div>
@@ -318,20 +375,70 @@ export default function Checkout() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3">
-                      {['city', 'state', 'pincode'].map(key => (
-                        <div key={key}>
-                          <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">
-                            {key === 'pincode' ? 'PIN Code *' : `${key.charAt(0).toUpperCase() + key.slice(1)} *`}
-                          </label>
-                          <input
-                            value={form[key]}
-                            onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                            placeholder={key === 'pincode' ? '500001' : ''}
-                            className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
-                          />
-                        </div>
-                      ))}
+                    <div>
+                      <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">PIN Code *</label>
+                      <div className="relative flex items-center">
+                        <input
+                          value={form.pincode}
+                          onChange={e => handlePincodeChange(e.target.value)}
+                          placeholder="6-digits"
+                          maxLength={6}
+                          // Styled condition dynamic matches layout in image_481121.png
+                          className={`w-full border rounded-xl pl-3 pr-10 py-2.5 font-lato text-sm transition-all focus:outline-none focus:ring-2 ${
+                            pincodeError 
+                              ? 'border-red-400 bg-red-50 text-red-900 focus:ring-red-200' 
+                              : 'border-cream-300 bg-cream-50 text-bark-700 focus:ring-olive-300'
+                          }`}
+                        />
+                        {fetchingPincode && (
+                          <div className="absolute right-3 w-4 h-4 border-2 border-olive-700 border-t-transparent rounded-full animate-spin" />
+                        )}
+                        {!fetchingPincode && form.pincode.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearPincode}
+                            className={`absolute right-3 p-0.5 rounded-full hover:bg-opacity-20 transition-colors ${
+                              pincodeError ? 'text-red-500 hover:bg-red-200' : 'text-bark-400 hover:bg-bark-200'
+                            }`}
+                          >
+                            <X size={16} />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Display Messages verbatim matching layout in image_481121.png */}
+                      <div className="mt-2 space-y-1 text-xs font-lato">
+                        {pincodeError && (
+                          <p className="text-red-500 flex items-center gap-1 font-semibold animate-pulse">
+                            <span>❌</span> PIN code not found — please check and retry
+                          </p>
+                        )}
+                        <p className="text-bark-500 flex items-center gap-1">
+                          <MapPin size={12} className="text-red-400" /> City & State auto-fill after PIN verification
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">City *</label>
+                        <input
+                          value={form.city}
+                          onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
+                          placeholder="City"
+                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">State *</label>
+                        <input
+                          value={form.state}
+                          onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
+                          placeholder="State"
+                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -347,31 +454,31 @@ export default function Checkout() {
                     <p className="font-playfair font-bold text-4xl mt-1">₹{total.toLocaleString('en-IN')}</p>
                   </div>
 
-    <div className="bg-cream-50 border border-cream-200 rounded-2xl p-5 text-center mb-5">
-  <p className="font-lato font-bold text-bark-700 text-sm mb-3">Scan QR Code to Pay</p>
-  
-  <img
-    src={QR_Code}
-    alt="UPI QR Code"
-    className="w-48 h-48 mx-auto rounded-2xl border-2 border-olive-200 shadow-sm object-contain bg-white"
-  />
+                  <div className="bg-cream-50 border border-cream-200 rounded-2xl p-5 text-center mb-5">
+                    <p className="font-lato font-bold text-bark-700 text-sm mb-3">Scan QR Code to Pay</p>
+                    
+                    <img
+                      src={QR_Code}
+                      alt="UPI QR Code"
+                      className="w-48 h-48 mx-auto rounded-2xl border-2 border-olive-200 shadow-sm object-contain bg-white"
+                    />
 
-  <div className="mt-3 flex items-center justify-center gap-2">
-    <p className="text-bark-600 font-lato text-sm">UPI ID:</p>
-    <button
-      type="button"
-      onClick={() => {
-        const upi = import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'
-        navigator.clipboard.writeText(upi)
-        toast.success('UPI ID copied!')
-      }}
-      className="font-playfair font-bold text-olive-700 text-lg hover:underline"
-    >
-      {import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'}
-    </button>
-  </div>
-  <p className="text-xs text-bark-400 font-lato mt-1">Tap UPI ID to copy</p>
-</div>
+                    <div className="mt-3 flex items-center justify-center gap-2">
+                      <p className="text-bark-600 font-lato text-sm">UPI ID:</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const upi = import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'
+                          navigator.clipboard.writeText(upi)
+                          toast.success('UPI ID copied!')
+                        }}
+                        className="font-playfair font-bold text-olive-700 text-lg hover:underline"
+                      >
+                        {import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'}
+                      </button>
+                    </div>
+                    <p className="text-xs text-bark-400 font-lato mt-1">Tap UPI ID to copy</p>
+                  </div>
 
                   <div>
                     <label className="block text-sm font-lato font-bold text-bark-700 mb-2">
@@ -427,16 +534,29 @@ export default function Checkout() {
 
               {/* Footer Buttons */}
               <div className="bg-cream-50 border-t border-cream-200 px-6 py-4 flex items-center justify-between">
-                {step > 0 ? (
-                  <button
-                    type="button"
-                    onClick={() => setStep(s => s - 1)}
-                    disabled={loading}
-                    className="flex items-center gap-1 text-sm font-lato font-bold text-bark-600 hover:text-bark-800 transition-colors disabled:opacity-50"
-                  >
-                    <ChevronLeft size={16} /> Back
-                  </button>
-                ) : <div />}
+                <div className="flex items-center gap-3">
+                  {step > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setStep(s => s - 1)}
+                      disabled={loading}
+                      className="flex items-center gap-1 text-sm font-lato font-bold text-bark-600 hover:text-bark-800 transition-colors disabled:opacity-50"
+                    >
+                      <ChevronLeft size={16} /> Back
+                    </button>
+                  )}
+                  
+                  {/* Clear button positioned next to back button */}
+                  {step === 1 && (
+                    <button
+                      type="button"
+                      onClick={handleClearAllDetails}
+                      className="flex items-center gap-1 text-sm font-lato font-bold text-red-600 hover:text-red-800 transition-colors"
+                    >
+                      <Trash2 size={15} /> Clear Details
+                    </button>
+                  )}
+                </div>
 
                 {step < 3 ? (
                   <button
