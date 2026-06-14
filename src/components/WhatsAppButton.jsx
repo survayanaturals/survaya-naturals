@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useCart } from '../context/CartContext' // Import your cart context
 
-const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '919959248167'
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || ''
 
 export default function WhatsAppButton() {
   const { isOpen } = useCart() // Grab the open state of the cart drawer

@@ -95,7 +95,7 @@ export default function Testimonials() {
           rating:      `${rating} / 5 ⭐`,
           review_text: formData.text,
           submitted_at: new Date().toLocaleString('en-IN'),
-          to_email:    'hello@survayanaturals.com', // your receiving email
+          to_email: import.meta.env.VITE_CONTACT_EMAIL || '' // your receiving email
         },
         EMAILJS_PUBLIC_KEY
       )

@@ -3,9 +3,9 @@ import { motion } from 'framer-motion'
 import { Mail, MapPin, MessageCircle, Clock, ArrowUpRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'hello@survayanaturals.com'
-const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '919959248167'
-const WHATSAPP_DISPLAY = import.meta.env.VITE_WHATSAPP_DISPLAY || '+91 99592 48167'
+const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || ''
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || ''
+const WHATSAPP_DISPLAY = import.meta.env.VITE_WHATSAPP_DISPLAY || ''
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })

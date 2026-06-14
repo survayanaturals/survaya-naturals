@@ -5,8 +5,9 @@ import { Mail, Phone, MapPin, Instagram, Facebook, Youtube, X } from 'lucide-rea
 import Logo from './Logo'
 import fssai_logo from '../components/Banner/fssai_logo.webp'
 
-const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '919959248167'
-const WHATSAPP_DISPLAY = import.meta.env.VITE_WHATSAPP_DISPLAY || '+91 99592 48167'
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || ''
+const WHATSAPP_DISPLAY = import.meta.env.VITE_WHATSAPP_DISPLAY || ''
+const EMAIL_DISPLAY = import.meta.env.VITE_CONTACT_EMAIL || ''
 
 // --- POPUP MODAL COMPONENT ---
 function PolicyModal({ isOpen, onClose, title, content }) {
@@ -93,7 +94,7 @@ export default function Footer() {
           <p>However, your satisfaction is our absolute priority. We handle issues on a case-by-case basis under the following parameters:</p>
 
           <h4 className="font-playfair font-bold text-bark-800 text-base mt-4">1. Damaged or Broken Deliveries</h4>
-          <p>If your parcel arrives severely crushed, torn, or physically damaged due to transit handlers, please take clear photos or a short video of the unopened external box and the damaged items inside. Email them to <span className="text-olive-700 font-bold">hello@survayanaturals.com
+          <p>If your parcel arrives severely crushed, torn, or physically damaged due to transit handlers, please take clear photos or a short video of the unopened external box and the damaged items inside. Email them to <span className="text-olive-700 font-bold">{EMAIL_DISPLAY}
             </span> or WhatsApp us within <strong>24 hours</strong> of delivery. We will gladly dispatch a fresh replacement batch at no extra cost or issue a full store credit.</p>
 
           <h4 className="font-playfair font-bold text-bark-800 text-base mt-4">2. Wrong or Missing Items</h4>
@@ -243,10 +244,10 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <Mail size={15} className="text-olive-400 mt-0.5 flex-shrink-0" />
                 <a
-                  href="mailto:hello@survayanaturals.com"
+                  href={`mailto:${EMAIL_DISPLAY}`}
                   className="text-bark-400 hover:text-cream-200 font-lato text-sm transition-colors"
                 >
-                 hello@survayanaturals.com
+                 {EMAIL_DISPLAY}
                 </a>
               </li>
               <li className="flex items-start gap-3">

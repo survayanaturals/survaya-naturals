@@ -60,8 +60,8 @@ export default function TrackOrder() {
   const isFailed       = result?.status?.toString().trim().toLowerCase() === 'failed'
   const isRejected     = result?.status?.toString().trim().toLowerCase() === 'rejected'
   const statusIdx      = result ? getStatusIndex(result.status) : 0
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '919959248167'
-  const businessEmail  = 'hello@survayanaturals.com'
+  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || ''
+  const businessEmail  = import.meta.env.VITE_CONTACT_EMAIL || ''
   const rawTotal       = result?.total ? result.total.toString().replace(/[^0-9.]/g, '') : '0'
   const totalPaid      = parseFloat(rawTotal)
 

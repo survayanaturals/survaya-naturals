@@ -14,8 +14,8 @@ const NAV_LINKS = [
   { label: 'Contact', href: '/contact' },
 ]
 
-const CALL_NUMBER = import.meta.env.VITE_CALL_NUMBER || '+919959248167'
-const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '919959248167'
+const CALL_NUMBER = import.meta.env.VITE_CALL_NUMBER || ''
+const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || ''
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
 
 export default function Navbar() {

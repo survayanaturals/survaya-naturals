@@ -1,5 +1,4 @@
-export const WHATSAPP_NUMBER =
-  import.meta.env.VITE_WHATSAPP_NUMBER || "919959248167";
+export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 
 import D1 from "../components/Banner/D1.webp";
 import D2 from "../components/Banner/D2.webp";

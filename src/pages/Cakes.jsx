@@ -127,7 +127,7 @@ export default function Cakes() {
             <motion.a
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
-              href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || '919959248167'}`}
+              href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || ''}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 bg-olive-700 text-white font-lato font-bold text-sm py-3.5 rounded-xl transition-colors duration-200 shadow-sm"
