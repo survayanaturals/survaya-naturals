@@ -92,35 +92,35 @@ export default function ProductCard({ product, compact = false }) {
       {/* ── Card Body ── */}
       <div className="p-4 flex flex-col justify-between flex-1 gap-4 bg-white">
 
-        {/* Title + starting price */}
-{/* Title + starting price */}
-<div className="space-y-1">
-  <h3 className="font-playfair font-bold text-bark-800 text-base md:text-lg leading-snug tracking-tight line-clamp-2 min-h-[2.5rem] group-hover:text-olive-800 transition-colors">
-    {product.name}
-  </h3>
-  <div className="flex items-center gap-2 flex-wrap">
-    <p className="font-lato font-extrabold text-olive-700 text-sm md:text-base">
-      ₹{product.startingPrice.toLocaleString('en-IN')} onwards
-    </p>
-    {product.originalPrice && (
-      <>
-        <span className="font-lato text-[#9E9E9E]  font-semibold text-sm line-through">
-          ₹{product.originalPrice.toLocaleString('en-IN')}
-        </span>
-        <span className="bg-olive-100 text-olive-700 text-xs font-lato font-bold px-2 py-0.5 rounded">
-          {Math.round(((product.originalPrice - product.startingPrice) / product.originalPrice) * 100)}% OFF
-        </span>
-      </>
-    )}
-  </div>
-</div>
-
-        {/* Weight dropdown */}
+      {/* Title + starting price + Discount */}
+      <div className="space-y-1">
+        <h3 className="font-playfair font-bold text-bark-800 text-base md:text-lg leading-snug tracking-tight line-clamp-2 min-h-[2.5rem] group-hover:text-olive-800 transition-colors">
+          {product.name}
+        </h3>
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="font-lato font-extrabold text-olive-700 text-sm md:text-base">
+              ₹{product.startingPrice.toLocaleString('en-IN')} onwards
+          </p>
+                {product.originalPrice && (
+            <>
+              <span className="font-lato text-[#9E9E9E]  font-semibold text-sm line-through">
+                ₹{product.originalPrice.toLocaleString('en-IN')}
+              </span>
+            <span className="bg-olive-100 text-olive-700 text-xs font-lato font-bold px-2 py-0.5 rounded">
+            {Math.round(((product.originalPrice - product.startingPrice) / product.originalPrice) * 100)}% OFF
+              </span>
+            </>
+             )}
+        </div>
+        </div>
+ 
+ {/* Weight dropdown */}
 <div className="space-y-1.5">
   <div className="flex items-center justify-between">
     <label className="text-[11px] uppercase tracking-wider text-bark-500 font-lato font-bold">
       Select Weight
     </label>
+                        
 {/* Frameless, borderless location badge */}
     {product.deliveryZone && !isComingSoon && (
       <span className="inline-flex items-center gap-1.5 px-1 py-0.5 text-[11px] font-sans font-semibold text-[#14533D]">
