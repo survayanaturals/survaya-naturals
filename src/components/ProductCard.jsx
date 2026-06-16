@@ -93,14 +93,27 @@ export default function ProductCard({ product, compact = false }) {
       <div className="p-4 flex flex-col justify-between flex-1 gap-4 bg-white">
 
         {/* Title + starting price */}
-        <div className="space-y-1">
-          <h3 className="font-playfair font-bold text-bark-800 text-base md:text-lg leading-snug tracking-tight line-clamp-2 min-h-[2.5rem] group-hover:text-olive-800 transition-colors">
-            {product.name}
-          </h3>
-          <p className="font-lato font-extrabold text-olive-700 text-sm md:text-base">
-            ₹{product.startingPrice.toLocaleString('en-IN')} onwards
-          </p>
-        </div>
+{/* Title + starting price */}
+<div className="space-y-1">
+  <h3 className="font-playfair font-bold text-bark-800 text-base md:text-lg leading-snug tracking-tight line-clamp-2 min-h-[2.5rem] group-hover:text-olive-800 transition-colors">
+    {product.name}
+  </h3>
+  <div className="flex items-center gap-2 flex-wrap">
+    <p className="font-lato font-extrabold text-olive-700 text-sm md:text-base">
+      ₹{product.startingPrice.toLocaleString('en-IN')} onwards
+    </p>
+    {product.originalPrice && (
+      <>
+        <span className="font-lato text-[#9E9E9E]  font-semibold text-sm line-through">
+          ₹{product.originalPrice.toLocaleString('en-IN')}
+        </span>
+        <span className="bg-olive-100 text-olive-700 text-xs font-lato font-bold px-2 py-0.5 rounded">
+          {Math.round(((product.originalPrice - product.startingPrice) / product.originalPrice) * 100)}% OFF
+        </span>
+      </>
+    )}
+  </div>
+</div>
 
         {/* Weight dropdown */}
 <div className="space-y-1.5">

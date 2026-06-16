@@ -33,6 +33,7 @@ export const biscuits = [
     deliveryZone: "Rajahmundry",
     emoji: "🌰",
     startingPrice: 169,
+    originalPrice: 199,
     description:
       "Wholesome ragi biscuits loaded with badam (almonds). Crunchy, nutritious, and made with love.",
     image: B1,
@@ -50,6 +51,7 @@ export const biscuits = [
     deliveryZone: "Rajahmundry",
     emoji: "🍪",
     startingPrice: 149,
+    originalPrice: 199,
     description:
       "Classic homemade ragi biscuits. Healthy, crispy, and perfect with your morning chai.",
     image: B2,
@@ -66,6 +68,7 @@ export const biscuits = [
     deliveryZone: "Rajahmundry",
     emoji: "🥥",
     startingPrice: 149,
+    originalPrice: 199,
     description:
       "Ragi biscuits with the tropical goodness of coconut. A delightful healthy treat.",
     image: B3,
@@ -82,6 +85,7 @@ export const biscuits = [
     deliveryZone: "Rajahmundry",
     emoji: "🍫",
     startingPrice: 149,
+    originalPrice: 199,
     description:
       "Healthy ragi meets indulgent chocolate chips. Kids love these guilt-free treats!",
     image: B4,
@@ -98,6 +102,7 @@ export const biscuits = [
     deliveryZone: "Rajahmundry",
     emoji: "🎁",
     startingPrice: 149,
+    originalPrice: 199,
     description:
       "A complete curated variety pack of our handmade healthy crunch treats.",
     image: B5,
@@ -114,6 +119,7 @@ export const biscuits = [
     deliveryZone: "Rajahmundry",
     emoji: "💝",
     startingPrice: 169,
+    originalPrice: 199,
     description: "The Taste of Real Mangos.",
     image: B11,
     weights: [
