@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingCart, Check, ChevronDown, Clock } from 'lucide-react'
+import { ShoppingCart, Check, ChevronDown, Clock, Info } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import toast from 'react-hot-toast'
 
@@ -8,6 +8,7 @@ export default function ProductCard({ product, compact = false }) {
   const [selectedWeightIdx, setSelectedWeightIdx] = useState(0)
   const [imgLoaded, setImgLoaded] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
 
   const { addItem, toggleCart } = useCart()
   const selectedWeight = product.weights[selectedWeightIdx]
@@ -92,75 +93,105 @@ export default function ProductCard({ product, compact = false }) {
       {/* ── Card Body ── */}
       <div className="p-4 flex flex-col justify-between flex-1 gap-4 bg-white">
 
-      {/* Title + starting price + Discount */}
-      <div className="space-y-1">
-        <h3 className="font-playfair font-bold text-bark-800 text-base md:text-lg leading-snug tracking-tight line-clamp-2 min-h-[2.5rem] group-hover:text-olive-800 transition-colors">
-          {product.name}
-        </h3>
+        {/* Title + Info icon + starting price + Discount */}
+        <div className="space-y-1">
+
+          {/* Title row with Info icon */}
+          <div className="flex items-start gap-1.5 min-h-[2.5rem]">
+            <h3 className="font-playfair font-bold text-bark-800 text-base md:text-lg leading-snug tracking-tight line-clamp-2 group-hover:text-olive-800 transition-colors flex-1">
+              {product.name}
+            </h3>
+            {product.description && (
+              <div className="relative flex-shrink-0 mt-0.5" onClick={e => e.stopPropagation()}>
+                <button
+                  className={`transition-colors focus:outline-none ${showInfo ? 'text-olive-700' : 'text-bark-400 hover:text-olive-700'}`}
+                  onMouseEnter={() => setShowInfo(true)}
+                  onMouseLeave={() => setShowInfo(false)}
+                  onTouchEnd={e => { e.preventDefault(); setShowInfo(v => { if (!v) setTimeout(() => setShowInfo(false), 3000); return !v }) }}
+                  aria-label="Product description"
+                >
+                  <Info size={15} className="stroke-[2]" />
+                </button>
+                <AnimatePresence>
+                  {showInfo && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-6 z-30 w-56 bg-white border border-cream-300 rounded-xl shadow-lg p-3"
+                    >
+                      <p className="font-lato text-[12px] text-bark-600 leading-relaxed">
+                        {product.description}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+
+          {/* Price + discount */}
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-lato font-extrabold text-olive-700 text-sm md:text-base">
               ₹{product.startingPrice.toLocaleString('en-IN')} onwards
-          </p>
-                {product.originalPrice && (
-            <>
-              <span className="font-lato text-[#9E9E9E]  font-semibold text-sm line-through">
-                ₹{product.originalPrice.toLocaleString('en-IN')}
-              </span>
-            <span className="bg-olive-100 text-olive-700 text-xs font-lato font-bold px-2 py-0.5 rounded">
-            {Math.round(((product.originalPrice - product.startingPrice) / product.originalPrice) * 100)}% OFF
-              </span>
-            </>
-             )}
+            </p>
+            {product.originalPrice && (
+              <>
+                <span className="font-lato text-[#9E9E9E] font-semibold text-sm line-through">
+                  ₹{product.originalPrice.toLocaleString('en-IN')}
+                </span>
+                <span className="bg-olive-100 text-olive-700 text-xs font-lato font-bold px-2 py-0.5 rounded">
+                  {Math.round(((product.originalPrice - product.startingPrice) / product.originalPrice) * 100)}% OFF
+                </span>
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Weight dropdown */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-[11px] uppercase tracking-wider text-bark-500 font-lato font-bold">
+              Select Weight
+            </label>
+
+            {/* Delivery zone badge */}
+            {product.deliveryZone && !isComingSoon && (
+              <span className="inline-flex items-center gap-1.5 px-1 py-0.5 text-[11px] font-sans font-semibold text-[#14533D]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2.5"
+                  stroke="currentColor"
+                  className="w-3.5 h-3.5 text-[#14533D] shrink-0"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10z" />
+                  <circle cx="12" cy="11" r="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span>{product.deliveryZone} only</span>
+              </span>
+            )}
+          </div>
+          <div className="relative w-full rounded-xl bg-cream-50 hover:bg-cream-100/70 transition-colors border border-cream-300 focus-within:ring-2 focus-within:ring-olive-300 focus-within:border-olive-500">
+            <select
+              value={selectedWeightIdx}
+              onChange={(e) => setSelectedWeightIdx(Number(e.target.value))}
+              disabled={isComingSoon}
+              className="w-full pl-3.5 pr-10 py-2.5 text-xs md:text-sm font-lato font-bold text-bark-700 bg-transparent outline-none cursor-pointer appearance-none disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {product.weights.map((w, idx) => (
+                <option key={idx} value={idx} className="font-semibold text-bark-800 bg-white">
+                  {w.label} – ₹{w.price}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-bark-500">
+              <ChevronDown size={16} className="stroke-[2.5]" />
+            </div>
+          </div>
         </div>
- 
- {/* Weight dropdown */}
-<div className="space-y-1.5">
-  <div className="flex items-center justify-between">
-    <label className="text-[11px] uppercase tracking-wider text-bark-500 font-lato font-bold">
-      Select Weight
-    </label>
-                        
-{/* Frameless, borderless location badge */}
-    {product.deliveryZone && !isComingSoon && (
-      <span className="inline-flex items-center gap-1.5 px-1 py-0.5 text-[11px] font-sans font-semibold text-[#14533D]">
-        {/* Crisp SVG Location Symbol */}
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          strokeWidth="2.5" 
-          stroke="currentColor" 
-          className="w-3.5 h-3.5 text-[#14533D] shrink-0"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 21s-6-5.5-6-10a6 6 0 1 1 12 0c0 4.5-6 10-6 10z" />
-          <circle cx="12" cy="11" r="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span>{product.deliveryZone} only</span>
-      </span>
-    )}
-
-  </div>
-  <div className="relative w-full rounded-xl bg-cream-50 hover:bg-cream-100/70 transition-colors border border-cream-300 focus-within:ring-2 focus-within:ring-olive-300 focus-within:border-olive-500">
-    <select
-      value={selectedWeightIdx}
-      onChange={(e) => setSelectedWeightIdx(Number(e.target.value))}
-      disabled={isComingSoon}
-      className="w-full pl-3.5 pr-10 py-2.5 text-xs md:text-sm font-lato font-bold text-bark-700 bg-transparent outline-none cursor-pointer appearance-none disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      {product.weights.map((w, idx) => (
-        <option key={idx} value={idx} className="font-semibold text-bark-800 bg-white">
-          {w.label} – ₹{w.price}
-        </option>
-      ))}
-    </select>
-    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-bark-500">
-      <ChevronDown size={16} className="stroke-[2.5]" />
-    </div>
-  </div>
-</div>
-
-        {/* Delivery zone strip — only if set */}
 
         {/* Add to Cart / Coming Soon button */}
         <motion.button

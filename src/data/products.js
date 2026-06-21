@@ -1,8 +1,9 @@
 export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "";
-
+/* Banner Images*/
 import D1 from "../components/Banner/D1.webp";
 import D2 from "../components/Banner/D2.webp";
 import D3 from "../components/Banner/D3.webp";
+/* Biscuits images import list   */
 import B1 from "../components/Banner/Ragi Badam Biscuits.webp";
 import B2 from "../components/Banner/Ragi Biscuits.webp";
 import B3 from "../components/Banner/Ragi Coconut Biscuits.webp";
@@ -11,7 +12,10 @@ import B5 from "../components/Banner/Comba_1.webp";
 import B6 from "../components/Banner/Chocolates Nutes.webp";
 import B7 from "../components/Banner/Chocolates Dry fruits.webp";
 import B11 from "../components/Banner/Aam papad.webp";
+/* Millets power image import list */
+import M1 from "../components/Banner/Six millets mixed power.webp";
 
+/* Cakes image import list */
 import C1 from "../components/Banner/Tea Time Cakes.webp";
 import C2 from "../components/Banner/Banana Cake.webp";
 import C3 from "../components/Banner/Ragi Cake.webp";
@@ -187,6 +191,24 @@ export const biscuits = [
       { label: "2Kg", price: 1889 },
     ],
     badge: "Coming Soon",
+  },
+  {
+    id: "m1",
+    name: "All Millet Mix Powder",
+    category: "biscuits",
+    emoji: "🍬",
+    deliveryZone: "Rajahmundry",
+    emoji: "🌰",
+    startingPrice: 449,
+    originalPrice: 599,
+    description:
+      "Artisan homemade chocolates crafted with premium cocoa and natural ingredients.",
+    image: M1,
+    weights: [
+      { label: "1Kg", price: 449 },
+      { label: "2Kg", price: 899 },
+    ],
+    badge: "Bestseller",
   },
 ];
 
