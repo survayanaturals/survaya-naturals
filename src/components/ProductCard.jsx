@@ -122,7 +122,7 @@ export default function ProductCard({ product, compact = false }) {
                       className="absolute right-0 top-6 z-30 w-56 bg-white border border-cream-300 rounded-xl shadow-lg p-3"
                     >
                       <p className="font-lato text-[12px] text-bark-600 leading-relaxed">
-                        {product.description}
+                        {product.description.split('\n').map((line, index) =>(<p key={index}>{line}</p>))}
                       </p>
                     </motion.div>
                   )}

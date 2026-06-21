@@ -8,7 +8,7 @@ import B1 from "../components/Banner/Ragi Badam Biscuits.webp";
 import B2 from "../components/Banner/Ragi Biscuits.webp";
 import B3 from "../components/Banner/Ragi Coconut Biscuits.webp";
 import B4 from "../components/Banner/Ragi Choco Chip Biscuits.webp";
-import B5 from "../components/Banner/Comba_1.webp";
+
 import B6 from "../components/Banner/Chocolates Nutes.webp";
 import B7 from "../components/Banner/Chocolates Dry fruits.webp";
 import B11 from "../components/Banner/Aam papad.webp";
@@ -28,6 +28,12 @@ import C9 from "../components/Banner/Vanilla Cake.webp";
 import C10 from "../components/Banner/Vanilla Cake Slice.webp";
 import C11 from "../components/Banner/Rose milk Cake.webp";
 import C12 from "../components/Banner/Rose milk Cake Slice.webp";
+
+/* Scacks Box import list */
+import S1 from "../components/Banner/Snack BOX 1.webp";
+import S2 from "../components/Banner/Snack BOX 2.webp";
+import S3 from "../components/Banner/Snack BOX 3.webp";
+import S4 from "../components/Banner/Snack BOX 4.webp";
 
 export const biscuits = [
   {
@@ -101,15 +107,17 @@ export const biscuits = [
   },
   {
     id: "b5",
-    name: "All in one Packet",
+    name: "Healthy Bites Collection",
     category: "biscuits",
     deliveryZone: "Rajahmundry",
     emoji: "🎁",
     startingPrice: 149,
     originalPrice: 199,
-    description:
-      "A complete curated variety pack of our handmade healthy crunch treats.",
-    image: B5,
+    description: `Golden Almond Ragi Cookies [6]
+                  Rustic Ragi Delights [6]
+                  Coconut Millet Crunch [6]
+                  Choco Millet Magic [6]`,
+    image: S1,
     weights: [
       { label: "250g", price: 149 },
       { label: "500g", price: 298 },
@@ -388,6 +396,57 @@ export const cakes = [
     description:
       "Exquisite individual slices infused with fragrant rose milk layers.",
     image: C12, // Matches Rose milk Cake Slice.webp
+    weights: [
+      { label: "250g", price: 145 },
+      { label: "500g", price: 280 },
+    ],
+    badge: "Coming Soon",
+  },
+  {
+    id: "c13",
+    name: "Bakery Delights Box",
+    category: "cakes",
+    emoji: "🍰",
+    startingPrice: 145,
+    description: `Marble Cake Slice [4]
+                  Puff Pastry[2]
+                  Chocolate Muffin / Cupcake[3]
+                  Vanilla Muffin / Plain Cupcake[3]`,
+    image: S2, // Matches Rose milk Cake Slice.webp
+    weights: [
+      { label: "250g", price: 145 },
+      { label: "500g", price: 280 },
+    ],
+    badge: "Coming Soon",
+  },
+  {
+    id: "c14",
+    name: "Signature Bakery Box",
+    category: "cakes",
+    emoji: "🍰",
+    startingPrice: 145,
+    description: `Donuts [2]
+                  Chocolate Muffins [4]
+                  Stuffed Bun [2]
+                  Marble Cake Slice[4]`,
+    image: S3, // Matches Rose milk Cake Slice.webp
+    weights: [
+      { label: "250g", price: 145 },
+      { label: "500g", price: 280 },
+    ],
+    badge: "Coming Soon",
+  },
+  {
+    id: "c15",
+    name: "Gourmet Cookie Box",
+    category: "cakes",
+    emoji: "🍰",
+    startingPrice: 145,
+    description: `Muffins [4 ]
+                  Red Velvet Cookies [4]
+                  Chocolate Chip Cookies [4]
+                  Brownies[4]`,
+    image: S4, // Matches Rose milk Cake Slice.webp
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
