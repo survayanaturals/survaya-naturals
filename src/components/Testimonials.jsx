@@ -394,7 +394,7 @@ export default function Testimonials() {
                   <h3 className="font-serif font-bold text-[#4A2D16] text-lg flex items-center gap-2">
                     🍰 🍪 Review Our Products ⭐
                   </h3>
-                  <p className="text-[#B0A296] text-[11px] font-sans mt-0.5">Your feedback helps our bakery grow</p>
+                  <p className="text-[#B0A296] text-[11px] font-sans mt-0.5">Share your experience—your feedback helps us make every bite even better.</p>
                 </div>
                 <button
                   disabled={loading}
