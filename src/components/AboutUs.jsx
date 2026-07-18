@@ -46,7 +46,7 @@ export default function AboutUs() {
             </div>
 
             {/* Fixed Floating Badge Layout Container */}
-            <div className="absolute -bottom-12 -right-5 z-20 bg-[#f4e5d9] border border-[#eb6421] text-amber-950 rounded-2xl p-4 shadow-warm-lg flex items-center gap-3">
+            <div className="absolute -bottom-12 -right-1 z-20 bg-[#f4e5d9] border border-[#eb6421] text-amber-950 rounded-2xl p-4 shadow-warm-lg flex items-center gap-3">
               <div className="bg-amber-900/10 p-2.5 rounded-xl flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-amber-800" />
               </div>
