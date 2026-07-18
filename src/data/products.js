@@ -113,16 +113,18 @@ export const biscuits = [
     emoji: "🎁",
     startingPrice: 149,
     originalPrice: 199,
-    description: `Golden Almond Ragi Cookies [6]
-                  Rustic Ragi Delights [6]
-                  Coconut Millet Crunch [6]
-                  Choco Millet Magic [6]`,
+    description: [
+      "Golden Almond Ragi Cookies [6 pcs]",
+      "Rustic Ragi Delights [6 pcs]",
+      "Coconut Millet Crunch [6 pcs]",
+      "Choco Millet Magic [6 pcs]",
+    ],
     image: S1,
     weights: [
       { label: "250g", price: 149 },
       { label: "500g", price: 298 },
     ],
-    badge: "Combo Special Offer 15% off",
+    badge: "Combo Save 15% Off",
   },
   {
     id: "b11",
@@ -138,7 +140,7 @@ export const biscuits = [
       { label: "1Kg", price: 169 },
       { label: "2Kg", price: 298 },
     ],
-    badge: "Summer Special ( Kids Fav )",
+    badge: "Summer Special",
   },
   {
     id: "b7",
