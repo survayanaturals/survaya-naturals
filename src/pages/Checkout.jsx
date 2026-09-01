@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, ChevronRight, ChevronLeft, Copy, CheckCircle, ShoppingBag, Trash2, X, MapPin } from 'lucide-react'
+import { Check, ChevronRight, ChevronLeft, Copy, CheckCircle, ShoppingBag, Trash2, X, MapPin, Truck, CreditCard, Smartphone } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import QR_Code from '../components/Banner/QR_Code.jpeg'
 
 const STEPS = ['Your Cart', 'Your Details', 'Payment', 'Confirm']
-
 const SCRIPT_URL = import.meta.env.VITE_SHEET_API_URL || ''
 
 export default function Checkout() {
@@ -17,7 +16,11 @@ export default function Checkout() {
   const [upiRefNo, setUpiRefNo] = useState('')
   const [copied, setCopied] = useState(false)
   const [fetchingPincode, setFetchingPincode] = useState(false)
-  const [pincodeError, setPincodeError] = useState(false) // Tracks inline error state from image_481121.png
+  const [pincodeError, setPincodeError] = useState(false)
+
+  // NEW: payment method state
+  const [paymentMethod, setPaymentMethod] = useState(null) // 'cod' | 'online'
+
   const [form, setForm] = useState({
     name: '', phone: '', email: '',
     street: '', city: '', state: '', pincode: '',
@@ -33,21 +36,15 @@ export default function Checkout() {
   const handlePincodeChange = async (val) => {
     const cleaned = val.replace(/\D/g, '').slice(0, 6)
     setForm(f => ({ ...f, pincode: cleaned }))
-    setPincodeError(false) // Reset error state on type
-
+    setPincodeError(false)
     if (cleaned.length === 6) {
       setFetchingPincode(true)
       try {
         const res = await fetch(`https://api.postalpincode.in/pincode/${cleaned}`)
         const data = await res.json()
-
         if (data && data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
           const { District, State } = data[0].PostOffice[0]
-          setForm(f => ({
-            ...f,
-            city: District,
-            state: State
-          }))
+          setForm(f => ({ ...f, city: District, state: State }))
           setPincodeError(false)
           toast.success('Location auto-filled!')
         } else {
@@ -62,28 +59,22 @@ export default function Checkout() {
         setFetchingPincode(false)
       }
     } else {
-      // Clear city and state if they change away from a 6-digit PIN
       setForm(f => ({ ...f, city: '', state: '' }))
     }
   }
 
-  // Clear just the PIN field inline
   const handleClearPincode = () => {
     setForm(f => ({ ...f, pincode: '', city: '', state: '' }))
     setPincodeError(false)
   }
 
-  // Clear all step 1 form details
   const handleClearAllDetails = () => {
-    setForm({
-      name: '', phone: '', email: '',
-      street: '', city: '', state: '', pincode: '',
-    })
+    setForm({ name: '', phone: '', email: '', street: '', city: '', state: '', pincode: '' })
     setPincodeError(false)
-    toast.success('Form cleared! You can now re-enter your details.')
+    toast.success('Form cleared!')
   }
 
-  // ── Empty cart guard ───────────────────────────────────────────────────────
+  // ── Empty cart guard ─────────────────────────────────────────────────────────
   if (items.length === 0 && !orderId) {
     return (
       <div className="min-h-screen bg-cream-100 flex items-center justify-center px-4">
@@ -91,15 +82,13 @@ export default function Checkout() {
           <div className="text-6xl mb-4">🛒</div>
           <h2 className="font-playfair font-bold text-bark-800 text-2xl mb-3">Your cart is empty!</h2>
           <p className="text-bark-500 font-lato mb-6">Add some homemade goodness first.</p>
-          <button onClick={() => navigate('/shop')} className="btn-primary px-8 py-3">
-            Shop Now
-          </button>
+          <button onClick={() => navigate('/shop')} className="btn-primary px-8 py-3">Shop Now</button>
         </div>
       </div>
     )
   }
 
-  // ── Step validation ────────────────────────────────────────────────────────
+  // ── Step validation ──────────────────────────────────────────────────────────
   const validateStep1 = () => {
     if (!form.name.trim())                                { toast.error('Please enter your name'); return false }
     if (!form.phone.trim() || form.phone.length < 10)    { toast.error('Please enter a valid phone number'); return false }
@@ -112,7 +101,11 @@ export default function Checkout() {
   }
 
   const validateStep2 = () => {
-    if (!upiRefNo.trim() || upiRefNo.length !== 12) {
+    if (!paymentMethod) {
+      toast.error('Please select a payment method')
+      return false
+    }
+    if (paymentMethod === 'online' && (!upiRefNo.trim() || upiRefNo.length !== 12)) {
       toast.error('Please enter a valid 12-digit UPI Ref Number')
       return false
     }
@@ -125,9 +118,9 @@ export default function Checkout() {
     setStep(s => s + 1)
   }
 
-  // ── Place Order ────────────────────────────────────────────────────────────
+  // ── Place Order ──────────────────────────────────────────────────────────────
   const handlePlaceOrder = async () => {
-    if (!upiRefNo.trim() || upiRefNo.length !== 12) {
+    if (paymentMethod === 'online' && (!upiRefNo.trim() || upiRefNo.length !== 12)) {
       toast.error('Please enter your 12-digit UPI Ref Number')
       return
     }
@@ -139,19 +132,17 @@ export default function Checkout() {
         .join(', ')
 
       const params = new URLSearchParams({
-        action:       'createOrder',
-        name:         form.name.trim(),
-        phone:        form.phone.trim(),
-        address:      `${form.street}, ${form.city}, ${form.state} - ${form.pincode}`,
+        action:        'createOrder',
+        name:          form.name.trim(),
+        phone:         form.phone.trim(),
+        address:       `${form.street}, ${form.city}, ${form.state} - ${form.pincode}`,
         itemsSummary,
-        total:        total.toString(),
-        upiRefNo:     upiRefNo.trim(),
+        total:         total.toString(),
+        paymentMethod: paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online (UPI)',
+        upiRefNo:      paymentMethod === 'online' ? upiRefNo.trim() : 'COD',
       })
 
-      const response = await fetch(`${SCRIPT_URL}?${params.toString()}`, {
-        method: 'GET',
-      })
-
+      const response = await fetch(`${SCRIPT_URL}?${params.toString()}`, { method: 'GET' })
       const data = await response.json()
 
       if (data && data.success && data.orderId) {
@@ -161,7 +152,6 @@ export default function Checkout() {
       } else {
         throw new Error(data.error || 'No order ID returned from server.')
       }
-
     } catch (err) {
       console.error('❌ Order error:', err)
       toast.error('Could not place order. Please check your connection and try again.')
@@ -180,7 +170,7 @@ export default function Checkout() {
             <div key={s} className="flex items-center">
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold font-lato border-2 transition-all ${
-                  idx < step  ? 'bg-olive-700 border-olive-700 text-white'
+                  idx < step    ? 'bg-olive-700 border-olive-700 text-white'
                   : idx === step ? 'bg-white border-olive-700 text-olive-700'
                   : 'bg-white border-cream-300 text-bark-400'
                 }`}>
@@ -200,7 +190,7 @@ export default function Checkout() {
         {/* Card */}
         <AnimatePresence mode="wait">
 
-          {/* Order Success Screen */}
+          {/* ── Order Success ── */}
           {orderId ? (
             <motion.div
               key="success"
@@ -236,8 +226,7 @@ export default function Checkout() {
                       el.style.position = 'fixed'
                       el.style.opacity = '0'
                       document.body.appendChild(el)
-                      el.focus()
-                      el.select()
+                      el.focus(); el.select()
                       document.execCommand('copy')
                       document.body.removeChild(el)
                       setCopied(true)
@@ -255,18 +244,12 @@ export default function Checkout() {
                 <p>🔍 <strong>Track status anytime</strong> on our Track Order portal.</p>
                 <p>🚚 <strong>Delivery schedule:</strong> Arrives within 2–3 business days.</p>
               </div>
-  
+
               <div className="flex flex-col gap-3">
-                <button
-                  onClick={() => navigate('/track')}
-                  className="btn-primary w-full py-3 rounded-xl"
-                >
+                <button onClick={() => navigate('/track')} className="btn-primary w-full py-3 rounded-xl">
                   Track My Order
                 </button>
-                <button
-                  onClick={() => navigate('/')}
-                  className="btn-outline w-full py-3 rounded-xl"
-                >
+                <button onClick={() => navigate('/')} className="btn-outline w-full py-3 rounded-xl">
                   Continue Shopping
                 </button>
               </div>
@@ -274,7 +257,6 @@ export default function Checkout() {
 
           ) : (
 
-            /* Multi-Step Form */
             <motion.div
               key={step}
               initial={{ opacity: 0, x: 40 }}
@@ -284,14 +266,13 @@ export default function Checkout() {
               className="bg-white rounded-2xl shadow-card border border-cream-200 overflow-hidden"
             >
 
-              {/* STEP 0: Cart Review */}
+              {/* ── STEP 0: Cart Review ── */}
               {step === 0 && (
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-5">
                     <ShoppingBag className="text-olive-700" size={20} />
                     <h2 className="font-playfair font-bold text-bark-800 text-xl">Review Your Order</h2>
                   </div>
-
                   <div className="flex flex-col gap-3 mb-5">
                     {items.map(item => (
                       <div key={item.itemKey} className="flex items-center gap-3 p-3 bg-cream-50 rounded-xl border border-cream-200">
@@ -306,7 +287,6 @@ export default function Checkout() {
                       </div>
                     ))}
                   </div>
-
                   <div className="border-t border-cream-200 pt-4 space-y-2">
                     <div className="flex justify-between text-sm font-lato text-bark-600">
                       <span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span>
@@ -325,7 +305,7 @@ export default function Checkout() {
                 </div>
               )}
 
-              {/* STEP 1: Customer Details */}
+              {/* ── STEP 1: Customer Details ── */}
               {step === 1 && (
                 <div className="p-6">
                   <h2 className="font-playfair font-bold text-bark-800 text-xl mb-5">Your Details</h2>
@@ -333,180 +313,258 @@ export default function Checkout() {
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">Full Name *</label>
-                        <input
-                          value={form.name}
-                          onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                        <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                           placeholder="Your name"
-                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
-                        />
+                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300" />
                       </div>
                       <div>
                         <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">Phone *</label>
-                        <input
-                          value={form.phone}
-                          onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                          placeholder="Your Whatsapp Number"
-                          type="tel"
-                          maxLength={10}
-                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
-                        />
+                        <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                          placeholder="WhatsApp Number" type="tel" maxLength={10}
+                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300" />
                       </div>
                     </div>
-
                     <div>
                       <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">Email (optional)</label>
-                      <input
-                        value={form.email}
-                        onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                        placeholder="your@email.com"
-                        type="email"
-                        className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
-                      />
+                      <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                        placeholder="your@email.com" type="email"
+                        className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300" />
                     </div>
-
                     <div>
                       <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">Delivery Address *</label>
-                      <textarea
-                        value={form.street}
-                        onChange={e => setForm(f => ({ ...f, street: e.target.value }))}
-                        placeholder="House no., Street, Area, Landmark"
-                        rows={2}
-                        className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300 resize-none"
-                      />
+                      <textarea value={form.street} onChange={e => setForm(f => ({ ...f, street: e.target.value }))}
+                        placeholder="House no., Street, Area, Landmark" rows={2}
+                        className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300 resize-none" />
                     </div>
-
                     <div>
                       <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">PIN Code *</label>
                       <div className="relative flex items-center">
-                        <input
-                          value={form.pincode}
-                          onChange={e => handlePincodeChange(e.target.value)}
-                          placeholder="6-digits"
-                          maxLength={6}
-                          // Styled condition dynamic matches layout in image_481121.png
+                        <input value={form.pincode} onChange={e => handlePincodeChange(e.target.value)}
+                          placeholder="6-digits" maxLength={6}
                           className={`w-full border rounded-xl pl-3 pr-10 py-2.5 font-lato text-sm transition-all focus:outline-none focus:ring-2 ${
-                            pincodeError 
-                              ? 'border-red-400 bg-red-50 text-red-900 focus:ring-red-200' 
-                              : 'border-cream-300 bg-cream-50 text-bark-700 focus:ring-olive-300'
-                          }`}
-                        />
+                            pincodeError ? 'border-red-400 bg-red-50 text-red-900 focus:ring-red-200'
+                            : 'border-cream-300 bg-cream-50 text-bark-700 focus:ring-olive-300'
+                          }`} />
                         {fetchingPincode && (
                           <div className="absolute right-3 w-4 h-4 border-2 border-olive-700 border-t-transparent rounded-full animate-spin" />
                         )}
                         {!fetchingPincode && form.pincode.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={handleClearPincode}
-                            className={`absolute right-3 p-0.5 rounded-full hover:bg-opacity-20 transition-colors ${
+                          <button type="button" onClick={handleClearPincode}
+                            className={`absolute right-3 p-0.5 rounded-full transition-colors ${
                               pincodeError ? 'text-red-500 hover:bg-red-200' : 'text-bark-400 hover:bg-bark-200'
-                            }`}
-                          >
+                            }`}>
                             <X size={16} />
                           </button>
                         )}
                       </div>
-
-                      {/* Display Messages verbatim matching layout in image_481121.png */}
-                    <div className="mt-3 space-y-2">
-  {/* Error Message */}
-  {pincodeError && (
-    <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 animate-pulse">
-      <span className="text-red-500 text-base">⚠️</span>
-      <p className="text-xs font-medium text-red-700">
-        PIN code not found. Please check the number and try again.
-      </p>
-    </div>
-  )}
-
-  {/* Info Message */}
-  <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
-    <MapPin size={15} className="mt-0.5 text-amber-600 shrink-0" />
-    <p className="text-xs text-amber-800">
-      <span className="font-semibold">City & State</span> will be automatically
-      filled after successful PIN verification.
-    </p>
-  </div>
-                    </div>
+                      <div className="mt-3 space-y-2">
+                        {pincodeError && (
+                          <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+                            <span className="text-red-500 text-base">⚠️</span>
+                            <p className="text-xs font-medium text-red-700">PIN code not found. Please check and try again.</p>
+                          </div>
+                        )}
+                        <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+                          <MapPin size={15} className="mt-0.5 text-amber-600 shrink-0" />
+                          <p className="text-xs text-amber-800">
+                            <span className="font-semibold">City & State</span> will be automatically filled after PIN verification.
+                          </p>
+                        </div>
                       </div>
-
+                    </div>
                     <div className="grid grid-cols-2 gap-3 pt-1">
                       <div>
                         <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">City *</label>
-                        <input
-                          value={form.city}
-                          onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
+                        <input value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
                           placeholder="City"
-                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
-                        />
+                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300" />
                       </div>
-
                       <div>
                         <label className="block text-xs font-lato font-bold text-bark-600 mb-1.5">State *</label>
-                        <input
-                          value={form.state}
-                          onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
+                        <input value={form.state} onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
                           placeholder="State"
-                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300"
-                        />
+                          className="w-full border border-cream-300 rounded-xl px-3 py-2.5 font-lato text-sm text-bark-700 bg-cream-50 focus:outline-none focus:ring-2 focus:ring-olive-300" />
                       </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* STEP 2: Payment */}
+              {/* ── STEP 2: Payment ── */}
               {step === 2 && (
                 <div className="p-6">
-                  <h2 className="font-playfair font-bold text-bark-800 text-xl mb-5">Make Payment</h2>
+                  <h2 className="font-playfair font-bold text-bark-800 text-xl mb-2">Payment</h2>
+                  <p className="text-bark-500 font-lato text-sm mb-5">Choose how you'd like to pay</p>
 
-                  <div className="bg-olive-700 text-white rounded-2xl p-4 text-center mb-5">
+                  {/* Amount banner */}
+                  <div className="bg-olive-700 text-white rounded-2xl p-4 text-center mb-6">
                     <p className="text-olive-200 text-xs font-lato font-semibold uppercase tracking-widest">Amount to Pay</p>
                     <p className="font-playfair font-bold text-4xl mt-1">₹{total.toLocaleString('en-IN')}</p>
                   </div>
 
-                  <div className="bg-cream-50 border border-cream-200 rounded-2xl p-5 text-center mb-5">
-                    <p className="font-lato font-bold text-bark-700 text-sm mb-3">Scan QR Code to Pay</p>
-                    
-                    <img
-                      src={QR_Code}
-                      alt="UPI QR Code"
-                      className="w-48 h-48 mx-auto rounded-2xl border-2 border-olive-200 shadow-sm object-contain bg-white"
-                    />
+                  {/* Payment method selector */}
+                  <div className="grid grid-cols-2 gap-3 mb-6">
 
-                    <div className="mt-3 flex items-center justify-center gap-2">
-                      <p className="text-bark-600 font-lato text-sm">UPI ID:</p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const upi = import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'
-                          navigator.clipboard.writeText(upi)
-                          toast.success('UPI ID copied!')
-                        }}
-                        className="font-playfair font-bold text-olive-700 text-lg hover:underline"
+                    {/* Cash on Delivery */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('cod')}
+                      className={`relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
+                        paymentMethod === 'cod'
+                          ? 'border-olive-600 bg-olive-50 shadow-md'
+                          : 'border-cream-300 bg-cream-50 hover:border-olive-300 hover:bg-cream-100'
+                      }`}
+                    >
+                      {paymentMethod === 'cod' && (
+                        <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-olive-600 rounded-full flex items-center justify-center">
+                          <Check size={11} className="text-white" strokeWidth={3} />
+                        </div>
+                      )}
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        paymentMethod === 'cod' ? 'bg-olive-100' : 'bg-white border border-cream-200'
+                      }`}>
+                        <Truck size={24} className={paymentMethod === 'cod' ? 'text-olive-700' : 'text-bark-500'} />
+                      </div>
+                      <div>
+                        <p className={`font-lato font-bold text-sm ${paymentMethod === 'cod' ? 'text-olive-800' : 'text-bark-700'}`}>
+                          Cash on Delivery
+                        </p>
+                        <p className="text-bark-400 font-lato text-xs mt-0.5 leading-snug">
+                          Pay when your order arrives
+                        </p>
+                      </div>
+                    </button>
+
+                    {/* Online Payment */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('online')}
+                      className={`relative flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all duration-200 text-left ${
+                        paymentMethod === 'online'
+                          ? 'border-olive-600 bg-olive-50 shadow-md'
+                          : 'border-cream-300 bg-cream-50 hover:border-olive-300 hover:bg-cream-100'
+                      }`}
+                    >
+                      {paymentMethod === 'online' && (
+                        <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-olive-600 rounded-full flex items-center justify-center">
+                          <Check size={11} className="text-white" strokeWidth={3} />
+                        </div>
+                      )}
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                        paymentMethod === 'online' ? 'bg-olive-100' : 'bg-white border border-cream-200'
+                      }`}>
+                        <Smartphone size={24} className={paymentMethod === 'online' ? 'text-olive-700' : 'text-bark-500'} />
+                      </div>
+                      <div>
+                        <p className={`font-lato font-bold text-sm ${paymentMethod === 'online' ? 'text-olive-800' : 'text-bark-700'}`}>
+                          Pay Online
+                        </p>
+                        <p className="text-bark-400 font-lato text-xs mt-0.5 leading-snug">
+                          UPI / QR Code / GPay
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* COD info */}
+                  <AnimatePresence>
+                    {paymentMethod === 'cod' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center"
                       >
-                        {import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'}
-                      </button>
-                    </div>
-                    <p className="text-xs text-bark-400 font-lato mt-1">Tap UPI ID to copy</p>
-                  </div>
+                        <div className="text-3xl mb-2">🚚</div>
+                        <p className="font-lato font-bold text-bark-800 text-sm mb-1">Cash on Delivery Selected</p>
+                        <p className="font-lato text-bark-500 text-xs leading-relaxed">
+                          Pay <strong>₹{total.toLocaleString('en-IN')}</strong> in cash when your order is delivered to your doorstep. No advance payment needed!
+                        </p>
+                        <div className="mt-3 flex items-center justify-center gap-1.5 text-amber-700 text-xs font-lato font-semibold">
+                          <Check size={13} strokeWidth={3} />
+                          No advance payment required
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                  <div className="bg-cream-50 border border-cream-200 rounded-xl p-4">
-                    <label className="block text-sm font-lato font-bold text-bark-700 mb-2">
-                      Enter 12-Digit UPI Ref / UTR Number *
-                    </label>
-                    <input type="text" maxLength={12} placeholder="e.g. 612345678901" value={upiRefNo}
-                      onChange={e => setUpiRefNo(e.target.value.replace(/\D/g,''))}
-                      className={`w-full border-2 rounded-xl px-4 py-3 font-lato text-lg text-bark-800 bg-white focus:outline-none focus:ring-2 tracking-widest font-bold transition-all ${
-                        upiRefNo.length===12 ? 'border-green-400 focus:ring-green-200 bg-green-50' : 'border-cream-300 focus:ring-olive-300'
-                      }`}/>
-                    {upiRefNo.length>0 && upiRefNo.length<12 && <p className="text-bark-400 text-xs mt-1.5 font-lato">{12-upiRefNo.length} more digits needed</p>}
-                    {upiRefNo.length===12 && <p className="text-green-600 text-xs mt-1.5 font-lato font-semibold">✅ Valid UPI reference</p>}
-                    <p className="text-bark-400 text-xs mt-2 font-lato">📱 Find in PhonePe / GPay → History → Transaction ID</p>
-                  </div>
+                  {/* Online Payment section */}
+                  <AnimatePresence>
+                    {paymentMethod === 'online' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-4"
+                      >
+                        {/* QR + UPI ID */}
+                        <div className="bg-cream-50 border border-cream-200 rounded-2xl p-5 text-center">
+                          <p className="font-lato font-bold text-bark-700 text-sm mb-3">Scan QR Code to Pay</p>
+                          <img
+                            src={QR_Code}
+                            alt="UPI QR Code"
+                            className="w-44 h-44 mx-auto rounded-2xl border-2 border-olive-200 shadow-sm object-contain bg-white"
+                          />
+                          <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
+                            <p className="text-bark-600 font-lato text-sm">UPI ID:</p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const upi = import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'
+                                navigator.clipboard.writeText(upi)
+                                toast.success('UPI ID copied!')
+                              }}
+                              className="font-playfair font-bold text-olive-700 text-base hover:underline"
+                            >
+                              {import.meta.env.VITE_UPI_ID || 'laxmi.prasad101003@ptyes'}
+                            </button>
+                          </div>
+                          <p className="text-xs text-bark-400 font-lato mt-1">Tap UPI ID to copy</p>
+                        </div>
+
+                        {/* UPI Ref input */}
+                        <div className="bg-cream-50 border border-cream-200 rounded-xl p-4">
+                          <label className="block text-sm font-lato font-bold text-bark-700 mb-2">
+                            Enter 12-Digit UPI Ref / UTR Number *
+                          </label>
+                          <input
+                            type="text"
+                            maxLength={12}
+                            placeholder="e.g. 612345678901"
+                            value={upiRefNo}
+                            onChange={e => setUpiRefNo(e.target.value.replace(/\D/g, ''))}
+                            className={`w-full border-2 rounded-xl px-4 py-3 font-lato text-lg text-bark-800 bg-white focus:outline-none focus:ring-2 tracking-widest font-bold transition-all ${
+                              upiRefNo.length === 12
+                                ? 'border-green-400 focus:ring-green-200 bg-green-50'
+                                : 'border-cream-300 focus:ring-olive-300'
+                            }`}
+                          />
+                          {upiRefNo.length > 0 && upiRefNo.length < 12 && (
+                            <p className="text-bark-400 text-xs mt-1.5 font-lato">{12 - upiRefNo.length} more digits needed</p>
+                          )}
+                          {upiRefNo.length === 12 && (
+                            <p className="text-green-600 text-xs mt-1.5 font-lato font-semibold">✅ Valid UPI reference</p>
+                          )}
+                          <p className="text-bark-400 text-xs mt-2 font-lato">
+                            📱 Find in PhonePe / GPay → History → Transaction ID
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Prompt if nothing selected */}
+                  {!paymentMethod && (
+                    <div className="text-center py-4">
+                      <p className="text-bark-400 font-lato text-sm">👆 Select a payment method above to continue</p>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* STEP 3: Confirm */}
+              {/* ── STEP 3: Confirm ── */}
               {step === 3 && (
                 <div className="p-6">
                   <h2 className="font-playfair font-bold text-bark-800 text-xl mb-5">Confirm & Place Order</h2>
@@ -534,9 +592,32 @@ export default function Checkout() {
                         </div>
                       ))}
                     </div>
-                    <div className="bg-olive-50 rounded-xl p-4 border border-olive-200">
-                      <p className="text-xs font-lato font-bold text-olive-600 uppercase tracking-wide mb-1">Payment Reference</p>
-                      <p className="font-lato font-bold text-bark-800 tracking-wider text-sm">UPI Ref: {upiRefNo}</p>
+
+                    {/* Payment method summary */}
+                    <div className={`rounded-xl p-4 border ${paymentMethod === 'cod' ? 'bg-amber-50 border-amber-200' : 'bg-olive-50 border-olive-200'}`}>
+                      <p className="text-xs font-lato font-bold uppercase tracking-wide mb-1.5 text-bark-500">Payment</p>
+                      {paymentMethod === 'cod' ? (
+                        <div className="flex items-center gap-2">
+                          <Truck size={16} className="text-amber-600" />
+                          <p className="font-lato font-bold text-bark-800 text-sm">Cash on Delivery</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <Smartphone size={16} className="text-olive-600" />
+                            <p className="font-lato font-bold text-bark-800 text-sm">Online Payment (UPI)</p>
+                          </div>
+                          <p className="font-lato text-bark-600 text-xs tracking-wider">
+                            UPI Ref: <span className="font-bold">{upiRefNo}</span>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Total */}
+                    <div className="bg-olive-700 text-white rounded-xl p-4 flex justify-between items-center">
+                      <span className="font-lato font-bold text-olive-200 text-sm">Total Amount</span>
+                      <span className="font-playfair font-bold text-2xl">₹{total.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
@@ -546,43 +627,27 @@ export default function Checkout() {
               <div className="bg-cream-50 border-t border-cream-200 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {step > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setStep(s => s - 1)}
-                      disabled={loading}
-                      className="flex items-center gap-1 text-sm font-lato font-bold text-bark-600 hover:text-bark-800 transition-colors disabled:opacity-50"
-                    >
+                    <button type="button" onClick={() => setStep(s => s - 1)} disabled={loading}
+                      className="flex items-center gap-1 text-sm font-lato font-bold text-bark-600 hover:text-bark-800 transition-colors disabled:opacity-50">
                       <ChevronLeft size={16} /> Back
                     </button>
                   )}
-                  
-                  {/* Clear button positioned next to back button */}
                   {step === 1 && (
-                    <button
-                      type="button"
-                      onClick={handleClearAllDetails}
-                      className="flex items-center gap-1 text-sm font-lato font-bold text-red-600 hover:text-red-800 transition-colors"
-                    >
-                      <Trash2 size={15} /> Clear Details
+                    <button type="button" onClick={handleClearAllDetails}
+                      className="flex items-center gap-1 text-sm font-lato font-bold text-red-600 hover:text-red-800 transition-colors">
+                      <Trash2 size={15} /> Clear
                     </button>
                   )}
                 </div>
 
                 {step < 3 ? (
-                  <button
-                    type="button"
-                    onClick={handleNext}
-                    className="btn-primary px-5 py-2.5 rounded-xl flex items-center gap-1 text-sm"
-                  >
+                  <button type="button" onClick={handleNext}
+                    className="btn-primary px-5 py-2.5 rounded-xl flex items-center gap-1 text-sm">
                     Next <ChevronRight size={16} />
                   </button>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={handlePlaceOrder}
-                    disabled={loading}
-                    className="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 flex items-center gap-2"
-                  >
+                  <button type="button" onClick={handlePlaceOrder} disabled={loading}
+                    className="btn-primary px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 flex items-center gap-2">
                     {loading ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
