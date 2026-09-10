@@ -18,21 +18,19 @@ export default function Checkout() {
   const [fetchingPincode, setFetchingPincode] = useState(false)
   const [pincodeError, setPincodeError] = useState(false)
 
-  // NEW: payment method state
-  const [paymentMethod, setPaymentMethod] = useState(null) // 'cod' | 'online'
+  const [paymentMethod, setPaymentMethod] = useState(null)
 
   const [form, setForm] = useState({
     name: '', phone: '', email: '',
     street: '', city: '', state: '', pincode: '',
   })
 
-  const { items, subtotal, clearCart } = useCart()
+  const { items, subtotal, clearCart, totalSavings } = useCart()
   const navigate = useNavigate()
 
   const deliveryCharge = subtotal < 500 ? 60 : 0
   const total = subtotal + deliveryCharge
 
-  // ── Auto-fill City & State via PIN Code ─────────────────────────────────────
   const handlePincodeChange = async (val) => {
     const cleaned = val.replace(/\D/g, '').slice(0, 6)
     setForm(f => ({ ...f, pincode: cleaned }))
@@ -74,7 +72,6 @@ export default function Checkout() {
     toast.success('Form cleared!')
   }
 
-  // ── Empty cart guard ─────────────────────────────────────────────────────────
   if (items.length === 0 && !orderId) {
     return (
       <div className="min-h-screen bg-cream-100 flex items-center justify-center px-4">
@@ -88,7 +85,6 @@ export default function Checkout() {
     )
   }
 
-  // ── Step validation ──────────────────────────────────────────────────────────
   const validateStep1 = () => {
     if (!form.name.trim())                                { toast.error('Please enter your name'); return false }
     if (!form.phone.trim() || form.phone.length < 10)    { toast.error('Please enter a valid phone number'); return false }
@@ -118,7 +114,6 @@ export default function Checkout() {
     setStep(s => s + 1)
   }
 
-  // ── Place Order ──────────────────────────────────────────────────────────────
   const handlePlaceOrder = async () => {
     if (paymentMethod === 'online' && (!upiRefNo.trim() || upiRefNo.length !== 12)) {
       toast.error('Please enter your 12-digit UPI Ref Number')
@@ -190,7 +185,6 @@ export default function Checkout() {
         {/* Card */}
         <AnimatePresence mode="wait">
 
-          {/* ── Order Success ── */}
           {orderId ? (
             <motion.div
               key="success"
@@ -281,9 +275,16 @@ export default function Checkout() {
                           <p className="font-lato font-semibold text-bark-800 text-sm truncate">{item.product.name}</p>
                           <p className="text-bark-500 text-xs">{item.selectedWeight.label} × {item.qty}</p>
                         </div>
-                        <p className="font-lato font-bold text-olive-700 text-sm flex-shrink-0">
-                          ₹{(item.selectedWeight.price * item.qty).toLocaleString('en-IN')}
-                        </p>
+                        <div className="flex flex-col items-end flex-shrink-0">
+                          <p className="font-lato font-bold text-olive-700 text-sm">
+                            ₹{(item.selectedWeight.price * item.qty).toLocaleString('en-IN')}
+                          </p>
+                          {item.selectedWeight.mrp && item.selectedWeight.mrp > item.selectedWeight.price && (
+                            <p className="text-[11px] text-bark-400 line-through">
+                              ₹{(item.selectedWeight.mrp * item.qty).toLocaleString('en-IN')}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -291,6 +292,11 @@ export default function Checkout() {
                     <div className="flex justify-between text-sm font-lato text-bark-600">
                       <span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span>
                     </div>
+                    {totalSavings > 0 && (
+                      <div className="flex justify-between text-sm font-lato text-olive-600 font-semibold">
+                        <span>You Saved</span><span>₹{totalSavings.toLocaleString('en-IN')}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm font-lato text-bark-600">
                       <span>Delivery</span>
                       <span className={deliveryCharge === 0 ? 'text-olive-600 font-semibold' : ''}>
@@ -396,16 +402,13 @@ export default function Checkout() {
                   <h2 className="font-playfair font-bold text-bark-800 text-xl mb-2">Payment</h2>
                   <p className="text-bark-500 font-lato text-sm mb-5">Choose how you'd like to pay</p>
 
-                  {/* Amount banner */}
                   <div className="bg-olive-700 text-white rounded-2xl p-4 text-center mb-6">
                     <p className="text-olive-200 text-xs font-lato font-semibold uppercase tracking-widest">Amount to Pay</p>
                     <p className="font-playfair font-bold text-4xl mt-1">₹{total.toLocaleString('en-IN')}</p>
                   </div>
 
-                  {/* Payment method selector */}
                   <div className="grid grid-cols-2 gap-3 mb-6">
 
-                    {/* Cash on Delivery */}
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('cod')}
@@ -435,7 +438,6 @@ export default function Checkout() {
                       </div>
                     </button>
 
-                    {/* Online Payment */}
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('online')}
@@ -466,7 +468,6 @@ export default function Checkout() {
                     </button>
                   </div>
 
-                  {/* COD info */}
                   <AnimatePresence>
                     {paymentMethod === 'cod' && (
                       <motion.div
@@ -489,7 +490,6 @@ export default function Checkout() {
                     )}
                   </AnimatePresence>
 
-                  {/* Online Payment section */}
                   <AnimatePresence>
                     {paymentMethod === 'online' && (
                       <motion.div
@@ -499,7 +499,6 @@ export default function Checkout() {
                         transition={{ duration: 0.2 }}
                         className="space-y-4"
                       >
-                        {/* QR + UPI ID */}
                         <div className="bg-cream-50 border border-cream-200 rounded-2xl p-5 text-center">
                           <p className="font-lato font-bold text-bark-700 text-sm mb-3">Scan QR Code to Pay</p>
                           <img
@@ -524,7 +523,6 @@ export default function Checkout() {
                           <p className="text-xs text-bark-400 font-lato mt-1">Tap UPI ID to copy</p>
                         </div>
 
-                        {/* UPI Ref input */}
                         <div className="bg-cream-50 border border-cream-200 rounded-xl p-4">
                           <label className="block text-sm font-lato font-bold text-bark-700 mb-2">
                             Enter 12-Digit UPI Ref / UTR Number *
@@ -555,7 +553,6 @@ export default function Checkout() {
                     )}
                   </AnimatePresence>
 
-                  {/* Prompt if nothing selected */}
                   {!paymentMethod && (
                     <div className="text-center py-4">
                       <p className="text-bark-400 font-lato text-sm">👆 Select a payment method above to continue</p>
@@ -593,7 +590,6 @@ export default function Checkout() {
                       ))}
                     </div>
 
-                    {/* Payment method summary */}
                     <div className={`rounded-xl p-4 border ${paymentMethod === 'cod' ? 'bg-amber-50 border-amber-200' : 'bg-olive-50 border-olive-200'}`}>
                       <p className="text-xs font-lato font-bold uppercase tracking-wide mb-1.5 text-bark-500">Payment</p>
                       {paymentMethod === 'cod' ? (
@@ -614,7 +610,6 @@ export default function Checkout() {
                       )}
                     </div>
 
-                    {/* Total */}
                     <div className="bg-olive-700 text-white rounded-xl p-4 flex justify-between items-center">
                       <span className="font-lato font-bold text-olive-200 text-sm">Total Amount</span>
                       <span className="font-playfair font-bold text-2xl">₹{total.toLocaleString('en-IN')}</span>

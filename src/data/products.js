@@ -48,9 +48,9 @@ export const biscuits = [
       "Wholesome ragi biscuits loaded with badam (almonds). Crunchy, nutritious, and made with love.",
     image: B1,
     weights: [
-      { label: "200g", price: 169 },
-      { label: "400g", price: 319 },
-      { label: "800g", price: 599 },
+      { label: "200g", price: 169, mrp: 199 },
+      { label: "400g", price: 319, mrp: 375 },
+      { label: "800g", price: 599, mrp: 705 },
     ],
     badge: "Bestseller",
   },
@@ -66,8 +66,8 @@ export const biscuits = [
       "Classic homemade ragi biscuits. Healthy, crispy, and perfect with your morning chai.",
     image: B2,
     weights: [
-      { label: "250g", price: 149 },
-      { label: "500g", price: 298 },
+      { label: "250g", price: 149, mrp: 199 },
+      { label: "500g", price: 298, mrp: 397 },
     ],
     badge: "Bestseller",
   },
@@ -83,8 +83,8 @@ export const biscuits = [
       "Ragi biscuits with the tropical goodness of coconut. A delightful healthy treat.",
     image: B3,
     weights: [
-      { label: "250g", price: 149 },
-      { label: "500g", price: 298 },
+      { label: "250g", price: 149, mrp: 199 },
+      { label: "500g", price: 298, mrp: 397 },
     ],
     badge: null,
   },
@@ -100,8 +100,8 @@ export const biscuits = [
       "Healthy ragi meets indulgent chocolate chips. Kids love these guilt-free treats!",
     image: B4,
     weights: [
-      { label: "250g", price: 149 },
-      { label: "500g", price: 298 },
+      { label: "250g", price: 149, mrp: 199 },
+      { label: "500g", price: 298, mrp: 397 },
     ],
     badge: null,
   },
@@ -121,8 +121,8 @@ export const biscuits = [
     ],
     image: S1,
     weights: [
-      { label: "250g", price: 149 },
-      { label: "500g", price: 298 },
+      { label: "250g", price: 149, mrp: 199 },
+      { label: "500g", price: 298, mrp: 397 },
     ],
     badge: "Combo Save 15% Off",
   },
@@ -137,8 +137,8 @@ export const biscuits = [
     description: "The Taste of Real Mangos.",
     image: B11,
     weights: [
-      { label: "1Kg", price: 169 },
-      { label: "2Kg", price: 298 },
+      { label: "1Kg", price: 169, mrp: 199 },
+      { label: "2Kg", price: 298, mrp: 351 },
     ],
     badge: "Summer Special",
   },
@@ -180,7 +180,7 @@ export const biscuits = [
     startingPrice: 1049,
     description:
       "Wholesome premium bulk pack configurations perfect for deep family sharing values.",
-    image: B1, // CHANGED: Swapped Unsplash link to your imported B1 asset (Ragi Badam Biscuits)
+    image: B1,
     weights: [
       { label: "1Kg", price: 1049 },
       { label: "2Kg", price: 1889 },
@@ -192,10 +192,10 @@ export const biscuits = [
     name: "Premium Cocoa Indulgence Pack",
     category: "chocolates",
     emoji: "🍬",
-    startingPrice: 1049, // Note: Starting price matches the first item in the weights array below
+    startingPrice: 1049,
     description:
       "Artisan homemade chocolates crafted with premium cocoa and natural ingredients.",
-    image: B6, // CHANGED: Swapped Unsplash link to your imported B6 asset (Chocolates Nutes)
+    image: B6,
     weights: [
       { label: "1Kg", price: 1049 },
       { label: "2Kg", price: 1889 },
@@ -206,17 +206,16 @@ export const biscuits = [
     id: "m1",
     name: "All Millet Mix Powder",
     category: "biscuits",
-    emoji: "🍬",
-    deliveryZone: "Rajahmundry",
     emoji: "🌰",
+    deliveryZone: "Rajahmundry",
     startingPrice: 449,
     originalPrice: 599,
     description:
       "Artisan homemade chocolates crafted with premium cocoa and natural ingredients.",
     image: M1,
     weights: [
-      { label: "1Kg", price: 449 },
-      { label: "2Kg", price: 899 },
+      { label: "1Kg", price: 449, mrp: 599 },
+      { label: "2Kg", price: 899, mrp: 1199 },
     ],
     badge: "Bestseller",
   },
@@ -225,7 +224,6 @@ export const biscuits = [
 export const cakes = [
   {
     id: "c1",
-
     name: "Tea Time Treat Collection",
     category: "cakes",
     emoji: "☕",
@@ -233,7 +231,7 @@ export const cakes = [
     deliveryZone: "Rajahmundry",
     description:
       "Light, soft tea cakes perfect for your evening chai time. Mildly sweet and homemade.",
-    image: C1, // Matches Tea Time Cakes.webp
+    image: C1,
     weights: [
       { label: "250g", price: 129 },
       { label: "500g", price: 258 },
@@ -248,7 +246,7 @@ export const cakes = [
     startingPrice: 179,
     description:
       "Moist banana cake made with fresh bananas and wholesome ingredients. A true classic.",
-    image: C2, // Matches Banana Cake.webp
+    image: C2,
     weights: [
       { label: "500g", price: 179 },
       { label: "1kg", price: 358 },
@@ -263,7 +261,7 @@ export const cakes = [
     startingPrice: 229,
     description:
       "Nutritious ragi cake that proves healthy can be delicious. Rich in calcium and fiber.",
-    image: C3, // Matches Ragi Cake.webp
+    image: C3,
     weights: [
       { label: "500g", price: 229 },
       { label: "1kg", price: 458 },
@@ -278,7 +276,7 @@ export const cakes = [
     startingPrice: 120,
     description:
       "Perfect individual slices of our nutritious, fiber-rich homemade ragi cake.",
-    image: C4, // Matches Ragi Cake Slice.webp
+    image: C4,
     weights: [
       { label: "250g", price: 120 },
       { label: "500g", price: 230 },
@@ -293,7 +291,7 @@ export const cakes = [
     startingPrice: 220,
     description:
       "Classic whole wheat cake – lighter, healthier, and just as delicious. No maida!",
-    image: C5, // Matches Wheat Flour Cake.webp
+    image: C5,
     weights: [
       { label: "500g", price: 220 },
       { label: "1kg", price: 420 },
@@ -308,7 +306,7 @@ export const cakes = [
     startingPrice: 115,
     description:
       "Fluffy slices of our signature no-maida whole wheat flour cake.",
-    image: C6, // Matches Wheat Flour Cake Slices.webp
+    image: C6,
     weights: [
       { label: "250g", price: 115 },
       { label: "500g", price: 220 },
@@ -323,7 +321,7 @@ export const cakes = [
     startingPrice: 550,
     description:
       "Decadent chocolate cake with rich cocoa layers. Made with premium dark chocolate.",
-    image: C7, // Matches Chocolate Cake.webp
+    image: C7,
     weights: [
       { label: "500g", price: 550 },
       { label: "1kg", price: 999 },
@@ -337,7 +335,7 @@ export const cakes = [
     emoji: "🍫",
     startingPrice: 320,
     description: "Rich individual slices of premium dark chocolate dream cake.",
-    image: C8, // Matches Chocolate Cake Slice.webp
+    image: C8,
     weights: [
       { label: "500g", price: 320 },
       { label: "1kg", price: 620 },
@@ -352,7 +350,7 @@ export const cakes = [
     startingPrice: 300,
     description:
       "Soft, fluffy vanilla cake with natural vanilla extract. Timeless and delightful.",
-    image: C9, // Matches Vanilla Cake.webp
+    image: C9,
     weights: [
       { label: "500g", price: 300 },
       { label: "1kg", price: 580 },
@@ -367,7 +365,7 @@ export const cakes = [
     startingPrice: 150,
     description:
       "Delicate slices of our pure, classic vanilla bean sponge cake.",
-    image: C10, // Matches Vanilla Cake Slice.webp
+    image: C10,
     weights: [
       { label: "250g", price: 150 },
       { label: "500g", price: 290 },
@@ -382,7 +380,7 @@ export const cakes = [
     startingPrice: 280,
     description:
       "Dreamy rose milk flavoured cake with a beautiful pink hue and floral fragrance.",
-    image: C11, // Matches Rose milk Cake.webp
+    image: C11,
     weights: [
       { label: "500g", price: 280 },
       { label: "1kg", price: 540 },
@@ -397,7 +395,7 @@ export const cakes = [
     startingPrice: 145,
     description:
       "Exquisite individual slices infused with fragrant rose milk layers.",
-    image: C12, // Matches Rose milk Cake Slice.webp
+    image: C12,
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
@@ -414,7 +412,7 @@ export const cakes = [
                   Puff Pastry[2]
                   Chocolate Muffin / Cupcake[3]
                   Vanilla Muffin / Plain Cupcake[3]`,
-    image: S2, // Matches Rose milk Cake Slice.webp
+    image: S2,
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
@@ -431,7 +429,7 @@ export const cakes = [
                   Chocolate Muffins [4]
                   Stuffed Bun [2]
                   Marble Cake Slice[4]`,
-    image: S3, // Matches Rose milk Cake Slice.webp
+    image: S3,
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
@@ -448,7 +446,7 @@ export const cakes = [
                   Red Velvet Cookies [4]
                   Chocolate Chip Cookies [4]
                   Brownies[4]`,
-    image: S4, // Matches Rose milk Cake Slice.webp
+    image: S4,
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },

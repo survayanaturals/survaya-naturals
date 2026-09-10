@@ -83,6 +83,13 @@ export function CartProvider({ children }) {
     0
   )
 
+  // NEW: total savings across all cart items (uses mrp when present, else 0 savings for that item)
+  const totalSavings = state.items.reduce(
+    (sum, i) =>
+      sum + ((i.selectedWeight.mrp || i.selectedWeight.price) - i.selectedWeight.price) * i.qty,
+    0
+  )
+
   const addItem = (product, selectedWeight) => {
     dispatch({ type: 'ADD_ITEM', payload: { product, selectedWeight } })
     dispatch({ type: 'OPEN_CART' })
@@ -123,6 +130,7 @@ export function CartProvider({ children }) {
         isOpen: state.isOpen,
         totalItems,
         subtotal,
+        totalSavings,
         addItem,
         removeItem,
         updateQty,

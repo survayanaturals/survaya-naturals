@@ -11,7 +11,7 @@ function unlockBody() {
 }
 
 export default function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQty, subtotal, totalItems } = useCart()
+  const { items, isOpen, closeCart, removeItem, updateQty, subtotal, totalItems, totalSavings } = useCart()
   const navigate = useNavigate()
 
   // Lock body scroll when cart is open; release when closed
@@ -21,7 +21,6 @@ export default function CartDrawer() {
     } else {
       unlockBody()
     }
-    // Safety net: always clean up when component unmounts
     return () => unlockBody()
   }, [isOpen])
 
@@ -37,8 +36,6 @@ export default function CartDrawer() {
 
   const handleContinueShopping = () => {
     handleClose()
-    // navigate('/') — only uncomment if you want to go to home page
-    // If you just want to close the drawer and stay on current page, handleClose() is enough
   }
 
   return (
@@ -52,8 +49,6 @@ export default function CartDrawer() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            // pointer-events-none is NOT set here — we want clicks to hit this layer
-            // but nothing else behind the drawer should be clickable while open
             className="fixed inset-0 z-40 bg-bark-900/40"
             style={{ cursor: 'pointer' }}
           />
@@ -144,9 +139,18 @@ export default function CartDrawer() {
                           <p className="text-bark-500 text-xs font-lato mt-0.5">
                             {item.selectedWeight.label}
                           </p>
-                          <p className="price-tag text-sm font-bold mt-0.5">
-                            ₹{(item.selectedWeight.price * item.qty).toLocaleString('en-IN')}
-                          </p>
+
+                          {/* Price + strikethrough MRP */}
+                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <p className="price-tag text-sm font-bold">
+                              ₹{(item.selectedWeight.price * item.qty).toLocaleString('en-IN')}
+                            </p>
+                            {item.selectedWeight.mrp && item.selectedWeight.mrp > item.selectedWeight.price && (
+                              <span className="text-[11px] text-bark-400 line-through">
+                                ₹{(item.selectedWeight.mrp * item.qty).toLocaleString('en-IN')}
+                              </span>
+                            )}
+                          </div>
 
                           {/* Qty controls */}
                           <div className="flex items-center gap-2 mt-2">
@@ -194,24 +198,32 @@ export default function CartDrawer() {
                     ₹{subtotal.toLocaleString('en-IN')}
                   </span>
                 </div>
-<div className="mt-3 flex items-start gap-3 rounded-xl bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-lime-50/40 border border-emerald-100 p-3.5 shadow-sm shadow-emerald-800/5">
-  {/* Left Side Icon Area */}
-  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-700">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124l-.208-3.33a2.719 2.719 0 0 0-2.64-2.546H16.5V9a1.5 1.5 0 0 0-1.5-1.5H6.75a1.5 1.5 0 0 0-1.5 1.5v3.375c0 .621-.504 1.125-1.125 1.125H3.375M16.5 13.5h3.87a1.125 1.125 0 0 1 1.097 1.173l-.28 4.5a1.125 1.125 0 0 1-1.12 1.077H16.5M6.75 6.75h7.5" />
-    </svg>
-  </div>
-  
-  {/* Content */}
-  <div className="flex flex-col gap-0.5">
-    <p className="text-xs font-semibold tracking-wide text-emerald-800 uppercase">
-      Complimentary Delivery Unlocked 🎉
-    </p>
-    <p className="text-[11px] leading-relaxed text-emerald-700/80">
-      Thank you for choosing healthy! Your order of <span className="font-bold text-emerald-900">₹1,000+</span> qualifies for free doorstep shipping.
-    </p>
-  </div>
-</div>
+
+                {totalSavings > 0 && (
+                  <div className="flex items-center justify-between -mt-1">
+                    <span className="font-lato font-semibold text-olive-600 text-sm">You Saved</span>
+                    <span className="font-lato font-bold text-olive-600 text-sm">
+                      ₹{totalSavings.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                )}
+
+                <div className="mt-1 flex items-start gap-3 rounded-xl bg-gradient-to-br from-emerald-50 via-emerald-50/50 to-lime-50/40 border border-emerald-100 p-3.5 shadow-sm shadow-emerald-800/5">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124l-.208-3.33a2.719 2.719 0 0 0-2.64-2.546H16.5V9a1.5 1.5 0 0 0-1.5-1.5H6.75a1.5 1.5 0 0 0-1.5 1.5v3.375c0 .621-.504 1.125-1.125 1.125H3.375M16.5 13.5h3.87a1.125 1.125 0 0 1 1.097 1.173l-.28 4.5a1.125 1.125 0 0 1-1.12 1.077H16.5M6.75 6.75h7.5" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-xs font-semibold tracking-wide text-emerald-800 uppercase">
+                      Complimentary Delivery Unlocked 🎉
+                    </p>
+                    <p className="text-[11px] leading-relaxed text-emerald-700/80">
+                      Thank you for choosing healthy! Your order of <span className="font-bold text-emerald-900">₹1,000+</span> qualifies for free doorstep shipping.
+                    </p>
+                  </div>
+                </div>
+
                 <button
                   onClick={handleCheckout}
                   className="btn-primary w-full py-3 rounded-xl"
