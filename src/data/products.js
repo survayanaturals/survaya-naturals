@@ -505,10 +505,10 @@ export const heroSlides = [
   {
     id: 1,
     image: D1,
-    title: "Made with Love.",
-    titleLine2: "Inspired by Home.",
+    title: "Wholesome Treats,",
+    titleLine2: "Feel Good Snack Better.",
     subtitle:
-      "Wholesome ingredients, homemade goodness baked specially for you.",
+      "Made with natural ingredients and no preservatives, our homemade cookies bring you delicious snacking with zero guilt and more goodness.",
     cta: "Shop Our Goodness",
   },
   {

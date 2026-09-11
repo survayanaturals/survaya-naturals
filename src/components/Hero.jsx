@@ -45,7 +45,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-cream-200" style={{ height: 'clamp(360px, 55vw, 520px)' }}>
+    <section className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '1920 / 630' }}>
       {/* Slides Container */}
       <AnimatePresence initial={false} custom={direction} mode="sync">
         <motion.div
@@ -56,7 +56,7 @@ export default function Hero() {
           animate="center"
           exit="exit"
           className="absolute inset-0 w-full h-full px-2 sm:px-4 md:px-6 py-3 md:py-5"
-        >
+        > 
           {/* 
             FIXED HERE: Replaced the broken multi-value array with a massive standard rounded edge.
             Using rounded-[40px] up to rounded-[80px] smoothly wraps BOTH left and right 
@@ -69,7 +69,7 @@ export default function Hero() {
               <motion.img
                 src={slide.image}
                 alt={slide.title}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-contain object-center"
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.05 }}
                 transition={{
@@ -90,17 +90,20 @@ export default function Hero() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.15, duration: 0.5 }}
                   >
-                    <h1 
-                      className="font-playfair font-bold text-bark-800 leading-tight mb-3 drop-shadow-sm"
-                      style={{ fontSize: 'clamp(1.75rem, 4.5vw, 3.25rem)' }}
-                    >
-                      {slide.title}
-                      <br />
-                      <span className="italic font-normal">{slide.titleLine2}</span>
-                    </h1>
-                    <p className="text-bark-700 font-lato font-medium text-sm md:text-base lg:text-lg mb-6 max-w-sm leading-relaxed">
-                      {slide.subtitle}
-                    </p>
+<h1
+  className="font-playfair font-bold text-[#5A301B] leading-tight mb-3 drop-shadow-sm"
+  style={{ fontSize: 'clamp(1.75rem, 4.5vw, 3.25rem)' }}
+>
+  {slide.title}
+  <br />
+  <span className="italic font-normal text-[#2E5133] whitespace-nowrap">
+    {slide.titleLine2}
+  </span>
+</h1>
+
+<p className="text-[#3D3D3D] font-lato font-medium text-sm md:text-base lg:text-lg mb-6 max-w-sm leading-relaxed">
+  {slide.subtitle}
+</p>
                     <motion.button
                       whileHover={{ scale: 1.02, backgroundColor: '#2f3e12' }}
                       whileTap={{ scale: 0.98 }}
