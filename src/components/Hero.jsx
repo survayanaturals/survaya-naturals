@@ -45,7 +45,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '1920 / 630' }}>
+    <section className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '1920 / 600' }}>
       {/* Slides Container */}
       <AnimatePresence initial={false} custom={direction} mode="sync">
         <motion.div
@@ -69,7 +69,7 @@ export default function Hero() {
               <motion.img
                 src={slide.image}
                 alt={slide.title}
-                className="w-full h-full object-contain object-center"
+                className="w-full h-full object-cover object-center"
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.05 }}
                 transition={{
