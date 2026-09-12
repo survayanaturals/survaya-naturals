@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingCart, Check, ChevronDown, Clock, Info } from 'lucide-react'
 import { useCart } from '../context/CartContext'
@@ -10,7 +10,8 @@ export default function ProductCard({ product, compact = false }) {
   const [isAnimating, setIsAnimating] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
 
-  const { addItem, toggleCart } = useCart()
+  const { addItem, toggleCart, triggerFly } = useCart()
+  const btnRef = useRef(null)
   const selectedWeight = product.weights[selectedWeightIdx]
   const isComingSoon = product.badge === 'Coming Soon'
 
@@ -19,6 +20,7 @@ export default function ProductCard({ product, compact = false }) {
 
     addItem(product, selectedWeight)
     setIsAnimating(true)
+    triggerFly(btnRef.current, product.image) 
 
     if (toggleCart) {
       toggleCart()
@@ -141,9 +143,9 @@ export default function ProductCard({ product, compact = false }) {
                 <span className="font-lato text-[#9E9E9E] font-semibold text-sm line-through">
                   ₹{product.originalPrice.toLocaleString('en-IN')}
                 </span>
-                <span className="bg-olive-100 text-olive-700 text-xs font-lato font-bold px-2 py-0.5 rounded">
-                  {Math.round(((product.originalPrice - product.startingPrice) / product.originalPrice) * 100)}% OFF
-                </span>
+<span className="shine-badge bg-olive-100 text-olive-700 text-xs font-lato font-bold px-2 py-0.5 rounded">
+  {Math.round(((product.originalPrice - product.startingPrice) / product.originalPrice) * 100)}% OFF
+</span>
               </>
             )}
           </div>
@@ -195,6 +197,7 @@ export default function ProductCard({ product, compact = false }) {
 
         {/* Add to Cart / Coming Soon button */}
         <motion.button
+          ref={btnRef}
           whileHover={!isComingSoon ? { scale: 1.01 } : {}}
           whileTap={!isComingSoon ? { scale: 0.98 } : {}}
           onClick={handleAddToCart}

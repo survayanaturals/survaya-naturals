@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Leaf, Home, Zap, Smile } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { heroSlides } from '../data/products'
 
@@ -45,7 +45,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-cream-200" style={{ aspectRatio: '1920 / 600' }}>
+    <section className="relative w-full overflow-hidden bg-cream-200" style={{ height: 'clamp(360px, 55vw, 520px)' }}>
       {/* Slides Container */}
       <AnimatePresence initial={false} custom={direction} mode="sync">
         <motion.div
@@ -112,6 +112,45 @@ export default function Hero() {
                     >
                       {slide.cta || "Shop Our Goodness"}
                     </motion.button>
+
+                    <motion.div
+                      initial={{ y: 15, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                      className="hidden lg:flex items-center gap-4 md:gap-6 mt-6 flex-wrap"
+                    >
+                      <div className="flex flex-col items-center text-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-olive-700/40 flex items-center justify-center">
+                          <Leaf size={16} className="text-olive-700" />
+                        </div>
+                        <p className="text-[11px] font-lato font-bold text-bark-800 leading-tight">Clean Ingredients</p>
+                        <p className="text-[10px] font-lato text-bark-500 leading-tight">Simple & Natural</p>
+                      </div>
+
+                      <div className="flex flex-col items-center text-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-olive-700/40 flex items-center justify-center">
+                          <Home size={16} className="text-olive-700" />
+                        </div>
+                        <p className="text-[11px] font-lato font-bold text-bark-800 leading-tight">Homemade Goodness</p>
+                        <p className="text-[10px] font-lato text-bark-500 leading-tight">Made with Care</p>
+                      </div>
+
+                      <div className="flex flex-col items-center text-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-olive-700/40 flex items-center justify-center">
+                          <Zap size={16} className="text-olive-700" />
+                        </div>
+                        <p className="text-[11px] font-lato font-bold text-bark-800 leading-tight">Sustained Energy</p>
+                        <p className="text-[10px] font-lato text-bark-500 leading-tight">Keeps You Going</p>
+                      </div>
+
+                      <div className="flex flex-col items-center text-center gap-1">
+                        <div className="w-9 h-9 rounded-full border border-olive-700/40 flex items-center justify-center">
+                          <Smile size={16} className="text-olive-700" />
+                        </div>
+                        <p className="text-[11px] font-lato font-bold text-bark-800 leading-tight">Zero Guilt</p>
+                        <p className="text-[10px] font-lato text-bark-500 leading-tight">Pure Indulgence</p>
+                      </div>
+                    </motion.div>
                   </motion.div>
                 </div>
               </div>

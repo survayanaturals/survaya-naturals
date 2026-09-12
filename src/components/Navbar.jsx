@@ -21,7 +21,7 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { totalItems, subtotal, toggleCart } = useCart()
+  const { totalItems, subtotal, toggleCart, cartIconRef } = useCart()
   const location = useLocation()
 
   // Optimized Scroll Handler (Passive listener reduces rendering lag)
@@ -131,6 +131,7 @@ export default function Navbar() {
 
             {/* Main Interactive Cart Slider Trigger Toggle */}
             <button
+              ref={cartIconRef}
               onClick={toggleCart}
               className="relative flex items-center gap-2 bg-white border border-cream-300 px-3 py-2 rounded-lg hover:bg-cream-100 hover:border-cream-400 transition-all shadow-sm hover:shadow active:scale-95"
               aria-label={`Shopping Cart, ${totalItems} items`}

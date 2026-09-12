@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect } from 'react'
+import { createContext, useContext, useReducer, useEffect, useRef, useState, useCallback } from 'react'
 import { WHATSAPP_NUMBER } from '../data/products'
 
 const CartContext = createContext(null)
@@ -73,6 +73,40 @@ export function CartProvider({ children }) {
     isOpen: false,
   })
 
+  const cartIconRef = useRef(null)
+  const [flights, setFlights] = useState([])
+
+  const triggerFly = useCallback((buttonEl, imageSrc) => {
+    const cartEl = cartIconRef.current
+    if (!buttonEl || !cartEl) return
+
+    const btnRect = buttonEl.getBoundingClientRect()
+    const cartRect = cartEl.getBoundingClientRect()
+    const size = 58
+    const id = Date.now() + Math.random()
+
+    setFlights((prev) => [
+      ...prev,
+      {
+        id,
+        imageSrc,
+        start: {
+          x: btnRect.left + btnRect.width / 2 - size / 2,
+          y: btnRect.top + btnRect.height / 2 - size / 2,
+        },
+        end: {
+          x: (cartRect.left + cartRect.width / 2) - size / 2,
+          y: cartRect.top + cartRect.height / 2 - size / 2,
+        },
+        size,
+      },
+    ])
+
+    setTimeout(() => {
+      setFlights((prev) => prev.filter((f) => f.id !== id))
+    }, 950)
+  }, [])
+
   useEffect(() => {
     localStorage.setItem('survaya_cart', JSON.stringify(state.items))
   }, [state.items])
@@ -131,6 +165,9 @@ export function CartProvider({ children }) {
         totalItems,
         subtotal,
         totalSavings,
+        cartIconRef,
+        flights,
+        triggerFly,
         addItem,
         removeItem,
         updateQty,

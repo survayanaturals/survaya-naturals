@@ -514,17 +514,19 @@ export const heroSlides = [
   {
     id: 2,
     image: D2,
-    title: "Healthy Baking,",
-    titleLine2: "Pure Flavours.",
-    subtitle: "No Maida. No Preservatives. Just pure homemade goodness.",
+    title: "Tea Time Cakes.",
+    titleLine2: "Made for Feel-Good Moments.",
+    subtitle:
+      "Homemade goodness made with wholesome ingredients, perfect for your everyday tea-time moments.",
     cta: "Explore Cakes",
   },
   {
     id: 3,
     image: D3,
-    title: "Celebrate Every",
-    titleLine2: "Moment Sweetly.",
-    subtitle: "Custom cakes and biscuits for every occasion, made with care.",
-    cta: "Order Now",
+    title: "Make Every Celebration",
+    titleLine2: "Feel Extra Special.",
+    subtitle:
+      "Beautiful homemade cakes made with care, bringing more joy to birthdays, milestones, and special moments.",
+    cta: "Order Your Cake",
   },
 ];

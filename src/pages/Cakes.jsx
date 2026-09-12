@@ -70,29 +70,29 @@ export default function Cakes() {
       className="min-h-screen bg-cream-100 py-10"
     >
       {/* PREMIUM HERO BANNER */}
-      <div className="w-full px-4 sm:px-8 md:px-12 mb-12">
-        <div className="relative w-full h-[240px] md:h-[320px] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-md border border-cream-300/30 group">
-          
-          {/* Background Image Layer with smooth hover scale effect */}
-          <div className="absolute inset-0 w-full h-full">
-            <img
-              src={Cake_Banner}
-              alt="Cakes Collection"
-              className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-            />
-            {/* Rich multi-tone dark shadow mask layer */}
-            <div className="absolute inset-0 bg-gradient-to-r from-bark-950/85 via-bark-900/60 to-transparent" />
-          </div>
+<div className="w-full px-4 sm:px-8 md:px-12 mb-12">
+  <div className="relative w-full aspect-[15.9/4.8] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-md border border-cream-300/30 group">
+    
+    {/* Background Image Layer */}
+    <div className="absolute inset-0 w-full h-full">
+      <img
+        src={Cake_Banner}
+        alt="Cakes Collection"
+        className="w-full h-full object-cover object-center"
+      />
+      {/* Rich multi-tone dark shadow mask layer */}
+      <div className="absolute inset-0 bg-gradient-to-r from-bark-950/85 via-bark-900/60 to-transparent" />
+    </div>
 
-          {/* Content overlay container */}
-          <div className="absolute inset-0 flex items-center px-8 sm:px-12 md:px-16 lg:px-20">
-            <div className="max-w-xl space-y-3">
-              {/* Optional banner elements can be rendered here */}
-            </div>
-          </div>
+    {/* Content overlay container */}
+    <div className="absolute inset-0 flex items-center px-8 sm:px-12 md:px-16 lg:px-20">
+      <div className="max-w-xl space-y-3">
+        {/* Optional banner elements can be rendered here */}
+      </div>
+    </div>
 
-        </div>
-      </div>        
+  </div>
+</div>       
 
       {/* Main Grid Section */}
       <div className="container mx-auto px-4">

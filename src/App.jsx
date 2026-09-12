@@ -14,6 +14,7 @@ import About from './pages/About'
 import TrackOrder from './pages/TrackOrder'
 import Contact from './pages/Contact'
 import Checkout from './pages/Checkout'
+import FlyToCart from './components/FkyToCart'
 
 export default function App() {
   // Global 75% scaling engine to prevent layout overflow and extra scrollbars
@@ -56,6 +57,9 @@ export default function App() {
 
         {/* Cart Drawer (slides from right) */}
         <CartDrawer />
+
+        {/* Fly-to-cart animation layer */}
+        <FlyToCart />
 
         {/* Floating WhatsApp button */}
         <WhatsAppButton />
