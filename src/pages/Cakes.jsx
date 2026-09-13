@@ -96,9 +96,8 @@ export default function Cakes() {
       {/* Main Grid Section */}
       <div className="container mx-auto px-4">
 
-        {/* --- DUAL PATH INTERACTION HUB — first section below the list --- */}
-        {/* --- DUAL PATH INTERACTION HUB — first section below the list --- */}
-<div className="mb-16 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+        {/* --- DUAL PATH INTERACTION HUB — first section below the banner --- */}
+        <div className="mb-16 grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
 
           {/* LEFT PANEL: THE CUSTOM PATH (WHATSAPP) */}
           <div className="bg-white rounded-3xl border border-cream-300 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)] flex flex-col relative">
@@ -138,17 +137,17 @@ export default function Cakes() {
 
                 {/* Feature row */}
                 <div className="flex items-stretch border border-dashed border-cream-300 rounded-2xl mb-6 overflow-hidden bg-white/70 backdrop-blur-[1px]">
-                  <div className="flex flex-col items-center text-center gap-1.5 py-3 px-3 flex-1">
+                  <div className="flex flex-col items-center text-center gap-1.5 py-3 px-2 flex-1">
                     <Palette className="w-4 h-4 text-olive-700" />
                     <span className="text-[10px] font-lato font-bold text-bark-600 leading-tight">Custom Design</span>
                   </div>
                   <span className="w-px bg-cream-300 my-2" />
-                  <div className="flex flex-col items-center text-center gap-1.5 py-3 px-3 flex-1">
+                  <div className="flex flex-col items-center text-center gap-1.5 py-3 px-2 flex-1">
                     <ChefHat className="w-4 h-4 text-olive-700" />
                     <span className="text-[10px] font-lato font-bold text-bark-600 leading-tight">Your Flavours</span>
                   </div>
                   <span className="w-px bg-cream-300 my-2" />
-                  <div className="flex flex-col items-center text-center gap-1.5 py-3 px-3 flex-1">
+                  <div className="flex flex-col items-center text-center gap-1.5 py-3 px-2 flex-1">
                     <HeartHandshake className="w-4 h-4 text-olive-700" />
                     <span className="text-[10px] font-lato font-bold text-bark-600 leading-tight">Made For You</span>
                   </div>
@@ -170,8 +169,8 @@ export default function Cakes() {
                 </motion.a>
               </div>
 
-              {/* IMAGE COLUMN */}
-              <div className="relative w-full md:w-[45%] aspect-[4/5] shrink-0">
+              {/* IMAGE COLUMN — shorter on mobile, taller on desktop */}
+              <div className="relative w-full md:w-[45%] aspect-[16/10] md:aspect-[4/5] shrink-0 mt-1 md:mt-0">
                 <img
                   src={CustomCakeImage}
                   alt="Custom signature cake"
@@ -216,7 +215,7 @@ export default function Cakes() {
                   </div>
                 </div>
 
-                <div className="relative w-full md:w-[42%] aspect-[4/3] shrink-0 rounded-2xl overflow-hidden">
+                <div className="relative w-full md:w-[42%] aspect-[16/10] md:aspect-[4/3] shrink-0 rounded-2xl overflow-hidden">
                   <img
                     src={EverydayCakeImage}
                     alt="Everyday cake"
