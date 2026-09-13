@@ -86,7 +86,7 @@ export const biscuits = [
       { label: "250g", price: 149, mrp: 199 },
       { label: "500g", price: 298, mrp: 397 },
     ],
-    badge: null,
+    badge: "Bestseller",
   },
   {
     id: "b4",
@@ -236,7 +236,7 @@ export const cakes = [
       { label: "250g", price: 129 },
       { label: "500g", price: 258 },
     ],
-    badge: "Coming Soon",
+    badge: " ",
   },
   {
     id: "c2",
@@ -251,7 +251,7 @@ export const cakes = [
       { label: "500g", price: 179 },
       { label: "1kg", price: 358 },
     ],
-    badge: "Coming Soon",
+    badge: " ",
   },
   {
     id: "c3",
@@ -281,7 +281,7 @@ export const cakes = [
       { label: "250g", price: 120 },
       { label: "500g", price: 230 },
     ],
-    badge: "Coming Soon",
+    badge: " ",
   },
   {
     id: "c5",

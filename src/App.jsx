@@ -15,6 +15,8 @@ import TrackOrder from './pages/TrackOrder'
 import Contact from './pages/Contact'
 import Checkout from './pages/Checkout'
 import FlyToCart from './components/FkyToCart'
+import TodaysOffersPopup from './components/TodaysOffersPopup'
+
 
 export default function App() {
   // Global 75% scaling engine to prevent layout overflow and extra scrollbars
@@ -63,6 +65,9 @@ export default function App() {
 
         {/* Floating WhatsApp button */}
         <WhatsAppButton />
+
+        {/* Today's offers — combined biscuit + cake deals */}
+       <TodaysOffersPopup />
 
         {/* Toast notifications */}
         <Toaster

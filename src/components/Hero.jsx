@@ -45,7 +45,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden bg-cream-200" style={{ height: 'clamp(360px, 55vw, 520px)' }}>
+     <section className="relative w-full overflow-hidden bg-cream-200" style={{ height: 'clamp(220px, 55vw, 520px)' }}>
       {/* Slides Container */}
       <AnimatePresence initial={false} custom={direction} mode="sync">
         <motion.div
@@ -69,7 +69,7 @@ export default function Hero() {
               <motion.img
                 src={slide.image}
                 alt={slide.title}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover object-[65%_center] sm:object-center"
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.05 }}
                 transition={{
@@ -84,7 +84,7 @@ export default function Hero() {
             {/* Content overlay inside the curves */}
             <div className="absolute inset-0 flex items-center">
               <div className="w-full px-8 sm:px-12 md:px-16 lg:px-20">
-                <div className="max-w-md md:max-w-lg">
+                <div className="max-w-[70%] sm:max-w-md md:max-w-lg">
                   <motion.div
                     initial={{ y: 25, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
