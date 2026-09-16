@@ -10,6 +10,7 @@ import PaymentsPage from "./PaymentsPage";
 import CustomersPage from "./CustomersPage";
 import ReportsPage from "./ReportPage";
 import SettingsPage from "./SettingsPage";
+import ProductsPage from "./ProductPages";
 
 const NAV_GROUPS = [
   {
@@ -20,7 +21,7 @@ const NAV_GROUPS = [
     label: "Manage",
     items: [
       { key: "Orders", icon: ShoppingBag, ready: true },
-      { key: "Products", icon: Package, ready: false },
+      { key: "Products", icon: Package, ready: true },
       { key: "Customers", icon: Users, ready: true },
       { key: "Payments", icon: Wallet, ready: true },
     ],
@@ -98,6 +99,7 @@ export default function DashboardShell() {
 
       {activePage === "Dashboard" && <DashboardOverviewPage onNavigate={setActivePage} />}
       {activePage === "Orders" && <OrdersPage />}
+      {activePage === "Products" && <ProductsPage />}
       {activePage === "Customers" && <CustomersPage />}
       {activePage === "Payments" && <PaymentsPage />}
       {activePage === "Reports" && <ReportsPage />}

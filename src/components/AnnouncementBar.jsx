@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 
 const items = [
-  { icon: '🌿', text: '100% Natural Ingredients' },
+  { icon: '🌿', text: 'Pure Natural Ingredients' },
   { icon: '🌾', text: 'No Maida' },
   { icon: '🛡️', text: 'No Preservatives' },
   { icon: '❤️', text: 'Homemade with Love' },

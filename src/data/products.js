@@ -493,7 +493,7 @@ export const testimonials = [
 ];
 
 export const features = [
-  { icon: "🌿", label: "100% Natural Ingredients" },
+  { icon: "🌿", label: "Pure Natural Ingredients" },
   { icon: "🚫", label: "No Maida" },
   { icon: "🛡️", label: "No Preservatives" },
   { icon: "🔥", label: "Freshly Baked" },
