@@ -16,6 +16,7 @@ import Contact from './pages/Contact'
 import Checkout from './pages/Checkout'
 import FlyToCart from './components/FkyToCart'
 import TodaysOffersPopup from './components/TodaysOffersPopup'
+import AdminGate from "./pages/AdminGate"; // your private order dashboard, gated by login
 
 
 export default function App() {
@@ -34,56 +35,68 @@ export default function App() {
 
   return (
     <CartProvider>
-      <div className="flex flex-col min-h-screen bg-cream-100">
-        {/* Top announcement bar */}
-        <AnnouncementBar />
+      <Routes>
+        {/* Private admin dashboard — no navbar, no footer, no zoom scaling, no popups.
+            Only reachable by typing this exact URL. */}
+        <Route path="/sn-orders-portal" element={<AdminGate />} />
 
-        {/* Sticky Navbar */}
-        <Navbar />
+        {/* Your normal storefront — everything else renders inside this layout */}
+        <Route
+          path="*"
+          element={
+            <div className="flex flex-col min-h-screen bg-cream-100">
+              {/* Top announcement bar */}
+              <AnnouncementBar />
 
-        {/* Main content */}
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/cakes" element={<Cakes />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/track" element={<TrackOrder />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/checkout" element={<Checkout />} />
-          </Routes>
-        </main>
+              {/* Sticky Navbar */}
+              <Navbar />
 
-        {/* Footer */}
-        <Footer />
+              {/* Main content */}
+              <main className="flex-1">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/cakes" element={<Cakes />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/track" element={<TrackOrder />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                </Routes>
+              </main>
 
-        {/* Cart Drawer (slides from right) */}
-        <CartDrawer />
+              {/* Footer */}
+              <Footer />
 
-        {/* Fly-to-cart animation layer */}
-        <FlyToCart />
+              {/* Cart Drawer (slides from right) */}
+              <CartDrawer />
 
-        {/* Floating WhatsApp button */}
-        <WhatsAppButton />
+              {/* Fly-to-cart animation layer */}
+              <FlyToCart />
 
-        {/* Today's offers — combined biscuit + cake deals */}
-       <TodaysOffersPopup />
+              {/* Floating WhatsApp button */}
+              <WhatsAppButton />
 
-        {/* Toast notifications */}
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            style: {
-              background: '#faf6f0',
-              color: '#3d2808',
-              border: '1px solid #c9d4a5',
-              borderRadius: '12px',
-              fontFamily: 'Lato, sans-serif',
-              fontSize: '14px',
-            },
-          }}
+              {/* Today's offers — combined biscuit + cake deals */}
+              <TodaysOffersPopup />
+
+              {/* Toast notifications */}
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: '#faf6f0',
+                    color: '#3d2808',
+                    border: '1px solid #c9d4a5',
+                    borderRadius: '12px',
+                    fontFamily: 'Lato, sans-serif',
+                    fontSize: '14px',
+                  },
+                }}
+              />
+            </div>
+          }
         />
-      </div>
+      </Routes>
     </CartProvider>
   )
 }

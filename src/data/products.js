@@ -155,7 +155,7 @@ export const biscuits = [
       { label: "250g", price: 149 },
       { label: "500g", price: 298 },
     ],
-    badge: "Coming Soon",
+    badge: " ",
   },
   {
     id: "b8",
