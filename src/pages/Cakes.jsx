@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard'
-import { cakes } from '../data/products'
+import { useLiveProducts } from '../data/useLiveProducts'
 import {
   Cake,
   ShoppingBag,
@@ -21,6 +21,7 @@ import FloralFrameBg from '../components/Banner/floral-frame-bg.webp'
 export default function Cakes() {
   const { addItem, closeCart } = useCart()
   const [isAdded, setIsAdded] = useState(false)
+  const { cakes, loading } = useLiveProducts()
 
   const [selectedStyle, setSelectedStyle] = useState('Plain Pastry Box')
   const [selectedSize, setSelectedSize] = useState('half') // 'half' (0.5 Kg) or 'full' (1.0 Kg)
@@ -300,11 +301,15 @@ export default function Cakes() {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
-          {cakes.map(cake => (
-            <ProductCard key={cake.id} product={cake} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-16 text-bark-500 font-lato">Loading cakes…</div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+            {cakes.map(cake => (
+              <ProductCard key={cake.id} product={cake} />
+            ))}
+          </div>
+        )}
 
       </div>
     </motion.div>

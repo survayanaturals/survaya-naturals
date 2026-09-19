@@ -4,9 +4,11 @@ import ProductSection from '../components/ProductSection'
 import DeliveryBanner from '../components/DeliveryBanner'
 import Testimonials from '../components/Testimonials'
 import AboutUs from '../components/AboutUs'
-import { biscuits, cakes } from '../data/products'
+import { useLiveProducts } from '../data/useLiveProducts'
 
 export default function Home() {
+  const { biscuits, cakes } = useLiveProducts()
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
