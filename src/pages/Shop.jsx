@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard'
-import { allProducts, biscuits, cakes } from '../data/products'
+import { useLiveProducts } from '../data/useLiveProducts'
+import { ProductGridSkeleton } from '../Dashboard/ProductCardSkeleton'
 
 const FILTERS = ['All', 'Biscuits', 'Cakes']
 
 export default function Shop() {
   const [active, setActive] = useState('All')
+  const { allProducts, biscuits, cakes, loading } = useLiveProducts()
   const products =
     active === 'All' ? allProducts : active === 'Biscuits' ? biscuits : cakes
 
@@ -46,11 +48,15 @@ export default function Shop() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-          {products.map(p => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
+        {loading ? (
+          <ProductGridSkeleton count={8} columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4" />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            {products.map(p => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        )}
       </div>
     </motion.div>
   )

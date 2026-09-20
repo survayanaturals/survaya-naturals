@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard'
 import { useLiveProducts } from '../data/useLiveProducts'
+import { ProductGridSkeleton } from '../Dashboard/ProductCardSkeleton'
 import {
   Cake,
   ShoppingBag,
@@ -302,7 +303,7 @@ export default function Cakes() {
 
         {/* Product Grid */}
         {loading ? (
-          <div className="text-center py-16 text-bark-500 font-lato">Loading cakes…</div>
+          <ProductGridSkeleton count={8} columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4" />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
             {cakes.map(cake => (

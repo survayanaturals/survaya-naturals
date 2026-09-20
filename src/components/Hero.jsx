@@ -7,6 +7,7 @@ import { heroSlides } from '../data/products'
 export default function Hero() {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(1)
+  const [loadedSlides, setLoadedSlides] = useState({})
   const navigate = useNavigate()
 
   const goTo = useCallback(
@@ -33,6 +34,11 @@ export default function Hero() {
   }, [next])
 
   const slide = heroSlides[current]
+  const isSlideLoaded = !!loadedSlides[current]
+
+  const markLoaded = idx => {
+    setLoadedSlides(prev => (prev[idx] ? prev : { ...prev, [idx]: true }))
+  }
 
   const variants = {
     enter: dir => ({ x: dir > 0 ? '100%' : '-100%', opacity: 0 }),
@@ -63,18 +69,24 @@ export default function Hero() {
             sides without breaking container ratios or clipping your photos.
           */}
           <div className="relative w-full h-full rounded-[40px] md:rounded-[60px] overflow-hidden shadow-md border border-cream-300/30">
-            
+
+            {/* Shimmer skeleton — covers the banner until this slide's image has actually loaded */}
+            {!isSlideLoaded && (
+              <div className="absolute inset-0 w-full h-full animate-pulse bg-cream-200" />
+            )}
+
             {/* Background image structure */}
             <div className="absolute inset-0 w-full h-full">
               <motion.img
                 src={slide.image}
                 alt={slide.title}
+                onLoad={() => markLoaded(current)}
                 className="w-full h-full object-cover object-[65%_center] sm:object-center"
-                initial={{ scale: 1 }}
-                animate={{ scale: 1.05 }}
+                initial={{ scale: 1, opacity: 0 }}
+                animate={{ scale: 1.05, opacity: isSlideLoaded ? 1 : 0 }}
                 transition={{
-                  duration: 8,
-                  ease: "easeOut"
+                  scale: { duration: 8, ease: "easeOut" },
+                  opacity: { duration: 0.3, ease: "easeOut" },
                 }}
               />
               {/* Subtle overlay mix for text readability */}
