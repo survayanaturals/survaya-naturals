@@ -15,7 +15,6 @@ import TrackOrder from './pages/TrackOrder'
 import Contact from './pages/Contact'
 import Checkout from './pages/Checkout'
 import FlyToCart from './components/FkyToCart'
-import TodaysOffersPopup from './components/TodaysOffersPopup'
 import AdminGate from "./pages/AdminGate"; // your private order dashboard, gated by login
 
 
@@ -76,8 +75,6 @@ export default function App() {
               {/* Floating WhatsApp button */}
               <WhatsAppButton />
 
-              {/* Today's offers — combined biscuit + cake deals */}
-              <TodaysOffersPopup />
 
               {/* Toast notifications */}
               <Toaster
