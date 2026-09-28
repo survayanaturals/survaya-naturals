@@ -29,7 +29,7 @@ export default function App() {
     if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
       document.body.style.MozTransform = "scale(0.80)"
       document.body.style.MozTransformOrigin = "top center"
-      document.body.style.width = "133.33%"
+      document.body.style.width = "80.33%"
     }
   }, [])
 

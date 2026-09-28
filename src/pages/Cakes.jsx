@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import ProductCard from '../components/ProductCard'
 import { useLiveProducts } from '../data/useLiveProducts'
 import { ProductGridSkeleton } from '../Dashboard/ProductCardSkeleton'
+
 import {
   Cake,
   ShoppingBag,
@@ -11,21 +12,31 @@ import {
   Leaf,
   MessageCircle,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  Star,
 } from 'lucide-react'
+
 import { useCart } from '../context/CartContext'
+
 import Cake_Banner from "../components/Banner/Cake_Banner.webp"
 import CustomCakeImage from "../components/Banner/custom-cake-hero.webp"
 import EverydayCakeImage from '../components/Banner/everyday-cake-hero.webp'
 import FloralFrameBg from '../components/Banner/floral-frame-bg.webp'
 
+
 export default function Cakes() {
+
   const { addItem, closeCart } = useCart()
+
   const [isAdded, setIsAdded] = useState(false)
+
   const { cakes, loading } = useLiveProducts()
 
   const [selectedStyle, setSelectedStyle] = useState('Plain Pastry Box')
-  const [selectedSize, setSelectedSize] = useState('half') // 'half' (0.5 Kg) or 'full' (1.0 Kg)
+
+  const [selectedSize, setSelectedSize] = useState('half')
+  // 'half' (0.5 Kg) or 'full' (1.0 Kg)
+
 
   const instantCakePricing = {
     'Plain Pastry Box': {
@@ -33,11 +44,13 @@ export default function Cakes() {
       half: 149,
       full: 279
     },
+
     'Classic Vanilla Sponge': {
       id: 'inst-vanilla',
       half: 249,
       full: 449
     },
+
     'Simple Chocolate Base': {
       id: 'inst-choco',
       half: 299,
@@ -45,274 +58,1194 @@ export default function Cakes() {
     }
   }
 
-  const currentPrice = instantCakePricing[selectedStyle][selectedSize]
-  const currentProductId = instantCakePricing[selectedStyle].id
+
+  const currentPrice =
+    instantCakePricing[selectedStyle][selectedSize]
+
+  const currentProductId =
+    instantCakePricing[selectedStyle].id
+
 
   const handleInstantAddToCart = () => {
+
     const productData = {
       id: currentProductId,
       name: selectedStyle,
-      image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150&auto=format&fit=crop&q=60"
+      image:
+        "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150&auto=format&fit=crop&q=60"
     }
 
     const weightData = {
-      label: selectedSize === 'half' ? '0.5 Kg' : '1.0 Kg',
+      label: selectedSize === 'half'
+        ? '0.5 Kg'
+        : '1.0 Kg',
+
       price: Number(currentPrice)
     }
 
     addItem(productData, weightData)
+
     closeCart()
 
     setIsAdded(true)
+
     setTimeout(() => setIsAdded(false), 2000)
   }
 
+
   return (
+
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-cream-100 py-10"
+      className="min-h-screen bg-[#F8F4EA] pb-16"
     >
-      {/* PREMIUM HERO BANNER */}
-      <div className="w-full px-4 sm:px-8 md:px-12 mb-12">
-        <div className="relative w-full aspect-[15.9/4.8] rounded-[40px] md:rounded-[60px] overflow-hidden shadow-md border border-cream-300/30 group">
 
-          <div className="absolute inset-0 w-full h-full">
-            <img
-              src={Cake_Banner}
-              alt="Cakes Collection"
-              className="w-full h-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-bark-950/85 via-bark-900/60 to-transparent" />
-          </div>
+      {/* =========================================================
+          HERO BANNER
+      ========================================================= */}
 
-          <div className="absolute inset-0 flex items-center px-8 sm:px-12 md:px-16 lg:px-20">
-            <div className="max-w-xl space-y-3">
-              {/* Optional banner elements can be rendered here */}
-            </div>
-          </div>
+ {/* ================= CAKE HERO BANNER ================= */}
+<div className="w-full px-4 sm:px-8 md:px-12 mb-10 md:mb-12">
+  <div
+    className="
+      relative w-full
+      aspect-[15.9/4.8]
+      rounded-[32px]
+      sm:rounded-[40px]
+      md:rounded-[50px]
+      lg:rounded-[60px]
+      overflow-hidden
+      shadow-[0_8px_30px_rgba(75,55,25,0.10)]
+      border border-cream-300/40
+      bg-cream-100
+      group
+    "
+  >
+    {/* Banner Image */}
+    <div className="absolute inset-0 w-full h-full">
+      <img
+        src={Cake_Banner}
+        alt="Survaya Naturals Cakes Collection"
+        className="
+          w-full
+          h-full
+          object-cover
+          object-center
+          transition-transform
+          duration-700
+          ease-out
+          group-hover:scale-[1.015]
+        "
+      />
 
-        </div>
+      {/* Soft readability overlay */}
+      <div
+        className="
+          absolute inset-0
+          bg-gradient-to-r
+          from-bark-950/20
+          via-transparent
+          to-transparent
+          pointer-events-none
+        "
+      />
+    </div>
+
+    {/* Optional content area */}
+    <div
+      className="
+        absolute inset-0
+        flex items-center
+        px-5
+        sm:px-8
+        md:px-12
+        lg:px-16
+        xl:px-20
+      "
+    >
+      <div className="max-w-xl space-y-3">
+        {/* Keep empty if text is already inside Cake_Banner */}
       </div>
+    </div>
+  </div>
+</div>
 
-      {/* Main Grid Section */}
-      <div className="container mx-auto px-4">
 
-        {/* --- DUAL PATH INTERACTION HUB — first section below the banner --- */}
-        <div className="mb-16 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-stretch">
 
-          {/* LEFT PANEL: THE CUSTOM PATH (WHATSAPP) */}
-          <div className="bg-white rounded-3xl border border-cream-300 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)] relative">
+      {/* =========================================================
+          MAIN CONTENT
+      ========================================================= */}
 
-            {/* Decorative background frame */}
+      <main
+        className="
+          max-w-[1450px]
+          mx-auto
+          px-3
+          sm:px-5
+          md:px-8
+          lg:px-10
+          mt-7
+          sm:mt-9
+          md:mt-10
+        "
+      >
+
+
+        {/* =======================================================
+            FEATURE PATHS
+        ======================================================= */}
+
+        <section
+          className="
+            grid
+            grid-cols-1
+            lg:grid-cols-2
+            gap-5
+            md:gap-6
+            mb-10
+            md:mb-14
+          "
+        >
+
+
+          {/* =====================================================
+              CUSTOM CAKE
+          ===================================================== */}
+
+          <motion.article
+            whileHover={{ y: -2 }}
+            transition={{ duration: 0.25 }}
+            className="
+              group
+              relative
+              overflow-hidden
+              rounded-[26px]
+              sm:rounded-[32px]
+              border
+              border-[#E7D8C0]
+              bg-[#FFFDF8]
+              shadow-[0_8px_30px_rgba(75,51,27,0.07)]
+              min-h-[330px]
+              md:min-h-[365px]
+            "
+          >
+
+            {/* Decorative background */}
+
             <img
               src={FloralFrameBg}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+              className="
+                absolute
+                inset-0
+                w-full
+                h-full
+                object-cover
+                opacity-[0.22]
+                pointer-events-none
+                select-none
+              "
             />
 
-            {/* Row layout at ALL widths — text left, image right, never stacks */}
-            <div className="relative z-10 flex flex-row h-full">
 
-              {/* TEXT COLUMN */}
-              <div className="flex-[1.15] min-w-0 flex flex-col p-4 sm:p-6 md:p-8">
-                <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-amber-50/90 border border-amber-200 flex items-center justify-center text-amber-600 mb-3 sm:mb-4">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+            <div className="relative z-10 flex h-full min-h-[330px] md:min-h-[365px]">
+
+              {/* TEXT */}
+
+              <div
+                className="
+                  w-[50%]
+                  sm:w-[49%]
+                  flex
+                  flex-col
+                  justify-between
+                  p-5
+                  sm:p-7
+                  md:p-8
+                  lg:p-9
+                "
+              >
+
+                <div>
+
+                  {/* Icon */}
+
+                  <div
+                    className="
+                      w-10
+                      h-10
+                      sm:w-11
+                      sm:h-11
+                      rounded-full
+                      bg-[#FFF7E8]
+                      border
+                      border-[#EFD9A9]
+                      flex
+                      items-center
+                      justify-center
+                      text-[#C78A19]
+                      mb-4
+                    "
+                  >
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </div>
+
+
+                  <h2
+                    className="
+                      font-playfair
+                      font-bold
+                      text-[#56321F]
+                      text-xl
+                      sm:text-2xl
+                      md:text-[27px]
+                      leading-[1.08]
+                      tracking-[-0.02em]
+                    "
+                  >
+                    Create Your
+                  </h2>
+
+                  <h2
+                    className="
+                      font-playfair
+                      font-bold
+                      text-[#56321F]
+                      text-xl
+                      sm:text-2xl
+                      md:text-[27px]
+                      leading-[1.08]
+                      tracking-[-0.02em]
+                    "
+                  >
+                    Signature Cake
+                  </h2>
+
+
+                  <p
+                    className="
+                      mt-3
+                      text-[#8A634A]
+                      font-lato
+                      text-xs
+                      sm:text-sm
+                      leading-relaxed
+                      max-w-[260px]
+                    "
+                  >
+                    For birthdays, anniversaries & moments
+                    worth celebrating.
+                  </p>
+
+
+                  {/* Features */}
+
+                  <div
+                    className="
+                      mt-5
+                      space-y-2.5
+                      sm:space-y-3
+                    "
+                  >
+
+                    <div className="flex items-center gap-2.5">
+
+                      <span
+                        className="
+                          w-7
+                          h-7
+                          rounded-full
+                          bg-[#F1F6E8]
+                          border
+                          border-[#DCE7C6]
+                          flex
+                          items-center
+                          justify-center
+                          shrink-0
+                        "
+                      >
+                        <Cake className="w-3.5 h-3.5 text-[#496522]" />
+                      </span>
+
+                      <span className="text-xs sm:text-sm font-lato font-bold text-[#624634]">
+                        Custom Design
+                      </span>
+
+                    </div>
+
+
+                    <div className="flex items-center gap-2.5">
+
+                      <span
+                        className="
+                          w-7
+                          h-7
+                          rounded-full
+                          bg-[#F1F6E8]
+                          border
+                          border-[#DCE7C6]
+                          flex
+                          items-center
+                          justify-center
+                          shrink-0
+                        "
+                      >
+                        <Leaf className="w-3.5 h-3.5 text-[#496522]" />
+                      </span>
+
+                      <span className="text-xs sm:text-sm font-lato font-bold text-[#624634]">
+                        Your Flavours
+                      </span>
+
+                    </div>
+
+
+                    <div className="flex items-center gap-2.5">
+
+                      <span
+                        className="
+                          w-7
+                          h-7
+                          rounded-full
+                          bg-[#F1F6E8]
+                          border
+                          border-[#DCE7C6]
+                          flex
+                          items-center
+                          justify-center
+                          shrink-0
+                        "
+                      >
+                        <Heart className="w-3.5 h-3.5 text-[#496522]" />
+                      </span>
+
+                      <span className="text-xs sm:text-sm font-lato font-bold text-[#624634]">
+                        Made For You
+                      </span>
+
+                    </div>
+
+                  </div>
+
                 </div>
 
-                <h3 className="font-playfair font-extrabold text-bark-800 text-base sm:text-xl md:text-2xl leading-tight tracking-tight">
-                  Create Your
-                </h3>
-                <h3 className="font-playfair font-extrabold text-bark-800 text-base sm:text-xl md:text-2xl leading-tight tracking-tight mb-2">
-                  Signature Cake
-                </h3>
 
-                <p className="text-bark-500 font-lato text-[11px] sm:text-xs md:text-sm mb-3 sm:mb-5 leading-relaxed">
-                  For birthdays, anniversaries & moments worth celebrating.
-                </p>
-
-                {/* Feature list — vertical, icon badge + label */}
-                <div className="flex flex-col gap-2 sm:gap-2.5 mb-4 sm:mb-6">
-                  <div className="flex items-center gap-2 sm:gap-2.5">
-                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-olive-50 border border-olive-200 flex items-center justify-center shrink-0">
-                      <Cake className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-olive-700" />
-                    </span>
-                    <span className="text-[11px] sm:text-xs font-lato font-bold text-bark-600">Custom Design</span>
-                  </div>
-                  <div className="flex items-center gap-2 sm:gap-2.5">
-                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-olive-50 border border-olive-200 flex items-center justify-center shrink-0">
-                      <Leaf className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-olive-700" />
-                    </span>
-                    <span className="text-[11px] sm:text-xs font-lato font-bold text-bark-600">Your Flavours</span>
-                  </div>
-                  <div className="flex items-center gap-2 sm:gap-2.5">
-                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-olive-50 border border-olive-200 flex items-center justify-center shrink-0">
-                      <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-olive-700" />
-                    </span>
-                    <span className="text-[11px] sm:text-xs font-lato font-bold text-bark-600">Made For You</span>
-                  </div>
-                </div>
+                {/* WhatsApp */}
 
                 <motion.a
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
+                  whileHover={{ scale: 1.015 }}
+                  whileTap={{ scale: 0.985 }}
                   href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || ''}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-auto w-full inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-olive-700 text-white font-lato font-bold text-[11px] sm:text-sm py-2.5 sm:py-3.5 px-3 rounded-full transition-colors duration-200 shadow-sm"
+                  className="
+                    mt-5
+                    w-full
+                    inline-flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-full
+                    bg-[#496522]
+                    hover:bg-[#3D571D]
+                    text-white
+                    font-lato
+                    font-bold
+                    text-xs
+                    sm:text-sm
+                    py-3
+                    sm:py-3.5
+                    px-3
+                    shadow-[0_5px_15px_rgba(62,88,30,0.18)]
+                    transition-colors
+                  "
                 >
-                  <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
-                  <span className="whitespace-nowrap">Talk to Our Baker</span>
-                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+
+                  <MessageCircle className="w-4 h-4" />
+
+                  <span>
+                    Talk to Our Baker
+                  </span>
+
+                  <ArrowRight className="w-4 h-4" />
+
                 </motion.a>
+
               </div>
 
-              {/* IMAGE COLUMN — full card height, always beside text */}
-              <div className="flex-1 shrink-0 relative">
+
+              {/* IMAGE */}
+
+              <div
+                className="
+                  relative
+                  w-[50%]
+                  sm:w-[51%]
+                  min-h-full
+                  overflow-hidden
+                "
+              >
+
                 <img
                   src={CustomCakeImage}
                   alt="Custom signature cake"
-                  className="w-full h-full object-cover"
+                  className="
+                    absolute
+                    inset-0
+                    w-full
+                    h-full
+                    object-cover
+                    transition-transform
+                    duration-700
+                    group-hover:scale-[1.035]
+                  "
                 />
+
+                <div
+                  className="
+                    absolute
+                    inset-y-0
+                    left-0
+                    w-16
+                    bg-gradient-to-r
+                    from-[#FFFDF8]/25
+                    to-transparent
+                    pointer-events-none
+                  "
+                />
+
               </div>
 
             </div>
-          </div>
 
-          {/* RIGHT PANEL: THE INSTANT SIMPLE PATH (DIRECT TO CART) */}
-          <div className="bg-white rounded-3xl border border-cream-300 overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)] relative">
+          </motion.article>
 
-            {/* Same decorative background frame as left panel */}
+
+
+          {/* =====================================================
+              EVERYDAY CAKES
+          ===================================================== */}
+
+          <motion.article
+            whileHover={{ y: -2 }}
+            transition={{ duration: 0.25 }}
+            className="
+              relative
+              overflow-hidden
+              rounded-[26px]
+              sm:rounded-[32px]
+              border
+              border-[#E7D8C0]
+              bg-[#FFFDF8]
+              shadow-[0_8px_30px_rgba(75,51,27,0.07)]
+              min-h-[330px]
+              md:min-h-[365px]
+            "
+          >
+
             <img
               src={FloralFrameBg}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none"
+              className="
+                absolute
+                inset-0
+                w-full
+                h-full
+                object-cover
+                opacity-[0.18]
+                pointer-events-none
+                select-none
+              "
             />
+
 
             <div className="relative z-10 flex flex-col h-full">
 
-              {/* TOP ROW: text + image, always side by side */}
-              <div className="flex flex-row">
-                <div className="flex-[1.15] min-w-0 p-4 sm:p-6 md:p-8 pb-3 sm:pb-0">
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-olive-50/90 border border-olive-200 flex items-center justify-center text-olive-700 mb-3 sm:mb-4">
+              {/* TOP */}
+
+              <div className="flex h-[47%] min-h-[145px]">
+
+                {/* Text */}
+
+                <div
+                  className="
+                    w-[50%]
+                    p-5
+                    sm:p-7
+                    md:p-8
+                    pb-3
+                  "
+                >
+
+                  <div
+                    className="
+                      w-10
+                      h-10
+                      rounded-full
+                      bg-[#F1F6E8]
+                      border
+                      border-[#DCE7C6]
+                      flex
+                      items-center
+                      justify-center
+                      text-[#496522]
+                      mb-4
+                    "
+                  >
                     <Cake className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
 
-                  <h3 className="font-playfair font-extrabold text-bark-800 text-base sm:text-xl md:text-2xl leading-tight tracking-tight mb-2">
-                    Everyday Cakes
-                  </h3>
 
-                  <p className="text-bark-500 font-lato text-[11px] sm:text-xs md:text-sm leading-relaxed">
-                    Simple, delicious cakes for everyday celebrations.
+                  <h2
+                    className="
+                      font-playfair
+                      font-bold
+                      text-[#56321F]
+                      text-xl
+                      sm:text-2xl
+                      md:text-[27px]
+                      leading-tight
+                    "
+                  >
+                    Everyday Cakes
+                  </h2>
+
+
+                  <p
+                    className="
+                      mt-2
+                      text-[#8A634A]
+                      font-lato
+                      text-xs
+                      sm:text-sm
+                      leading-relaxed
+                      max-w-[240px]
+                    "
+                  >
+                    Simple, delicious cakes for everyday
+                    celebrations.
                   </p>
+
                 </div>
 
-                <div className="flex-1 shrink-0 relative min-h-[140px] sm:min-h-[170px]">
+
+                {/* Cake image */}
+
+                <div
+                  className="
+                    relative
+                    w-[50%]
+                    overflow-hidden
+                  "
+                >
+
                   <img
                     src={EverydayCakeImage}
                     alt="Everyday cake"
-                    className="w-full h-full object-cover"
+                    className="
+                      absolute
+                      inset-0
+                      w-full
+                      h-full
+                      object-cover
+                    "
                   />
+
                 </div>
+
               </div>
 
-              {/* Form fields — full width below the row */}
-              <div className="p-4 sm:p-6 md:p-8 pt-3 sm:pt-4 flex flex-col gap-3 sm:gap-4 flex-1">
-                <div className="space-y-1 sm:space-y-1.5">
-                  <label className="block text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-bark-400 font-lato">
+
+              {/* FORM */}
+
+              <div
+                className="
+                  flex-1
+                  px-5
+                  sm:px-7
+                  md:px-8
+                  pb-5
+                  sm:pb-7
+                  pt-3
+                  flex
+                  flex-col
+                "
+              >
+
+                {/* Cake */}
+
+                <div>
+
+                  <label
+                    className="
+                      block
+                      text-[10px]
+                      sm:text-[11px]
+                      uppercase
+                      tracking-[0.13em]
+                      font-lato
+                      font-extrabold
+                      text-[#9A7358]
+                      mb-1.5
+                    "
+                  >
                     Choose Your Cake
                   </label>
-                  <select
-                    value={selectedStyle}
-                    onChange={(e) => setSelectedStyle(e.target.value)}
-                    className="w-full px-3 py-2 sm:py-2.5 rounded-xl border border-cream-300 text-bark-800 text-[11px] sm:text-xs font-lato font-medium bg-white/80 focus:outline-none focus:border-olive-600"
-                  >
-                    <option value="Plain Pastry Box">Daily Fresh Pastry Box (Assorted)</option>
-                    <option value="Classic Vanilla Sponge">Classic Plain Vanilla Sponge</option>
-                    <option value="Simple Chocolate Base">Simple Soft Chocolate Base</option>
-                  </select>
+
+
+                  <div className="relative">
+
+                    <select
+                      value={selectedStyle}
+                      onChange={(e) => setSelectedStyle(e.target.value)}
+                      className="
+                        appearance-none
+                        w-full
+                        px-4
+                        py-2.5
+                        sm:py-3
+                        pr-10
+                        rounded-xl
+                        border
+                        border-[#E4D8C6]
+                        bg-white/90
+                        text-[#604532]
+                        text-xs
+                        sm:text-sm
+                        font-lato
+                        font-medium
+                        outline-none
+                        focus:border-[#647D35]
+                        focus:ring-2
+                        focus:ring-[#647D35]/10
+                        transition
+                      "
+                    >
+
+                      <option value="Plain Pastry Box">
+                        Daily Fresh Pastry Box (Assorted)
+                      </option>
+
+                      <option value="Classic Vanilla Sponge">
+                        Classic Plain Vanilla Sponge
+                      </option>
+
+                      <option value="Simple Chocolate Base">
+                        Simple Soft Chocolate Base
+                      </option>
+
+                    </select>
+
+                    <span
+                      className="
+                        absolute
+                        right-3
+                        top-1/2
+                        -translate-y-1/2
+                        pointer-events-none
+                        text-[#76513B]
+                      "
+                    >
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    </span>
+
+                  </div>
+
                 </div>
 
-                <div className="space-y-1 sm:space-y-1.5">
-                  <label className="block text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-bark-400 font-lato">
+
+                {/* SIZE */}
+
+                <div className="mt-3">
+
+                  <label
+                    className="
+                      block
+                      text-[10px]
+                      sm:text-[11px]
+                      uppercase
+                      tracking-[0.13em]
+                      font-lato
+                      font-extrabold
+                      text-[#9A7358]
+                      mb-1.5
+                    "
+                  >
                     Choose Your Size
                   </label>
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
+
+
+                  <div className="grid grid-cols-2 gap-2.5">
+
                     <button
                       type="button"
                       onClick={() => setSelectedSize('half')}
-                      className={`py-2 rounded-xl text-[11px] sm:text-xs font-lato font-bold border transition-all flex items-center justify-center gap-1.5 ${
-                        selectedSize === 'half'
-                          ? 'bg-olive-700 text-white border-olive-700'
-                          : 'bg-white/80 text-bark-700 border-cream-300 hover:bg-cream-50'
-                      }`}
+                      className={`
+                        py-2.5
+                        rounded-xl
+                        text-xs
+                        sm:text-sm
+                        font-lato
+                        font-bold
+                        border
+                        transition-all
+                        flex
+                        items-center
+                        justify-center
+                        gap-1.5
+                        ${
+                          selectedSize === 'half'
+                            ? 'bg-[#496522] text-white border-[#496522] shadow-[0_4px_10px_rgba(73,101,34,0.16)]'
+                            : 'bg-white text-[#624634] border-[#E4D8C6] hover:bg-[#F8F4EA]'
+                        }
+                      `}
                     >
-                      <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> 0.5 KG
-                      {selectedSize === 'half' && <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+
+                      <ShoppingBag className="w-3.5 h-3.5" />
+
+                      0.5 KG
+
+                      {selectedSize === 'half' && (
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      )}
+
                     </button>
+
+
                     <button
                       type="button"
                       onClick={() => setSelectedSize('full')}
-                      className={`py-2 rounded-xl text-[11px] sm:text-xs font-lato font-bold border transition-all flex items-center justify-center gap-1.5 ${
-                        selectedSize === 'full'
-                          ? 'bg-olive-700 text-white border-olive-700'
-                          : 'bg-white/80 text-bark-700 border-cream-300 hover:bg-cream-50'
-                      }`}
+                      className={`
+                        py-2.5
+                        rounded-xl
+                        text-xs
+                        sm:text-sm
+                        font-lato
+                        font-bold
+                        border
+                        transition-all
+                        flex
+                        items-center
+                        justify-center
+                        gap-1.5
+                        ${
+                          selectedSize === 'full'
+                            ? 'bg-[#496522] text-white border-[#496522] shadow-[0_4px_10px_rgba(73,101,34,0.16)]'
+                            : 'bg-white text-[#624634] border-[#E4D8C6] hover:bg-[#F8F4EA]'
+                        }
+                      `}
                     >
-                      <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> 1.0 KG
-                      {selectedSize === 'full' && <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+
+                      <ShoppingBag className="w-3.5 h-3.5" />
+
+                      1.0 KG
+
+                      {selectedSize === 'full' && (
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      )}
+
                     </button>
+
                   </div>
+
                 </div>
 
-                <div className="mt-auto flex items-center gap-3 sm:gap-4 pt-1">
-                  <div className="flex flex-col shrink-0">
-                    <span className="text-[9px] sm:text-[10px] uppercase font-lato font-bold text-bark-400 tracking-wider leading-none flex items-center gap-1">
-                      From <Heart className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-amber-400 fill-amber-400" />
+
+                {/* PRICE + CART */}
+
+                <div
+                  className="
+                    mt-auto
+                    pt-4
+                    flex
+                    items-end
+                    gap-3
+                  "
+                >
+
+                  {/* Price */}
+
+                  <div className="shrink-0">
+
+                    <span
+                      className="
+                        block
+                        text-[9px]
+                        sm:text-[10px]
+                        uppercase
+                        tracking-[0.13em]
+                        font-lato
+                        font-bold
+                        text-[#A18068]
+                        mb-0.5
+                      "
+                    >
+                      From
                     </span>
-                    <span className="text-base sm:text-xl font-lato font-black text-olive-700">₹{currentPrice}</span>
+
+                    <span
+                      className="
+                        block
+                        text-xl
+                        sm:text-2xl
+                        font-lato
+                        font-black
+                        text-[#496522]
+                        leading-none
+                      "
+                    >
+                      ₹{currentPrice}
+                    </span>
+
                   </div>
+
+
+                  {/* Add */}
 
                   <motion.button
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={handleInstantAddToCart}
-                    className={`flex-1 inline-flex items-center justify-center gap-1.5 sm:gap-2 font-lato font-bold text-[11px] sm:text-sm py-2.5 sm:py-3.5 rounded-full transition-all shadow-sm ${
-                      isAdded ? 'bg-olive-700 text-white' : 'bg-olive-700 hover:bg-olive-800 text-white'
-                    }`}
+                    className={`
+                      flex-1
+                      min-h-[42px]
+                      sm:min-h-[46px]
+                      inline-flex
+                      items-center
+                      justify-center
+                      gap-2
+                      rounded-full
+                      font-lato
+                      font-bold
+                      text-xs
+                      sm:text-sm
+                      text-white
+                      shadow-[0_5px_15px_rgba(62,88,30,0.16)]
+                      transition-all
+                      ${
+                        isAdded
+                          ? 'bg-[#607A31]'
+                          : 'bg-[#496522] hover:bg-[#3D571D]'
+                      }
+                    `}
                   >
+
                     {isAdded ? (
-                      <>Added ✓</>
-                    ) : (
+
                       <>
-                        <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        Add to Cart
-                        <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <CheckCircle2 className="w-4 h-4" />
+                        Added
                       </>
+
+                    ) : (
+
+                      <>
+                        <ShoppingBag className="w-4 h-4" />
+                        Add to Cart
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+
                     )}
+
                   </motion.button>
+
                 </div>
+
               </div>
 
             </div>
+
+          </motion.article>
+
+        </section>
+
+
+
+        {/* =========================================================
+            SMALL TRUST STRIP
+        ========================================================= */}
+
+        <section
+          className="
+            hidden
+            md:grid
+            grid-cols-4
+            rounded-2xl
+            border
+            border-[#E6DCCB]
+            bg-white/80
+            shadow-[0_5px_20px_rgba(70,48,25,0.04)]
+            mb-10
+            overflow-hidden
+          "
+        >
+
+          <div className="flex items-center justify-center gap-3 py-4 border-r border-[#E8DECF]">
+
+            <span
+              className="
+                w-9
+                h-9
+                rounded-full
+                bg-[#F0F5E7]
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <Leaf className="w-4 h-4 text-[#55702C]" />
+            </span>
+
+            <div>
+              <p className="text-xs font-bold text-[#573A27]">
+                100% Natural
+              </p>
+
+              <p className="text-[10px] text-[#92745E]">
+                Ingredients
+              </p>
+            </div>
+
           </div>
 
-        </div>
 
-        {/* Product Grid */}
+          <div className="flex items-center justify-center gap-3 py-4 border-r border-[#E8DECF]">
+
+            <span
+              className="
+                w-9
+                h-9
+                rounded-full
+                bg-[#FFF5E4]
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <Sparkles className="w-4 h-4 text-[#C28B32]" />
+            </span>
+
+            <div>
+              <p className="text-xs font-bold text-[#573A27]">
+                No Maida
+              </p>
+
+              <p className="text-[10px] text-[#92745E]">
+                No Preservatives
+              </p>
+            </div>
+
+          </div>
+
+
+          <div className="flex items-center justify-center gap-3 py-4 border-r border-[#E8DECF]">
+
+            <span
+              className="
+                w-9
+                h-9
+                rounded-full
+                bg-[#FFF0ED]
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <Heart className="w-4 h-4 text-[#D35B4C] fill-[#D35B4C]" />
+            </span>
+
+            <div>
+              <p className="text-xs font-bold text-[#573A27]">
+                Handmade
+              </p>
+
+              <p className="text-[10px] text-[#92745E]">
+                With Love
+              </p>
+            </div>
+
+          </div>
+
+
+          <div className="flex items-center justify-center gap-3 py-4">
+
+            <span
+              className="
+                w-9
+                h-9
+                rounded-full
+                bg-[#F0F5E7]
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <Cake className="w-4 h-4 text-[#55702C]" />
+            </span>
+
+            <div>
+              <p className="text-xs font-bold text-[#573A27]">
+                Freshly Baked
+              </p>
+
+              <p className="text-[10px] text-[#92745E]">
+                To Order
+              </p>
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        {/* =========================================================
+            PRODUCTS HEADER
+        ========================================================= */}
+
+        <section className="mb-5 sm:mb-7">
+
+          <div className="flex items-end justify-between gap-4">
+
+            <div>
+
+              <div className="flex items-center gap-2 mb-1">
+
+                <span
+                  className="
+                    w-8
+                    h-8
+                    rounded-full
+                    bg-[#EEF4E5]
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
+                  <Cake className="w-4 h-4 text-[#55702C]" />
+                </span>
+
+                <span
+                  className="
+                    text-[10px]
+                    sm:text-xs
+                    uppercase
+                    tracking-[0.15em]
+                    font-bold
+                    text-[#8A6B53]
+                  "
+                >
+                  Freshly Baked
+                </span>
+
+              </div>
+
+
+              <h2
+                className="
+                  font-playfair
+                  font-bold
+                  text-[#54321F]
+                  text-2xl
+                  sm:text-3xl
+                  md:text-[34px]
+                  leading-tight
+                "
+              >
+                Our Cake Collection
+              </h2>
+
+
+              <p
+                className="
+                  mt-1
+                  text-xs
+                  sm:text-sm
+                  text-[#8A6A52]
+                  font-lato
+                "
+              >
+                Homemade cakes made for your sweetest moments.
+              </p>
+
+            </div>
+
+
+            <div
+              className="
+                hidden
+                sm:flex
+                items-center
+                gap-1.5
+                text-xs
+                font-lato
+                font-bold
+                text-[#55702C]
+              "
+            >
+              <Star className="w-4 h-4 fill-[#D59B35] text-[#D59B35]" />
+              Made with care
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        {/* =========================================================
+            PRODUCT GRID
+        ========================================================= */}
+
         {loading ? (
-          <ProductGridSkeleton count={8} columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4" />
+
+          <ProductGridSkeleton
+            count={8}
+            columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+          />
+
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
-            {cakes.map(cake => (
-              <ProductCard key={cake.id} product={cake} />
+
+          <div
+            className="
+              grid
+              grid-cols-2
+              sm:grid-cols-2
+              md:grid-cols-3
+              lg:grid-cols-4
+              gap-3
+              sm:gap-5
+              lg:gap-6
+            "
+          >
+
+            {cakes.map((cake) => (
+
+              <ProductCard
+                key={cake.id}
+                product={cake}
+              />
+
             ))}
+
           </div>
+
         )}
 
-      </div>
+      </main>
+
     </motion.div>
   )
 }
