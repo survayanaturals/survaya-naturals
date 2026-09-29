@@ -1,69 +1,56 @@
+import React from "react";
 import logo from "../components/Banner/logo 2.png";
 
-export default function Logo() {
+/**
+ * Premium Survaya Naturals wordmark.
+ * Usage: <Logo /> or <Logo size={58} />
+ * `size` controls the emblem height in pixels.
+ */
+export default function Logo({ size = 64, className = "" }) {
   return (
-    <div className="flex items-center gap-3 select-none">
-      {/* Inject Google Fonts dynamically so they render perfectly */}
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@500;700&family=Playfair+Display:ital,wght@1,700&display=swap');
-        `}
-      </style>
-
-      {/* Logo Leaf Emblem */}
-      <img
-        src={logo}
-        alt="Survaya Naturals Emblem"
-        className="h-16 w-auto object-contain"
+    <div
+      className={`inline-flex max-w-full select-none items-center gap-2.5 sm:gap-3.5 ${className}`}
+      aria-label="Survaya Naturals — Homemade Goodness"
+    >
+      {/* Load once globally in index.html for optimal performance if preferred. */}
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap"
       />
 
-      {/* Perfectly Recreated Typography Stack */}
-      <div className="flex flex-col items-center text-center">
-        {/* Main Brand Name */}
-        <h1
-          style={{
-          fontFamily: "'Playfair Display', serif", // Swapped to match the thick logo script            fontSize: "2.2rem",
-            fontWeight: 700,
-            fontSize:"2.0rem",
-            color: "#3A2816",
-            lineHeight: "0.95"
-          }}
-          className="italic" // Makes "Survaya" beautifully cursive-styled like the image
+      <img
+        src={logo}
+        alt=""
+        draggable={false}
+        style={{ height: size, width: "auto" }}
+        className="shrink-0 object-contain drop-shadow-[0_2px_5px_rgba(58,40,22,0.10)]"
+      />
+
+      <div className="flex min-w-0 flex-col items-center justify-center text-center">
+        <span
+          className="whitespace-nowrap text-[1.7rem] leading-[0.95] tracking-normal text-[#3A2816] sm:text-[2rem]"
+          style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700 }}
         >
           Survaya
-        </h1>
+        </span>
 
-        {/* NATURALS with Side Hyphen Lines */}
-        <div className="flex items-center w-full justify-center gap-1.5 my-0.5">
-          <span className="h-[1px] w-3 bg-bark-400 opacity-60"></span>
-          <div
-            style={{
-              fontFamily: "'Montserrat', sans-serif",
-              fontSize: "0.6rem",
-              alignItems:'center',
-              letterSpacing: "0.25em",
-              color: "#3A2816", // Darker tint matching the image text
-              fontWeight: 750
-            }}
+        <div className="mt-1 flex w-full items-center justify-center gap-2 sm:gap-2.5">
+          <span className="h-px w-5 bg-[#B89960] sm:w-7" aria-hidden="true" />
+          <span
+            className="whitespace-nowrap text-[0.54rem] font-extrabold tracking-[0.25em] text-[#3A2816] sm:text-[0.6rem]"
+            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
           >
             NATURALS
-          </div>
-          <span className="h-[1px] w-3 bg-bark-400 opacity-60"></span>
+          </span>
+          <span className="h-px w-5 bg-[#B89960] sm:w-7" aria-hidden="true" />
         </div>
 
-        {/* Sub-tagline */}
-        <div
-          style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: "0.68rem",
-            color: "#5C4D3C",
-            fontWeight: 550,
-            letterSpacing: "0.02em"
-          }}
-          className="mt-0.5"
+        <span
+          className="mt-0.5 whitespace-nowrap text-[0.57rem] font-medium tracking-[0.02em] text-[#5C4D3C] sm:text-[0.68rem]"
+          style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
         >
           Homemade Goodness
-        </div>
+        </span>
       </div>
     </div>
   );

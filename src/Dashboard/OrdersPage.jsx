@@ -51,14 +51,14 @@ function Badge({ status }) {
 
 function StatCard({ icon: Icon, label, value, tint, trend }) {
   return (
-    <div className="flex-1 min-w-[190px] bg-white rounded-xl border border-[#EDE7DC] p-4 flex items-center gap-3">
-      <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: tint }}>
-        <Icon size={18} color="#fff" />
+    <div className="flex-1 min-w-[190px] bg-white/95 rounded-[22px] border border-[#E8E9DE] p-5 flex items-center gap-4 shadow-[0_8px_30px_rgba(58,76,52,0.035)] hover:shadow-[0_12px_35px_rgba(58,76,52,0.07)] transition-shadow">
+      <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ background: tint }}>
+        <Icon size={19} color="#fff" strokeWidth={1.7} />
       </div>
       <div>
-        <div className="text-xs text-[#8A8477]">{label}</div>
-        <div className="text-xl font-semibold text-[#2B2620]">{value}</div>
-        {trend && <div className="text-[11px] mt-0.5" style={{ color: trend.startsWith("—") ? "#8A8477" : "#2F6F4E" }}>{trend}</div>}
+        <div className="text-xs text-[#93998B]">{label}</div>
+        <div className="text-[25px] tracking-tight font-semibold text-[#343B32]">{value}</div>
+        {trend && <div className="text-[11px] mt-0.5" style={{ color: "#6E8C68" }}>{trend}</div>}
       </div>
     </div>
   );
@@ -121,27 +121,27 @@ function RowActionsMenu({ order, onView, onPrintBill, onPrintBarcode, onQuickSta
     <div className="relative inline-block text-left" ref={ref}>
       <button
         onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
-        className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#EDE7DC] text-[#5C5548] hover:bg-[#FAF7F2]"
+        className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#E8E9DE] text-[#697267] hover:bg-[#F6F9F2]"
       >
         <MoreHorizontal size={15} />
       </button>
       {open && (
         <div
           onClick={(e) => e.stopPropagation()}
-          className="absolute right-0 mt-1 w-48 bg-white border border-[#EDE7DC] rounded-lg shadow-lg z-20 py-1 text-sm"
+          className="absolute right-0 mt-2 w-52 bg-white border border-[#E8E9DE] rounded-2xl shadow-[0_18px_45px_rgba(40,55,36,0.14)] z-30 p-1.5 text-sm"
         >
-          <button onClick={() => { onView(order); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#2B2620] hover:bg-[#FAF7F2]">
+          <button onClick={() => { onView(order); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#343B32] hover:bg-[#F6F9F2]">
             <Eye size={14} /> View details
           </button>
           {next && (
-            <button onClick={() => { onQuickStatus(order, next); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#2B2620] hover:bg-[#FAF7F2]">
+            <button onClick={() => { onQuickStatus(order, next); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#343B32] hover:bg-[#F6F9F2]">
               <Check size={14} /> Mark as {next}
             </button>
           )}
-          <button onClick={() => { onPrintBill(order); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#2B2620] hover:bg-[#FAF7F2]">
+          <button onClick={() => { onPrintBill(order); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#343B32] hover:bg-[#F6F9F2]">
             <Printer size={14} /> Print bill
           </button>
-          <button onClick={() => { onPrintBarcode(order); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#2B2620] hover:bg-[#FAF7F2]">
+          <button onClick={() => { onPrintBarcode(order); setOpen(false); }} className="w-full text-left px-3 py-2 flex items-center gap-2 text-[#343B32] hover:bg-[#F6F9F2]">
             <FileText size={14} /> Print barcode
           </button>
         </div>
@@ -159,6 +159,8 @@ export default function OrdersPage() {
   const [confirmError, setConfirmError] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sortNewest, setSortNewest] = useState(false);
 
   useEffect(() => {
     if (printTarget) {
@@ -182,7 +184,7 @@ export default function OrdersPage() {
     const q = search.trim().toLowerCase();
     const searchOk = !q || o.orderId.toLowerCase().includes(q) || o.customer.toLowerCase().includes(q) || o.phone.includes(q);
     return tabOk && searchOk;
-  });
+  }).sort((a, b) => sortNewest ? String(b.dateTime ?? "").localeCompare(String(a.dateTime ?? "")) : 0);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const clampedPage = Math.min(page, totalPages);
@@ -219,21 +221,35 @@ export default function OrdersPage() {
   };
 
   const stats = [
-    { icon: ShoppingBag, label: "Total Orders", value: orders.length, tint: "#1F3D2C", trend: "↑ 18% vs last 7 days" },
-    { icon: Clock, label: "New (Order Received)", value: counts["Order Received"], tint: "#E8935B", trend: "↑ 33% vs last 7 days" },
-    { icon: ChefHat, label: "Preparing", value: counts.Preparing, tint: "#8B5E34", trend: "— 0% vs last 7 days" },
-    { icon: CheckCircle2, label: "Delivered", value: counts.Delivered, tint: "#2F6F4E", trend: "↑ 20% vs last 7 days" },
-    { icon: IndianRupee, label: "Today's Sales", value: `₹${orders.reduce((s, o) => s + o.total, 0)}`, tint: "#C9A227", trend: "↑ 25% vs yesterday" },
+    { icon: ShoppingBag, label: "Total Orders", value: orders.length, tint: "#435B46", trend: "All recorded orders" },
+    { icon: Clock, label: "New (Order Received)", value: counts["Order Received"], tint: "#E8935B", trend: "Awaiting acceptance" },
+    { icon: ChefHat, label: "Preparing", value: counts.Preparing, tint: "#8B5E34", trend: "In preparation" },
+    { icon: CheckCircle2, label: "Delivered", value: counts.Delivered, tint: "#2F6F4E", trend: "Successfully delivered" },
+    { icon: IndianRupee, label: "Total Sales", value: `₹${orders.reduce((s, o) => s + o.total, 0)}`, tint: "#BDA06D", trend: "All recorded sales" },
   ];
+
+  const exportOrders = () => {
+    const columns = ["orderId", "customer", "phone", "items", "total", "source", "status", "dateTime", "paymentMethod", "paymentStatus", "address"];
+    const quote = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+    const csv = [columns.join(","), ...filtered.map((o) => columns.map((key) => quote(o[key])).join(","))].join("\r\n");
+    const url = URL.createObjectURL(new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `survaya-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
 
   const initials = "SN";
 
   if (loading) {
     return (
-      <main className="flex-1 flex flex-col min-w-0 bg-[#FAF7F2]">
+      <main className="flex-1 flex flex-col min-w-0 bg-[#F8F7F2] overflow-hidden">
         <header className="px-8 py-5">
-          <h1 className="text-2xl font-serif text-[#1F3D2C] flex items-center gap-2">Order Management 🌿</h1>
-          <p className="text-xs text-[#8A8477] mt-0.5">Loading your orders…</p>
+          <h1 className="text-[30px] sm:text-[35px] leading-tight font-playfair font-semibold tracking-[-0.035em] text-[#435B46] flex items-center gap-3">Order Management <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-[#E5ECD9] text-[#6C8966]"><ShoppingBag size={18} strokeWidth={1.6} /></span></h1>
+          <p className="text-[13px] text-[#899181] mt-2">Loading your orders…</p>
         </header>
         <SkeletonStatRow count={5} />
         <SkeletonGrid count={6} />
@@ -242,7 +258,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <main className="flex-1 flex flex-col min-w-0 bg-[#FAF7F2]">
+    <main className="flex-1 flex flex-col min-w-0 bg-[#F8F7F2] overflow-hidden">
       <style>{`
         @media print {
           body * { visibility: hidden; }
@@ -252,83 +268,84 @@ export default function OrdersPage() {
       `}</style>
       <PrintableReceipt order={printTarget} />
 
-      <header className="flex items-center justify-between px-8 py-5 print:hidden flex-wrap gap-3">
+      <header className="relative flex items-center justify-between px-5 sm:px-8 pt-9 pb-7 print:hidden flex-wrap gap-5 bg-gradient-to-br from-[#F4F5EA] via-[#FBFAF5] to-[#F8F7F2] border-b border-[#E8E9DE]">
         <div>
-          <h1 className="text-2xl font-serif text-[#1F3D2C] flex items-center gap-2">Order Management 🌿</h1>
-          <p className="text-xs text-[#8A8477] mt-0.5">Manage every order with care and make every customer happy.</p>
+          <h1 className="text-[30px] sm:text-[35px] leading-tight font-playfair font-semibold tracking-[-0.035em] text-[#435B46] flex items-center gap-3">Order Management <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-[#E5ECD9] text-[#6C8966]"><ShoppingBag size={18} strokeWidth={1.6} /></span></h1>
+          <p className="text-[13px] text-[#899181] mt-2">Manage every order with care and make every customer happy.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white border border-[#EDE7DC] rounded-lg px-3 py-2 w-72">
-            <Search size={15} className="text-[#8A8477]" />
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 bg-white/90 border border-[#E2E7D9] rounded-2xl px-4 py-3 w-full sm:w-72 shadow-sm focus-within:ring-2 focus-within:ring-[#B8C7A9]/50">
+            <Search size={15} className="text-[#93998B]" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by Order ID, Customer or Phone…"
-              className="text-sm outline-none bg-transparent w-full placeholder:text-[#B7B0A2]"
+              className="text-sm outline-none bg-transparent w-full placeholder:text-[#B1B6A8]"
             />
           </div>
-          <button className="flex items-center gap-2 text-xs border border-[#EDE7DC] rounded-lg px-3 py-2 bg-white text-[#2B2620]">
-            <Calendar size={14} /> 23 Jun – 23 Jun 2026 <ChevronDown size={14} />
+          <button className="flex items-center gap-2 text-xs border border-[#E8E9DE] rounded-lg px-3 py-2 bg-white text-[#343B32]">
+            <Calendar size={14} /> {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })} <ChevronDown size={14} />
           </button>
-          <button className="relative w-9 h-9 rounded-full bg-white border border-[#EDE7DC] flex items-center justify-center">
+          <button className="relative w-9 h-9 rounded-full bg-white border border-[#E8E9DE] flex items-center justify-center">
             <Bell size={16} />
-            <span className="absolute -top-1 -right-1 bg-[#C1443C] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">3</span>
+            <span className="absolute -top-1 -right-1 bg-[#C1443C] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">{counts["Order Received"]}</span>
           </button>
-          <div className="w-9 h-9 rounded-full bg-[#16311F] text-white text-xs font-semibold flex items-center justify-center">
+          <div className="w-9 h-9 rounded-full bg-[#647A59] text-white text-xs font-semibold flex items-center justify-center">
             {initials}
           </div>
         </div>
       </header>
 
       {newOrderBanner && (
-        <div className="mx-8 mb-4 flex items-center justify-between bg-[#FBEBD8] border border-[#EAD8B8] rounded-lg px-4 py-3 print:hidden">
+        <div className="mx-5 sm:mx-8 mt-5 mb-1 flex items-center justify-between bg-[#FBEBD8] border border-[#EAD8B8] rounded-lg px-4 py-3 print:hidden">
           <div className="flex items-center gap-2 text-sm text-[#7A5230]">
             <Bell size={15} /> New order received — <strong>#{newOrderBanner.orderId}</strong> from {newOrderBanner.customer}
           </div>
-          <button onClick={dismissBanner}><X size={15} className="text-[#8A8477]" /></button>
+          <button onClick={dismissBanner}><X size={15} className="text-[#93998B]" /></button>
         </div>
       )}
 
-      <section className="px-8 flex gap-3 flex-wrap print:hidden">
+      <section className="px-5 sm:px-8 pt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 print:hidden">
         {stats.map((s) => <StatCard key={s.label} {...s} />)}
       </section>
 
-      <section className="flex-1 flex gap-5 px-8 py-6 min-h-0">
-        <div className="flex-1 min-w-0 bg-white rounded-xl border border-[#EDE7DC] flex flex-col">
-          <div className="flex items-center justify-between px-4 pt-3 border-b border-[#EDE7DC] flex-wrap gap-2 print:hidden">
-            <div className="flex items-center gap-1 overflow-x-auto">
+      <section className="flex-1 flex flex-col xl:flex-row gap-5 px-5 sm:px-8 py-6 min-h-0">
+        <div className="flex-1 min-w-0 bg-white rounded-[24px] border border-[#E8E9DE] shadow-[0_10px_35px_rgba(54,71,51,0.035)] flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-5 pt-4 border-b border-[#E8E9DE] flex-wrap gap-3 print:hidden bg-gradient-to-r from-[#FBFCF8] to-white">
+            <div className="flex items-center gap-1 overflow-x-auto max-w-full pb-1 scrollbar-thin">
               {TABS.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 -mb-px flex items-center gap-1.5 ${
-                    activeTab === tab ? "border-[#16311F] text-[#16311F] font-medium" : "border-transparent text-[#8A8477]"
+                  className={`px-3.5 py-3 text-[12px] whitespace-nowrap border-b-2 -mb-px flex items-center gap-1.5 transition-colors ${
+                    activeTab === tab ? "border-[#647A59] text-[#647A59] font-medium" : "border-transparent text-[#93998B]"
                   }`}
                 >
                   {tab}
                   {tab !== "All Orders" && (
-                    <span className="text-[10px] bg-[#F1ECE1] text-[#5C5548] px-1.5 py-0.5 rounded-full">{counts[tab]}</span>
+                    <span className="text-[10px] bg-[#F1ECE1] text-[#697267] px-1.5 py-0.5 rounded-full">{counts[tab]}</span>
                   )}
                 </button>
               ))}
             </div>
             <div className="flex items-center gap-2 pb-2">
-              <button className="flex items-center gap-1.5 text-xs border border-[#EDE7DC] rounded-lg px-3 py-1.5 bg-white text-[#2B2620]">
+              <button className="flex items-center gap-1.5 text-xs border border-[#E8E9DE] rounded-lg px-3 py-1.5 bg-white text-[#343B32]">
                 <SlidersHorizontal size={13} /> Filters
               </button>
-              <button className="w-8 h-8 flex items-center justify-center border border-[#EDE7DC] rounded-lg bg-white text-[#5C5548]">
+              <button title="Sort newest first" onClick={() => setSortNewest((v) => !v)} className={`w-9 h-9 flex items-center justify-center border border-[#E8E9DE] rounded-xl ${sortNewest ? "bg-[#E5ECD9] text-[#435B46]" : "bg-white text-[#697267]"}`}>
                 <LayoutGrid size={14} />
               </button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#16311F] text-white">
+              <button title="Export filtered orders to CSV" onClick={exportOrders} className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#647A59] text-white hover:bg-[#536A4E]">
                 <Download size={14} />
               </button>
             </div>
           </div>
 
-          <div className="overflow-auto">
-            <table className="w-full text-sm">
+          {filtersOpen && <div className="px-5 py-3 bg-[#F7F9F2] border-b border-[#E8E9DE] flex items-center gap-3 text-xs text-[#697267]">Showing <strong className="text-[#435B46]">{activeTab}</strong> · {filtered.length} matching orders <button onClick={() => { setActiveTab("All Orders"); setSearch(""); setSortNewest(false); }} className="ml-auto text-[#435B46] underline underline-offset-2">Clear filters</button></div>}
+          <div className="overflow-auto max-h-[620px]">
+            <table className="w-full text-[13px]">
               <thead>
-                <tr className="text-left text-[#8A8477] text-xs border-b border-[#EDE7DC]">
+                <tr className="text-left text-[#838C7D] text-[11px] uppercase tracking-[0.09em] border-b border-[#E8E9DE] bg-[#FAFBF7] sticky top-0 z-10">
                   <th className="px-4 py-3 font-medium">Order ID</th>
                   <th className="px-4 py-3 font-medium">Customer</th>
                   <th className="px-4 py-3 font-medium">Items</th>
@@ -346,20 +363,20 @@ export default function OrdersPage() {
                     <tr
                       key={o.orderId}
                       onClick={() => openDetails(o)}
-                      className={`cursor-pointer border-b border-[#F3EFE6] ${selectedId === o.orderId ? "bg-[#F5F0E4]" : "hover:bg-[#FAF7F2]"}`}
+                      className={`cursor-pointer border-b border-[#F0F1E8] ${selectedId === o.orderId ? "bg-[#F0F4E9]" : "hover:bg-[#F6F9F2]"}`}
                     >
-                      <td className="px-4 py-3 font-medium text-[#2B2620]">#{o.orderId.slice(-4)}</td>
+                      <td className="px-4 py-3 font-medium text-[#343B32]">#{o.orderId.slice(-4)}</td>
                       <td className="px-4 py-3">
-                        <div className="text-[#2B2620]">{o.customer}</div>
-                        <div className="text-[11px] text-[#8A8477]">{o.phone}</div>
+                        <div className="text-[#343B32]">{o.customer}</div>
+                        <div className="text-[11px] text-[#93998B]">{o.phone}</div>
                       </td>
-                      <td className="px-4 py-3 text-[#5C5548] max-w-[240px] truncate">{o.items}</td>
-                      <td className="px-4 py-3 text-[#2B2620]">₹{o.total}</td>
+                      <td className="px-4 py-3 text-[#697267] max-w-[240px] truncate">{o.items}</td>
+                      <td className="px-4 py-3 text-[#343B32]">₹{o.total}</td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5 text-[#5C5548] text-xs"><SourceIcon size={13} /> {o.source}</div>
+                        <div className="flex items-center gap-1.5 text-[#697267] text-xs"><SourceIcon size={13} /> {o.source}</div>
                       </td>
                       <td className="px-4 py-3"><Badge status={o.status} /></td>
-                      <td className="px-4 py-3 text-[#5C5548] text-xs whitespace-nowrap">{o.dateTime}</td>
+                      <td className="px-4 py-3 text-[#697267] text-xs whitespace-nowrap">{o.dateTime}</td>
                       <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <RowActionsMenu
                           order={o}
@@ -373,13 +390,13 @@ export default function OrdersPage() {
                   );
                 })}
                 {pageRows.length === 0 && (
-                  <tr><td colSpan={8} className="text-center py-10 text-[#8A8477] text-sm">No orders match this filter.</td></tr>
+                  <tr><td colSpan={8} className="text-center py-10 text-[#93998B] text-sm">No orders match this filter.</td></tr>
                 )}
               </tbody>
             </table>
           </div>
 
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#EDE7DC] text-xs text-[#5C5548] flex-wrap gap-2 print:hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E8E9DE] text-xs text-[#697267] flex-wrap gap-2 print:hidden">
             <div>
               Showing {filtered.length === 0 ? 0 : pageStart + 1} to {Math.min(pageStart + pageSize, filtered.length)} of {filtered.length} orders
             </div>
@@ -387,7 +404,7 @@ export default function OrdersPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={clampedPage === 1}
-                className="w-7 h-7 flex items-center justify-center rounded-md border border-[#EDE7DC] disabled:opacity-40"
+                className="w-7 h-7 flex items-center justify-center rounded-md border border-[#E8E9DE] disabled:opacity-40"
               >
                 <ChevronLeft size={13} />
               </button>
@@ -396,7 +413,7 @@ export default function OrdersPage() {
                   key={n}
                   onClick={() => setPage(n)}
                   className={`w-7 h-7 flex items-center justify-center rounded-md text-xs ${
-                    n === clampedPage ? "bg-[#16311F] text-white" : "border border-[#EDE7DC] text-[#2B2620]"
+                    n === clampedPage ? "bg-[#647A59] text-white" : "border border-[#E8E9DE] text-[#343B32]"
                   }`}
                 >
                   {n}
@@ -405,7 +422,7 @@ export default function OrdersPage() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={clampedPage === totalPages}
-                className="w-7 h-7 flex items-center justify-center rounded-md border border-[#EDE7DC] disabled:opacity-40"
+                className="w-7 h-7 flex items-center justify-center rounded-md border border-[#E8E9DE] disabled:opacity-40"
               >
                 <ChevronRight size={13} />
               </button>
@@ -413,7 +430,7 @@ export default function OrdersPage() {
             <select
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
-              className="border border-[#EDE7DC] rounded-md px-2 py-1 bg-white"
+              className="border border-[#E8E9DE] rounded-md px-2 py-1 bg-white"
             >
               {PAGE_SIZE_OPTIONS.map((n) => (
                 <option key={n} value={n}>{n} / page</option>
@@ -423,43 +440,43 @@ export default function OrdersPage() {
         </div>
 
         {selected && (
-          <div className="w-[340px] shrink-0 bg-white rounded-xl border border-[#EDE7DC] flex flex-col print:hidden">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE7DC]">
+          <div className="w-full xl:w-[350px] 2xl:w-[390px] shrink-0 bg-white rounded-[24px] border border-[#E8E9DE] shadow-[0_10px_35px_rgba(54,71,51,0.035)] flex flex-col print:hidden overflow-hidden xl:sticky xl:top-4 xl:max-h-[calc(100vh-32px)]">
+            <div className="flex items-center justify-between px-5 py-5 border-b border-[#E8E9DE] bg-gradient-to-r from-[#F4F7EE] to-[#FEFEFB]">
               <div>
-                <div className="text-sm font-semibold text-[#2B2620]">Order #{selected.orderId.slice(-4)}</div>
-                <div className="text-[10px] text-[#8A8477]">{selected.orderId}</div>
+                <div className="text-sm font-semibold text-[#343B32]">Order #{selected.orderId.slice(-4)}</div>
+                <div className="text-[10px] text-[#93998B]">{selected.orderId}</div>
               </div>
               <Badge status={selected.status} />
             </div>
 
-            <div className="px-4 py-3 space-y-4 overflow-auto flex-1 text-sm">
+            <div className="px-5 py-5 space-y-5 overflow-auto flex-1 text-sm">
               <div>
-                <div className="flex items-center gap-1.5 text-[#8A8477] text-xs mb-1"><User size={13} /> Customer</div>
-                <div className="text-[#2B2620] font-medium">{selected.customer}</div>
-                <div className="text-[#5C5548] text-xs">{selected.phone}</div>
+                <div className="flex items-center gap-1.5 text-[#93998B] text-xs mb-1"><User size={13} /> Customer</div>
+                <div className="text-[#343B32] font-medium">{selected.customer}</div>
+                <div className="text-[#697267] text-xs">{selected.phone}</div>
               </div>
 
               <div>
-                <div className="flex items-center gap-1.5 text-[#8A8477] text-xs mb-1"><MapPin size={13} /> Delivery Address</div>
-                <div className="text-[#5C5548] text-xs leading-relaxed">{selected.address}</div>
+                <div className="flex items-center gap-1.5 text-[#93998B] text-xs mb-1"><MapPin size={13} /> Delivery Address</div>
+                <div className="text-[#697267] text-xs leading-relaxed">{selected.address}</div>
               </div>
 
               <div>
-                <div className="flex items-center gap-1.5 text-[#8A8477] text-xs mb-1"><Package size={13} /> Items</div>
-                <div className="flex justify-between text-[#2B2620]"><span>{selected.items}</span><span>₹{selected.total}</span></div>
-                <div className="border-t border-dashed border-[#EDE7DC] my-2" />
-                <div className="flex justify-between font-semibold text-[#2B2620]"><span>Total</span><span>₹{selected.total}</span></div>
+                <div className="flex items-center gap-1.5 text-[#93998B] text-xs mb-1"><Package size={13} /> Items</div>
+                <div className="flex justify-between text-[#343B32]"><span>{selected.items}</span><span>₹{selected.total}</span></div>
+                <div className="border-t border-dashed border-[#E8E9DE] my-2" />
+                <div className="flex justify-between font-semibold text-[#343B32]"><span>Total</span><span>₹{selected.total}</span></div>
               </div>
 
               <div className="grid grid-cols-2 gap-y-2 text-xs">
-                <div className="flex items-center gap-1.5 text-[#8A8477]"><CreditCard size={13} /> Payment</div>
-                <div className="text-[#2B2620] text-right">{selected.paymentMethod} · {selected.paymentStatus}</div>
-                <div className="flex items-center gap-1.5 text-[#8A8477]"><Calendar size={13} /> Order Date</div>
-                <div className="text-[#2B2620] text-right">{selected.dateTime}</div>
+                <div className="flex items-center gap-1.5 text-[#93998B]"><CreditCard size={13} /> Payment</div>
+                <div className="text-[#343B32] text-right">{selected.paymentMethod} · {selected.paymentStatus}</div>
+                <div className="flex items-center gap-1.5 text-[#93998B]"><Calendar size={13} /> Order Date</div>
+                <div className="text-[#343B32] text-right">{selected.dateTime}</div>
               </div>
 
               <div>
-                <div className="text-[#8A8477] text-xs mb-2">Order Timeline</div>
+                <div className="text-[#93998B] text-xs mb-2">Order Timeline</div>
                 <div className="space-y-2.5">
                   {TIMELINE_STEPS.map((step, i) => {
                     const stepIdx = STATUS_STEP_INDEX[selected.status] ?? 0;
@@ -468,11 +485,11 @@ export default function OrdersPage() {
                     return (
                       <div key={step} className="flex items-center gap-2 text-xs">
                         {done || active ? (
-                          <CheckCircle2 size={15} className={done ? "text-[#3D8A62]" : "text-[#C9A227]"} />
+                          <CheckCircle2 size={15} className={done ? "text-[#3D8A62]" : "text-[#BDA06D]"} />
                         ) : (
-                          <Circle size={15} className="text-[#D9D2C4]" />
+                          <Circle size={15} className="text-[#D8DDCF]" />
                         )}
-                        <span className={done || active ? "text-[#2B2620]" : "text-[#B7B0A2]"}>{step}</span>
+                        <span className={done || active ? "text-[#343B32]" : "text-[#B1B6A8]"}>{step}</span>
                       </div>
                     );
                   })}
@@ -480,21 +497,21 @@ export default function OrdersPage() {
               </div>
 
               <div>
-                <div className="text-[#8A8477] text-xs mb-2">Barcode (Order ID)</div>
-                <div className="border border-[#EDE7DC] rounded-lg p-3 flex flex-col items-center gap-1">
+                <div className="text-[#93998B] text-xs mb-2">Barcode (Order ID)</div>
+                <div className="border border-[#E8E9DE] rounded-lg p-3 flex flex-col items-center gap-1">
                   <Barcode value={selected.orderId} />
-                  <span className="text-[11px] tracking-widest text-[#5C5548]">{selected.orderId}</span>
+                  <span className="text-[11px] tracking-widest text-[#697267]">{selected.orderId}</span>
                 </div>
               </div>
             </div>
 
-            <div className="p-3 border-t border-[#EDE7DC] grid grid-cols-1 gap-2">
+            <div className="p-4 border-t border-[#E8E9DE] bg-[#FCFCF8] grid grid-cols-1 gap-2.5">
               {confirmError && <div className="text-xs text-[#C0492F] bg-[#F5DCDC] rounded-lg px-3 py-2">{confirmError}</div>}
 
               {!TERMINAL_FAIL_STATUSES.includes(selected.status) && nextStatus(selected.status) && (
                 <button
                   onClick={() => handleStatusChange(selected, nextStatus(selected.status))}
-                  className="flex items-center justify-center gap-1.5 bg-[#16311F] text-white text-sm font-medium py-2 rounded-lg"
+                  className="flex items-center justify-center gap-1.5 bg-[#647A59] text-white text-sm font-medium py-3 rounded-xl shadow-sm hover:brightness-95 transition"
                 >
                   <Check size={14} /> Mark as {nextStatus(selected.status)}
                 </button>
@@ -503,7 +520,7 @@ export default function OrdersPage() {
               {selected.status === "Delivered" && selected.paymentMethod === "COD" && selected.deliveryStatus !== "Collected" && (
                 <button
                   onClick={() => handleDeliveryStatusChange(selected, "Collected")}
-                  className="flex items-center justify-center gap-1.5 bg-[#2F8556] text-white text-sm font-medium py-2 rounded-lg"
+                  className="flex items-center justify-center gap-1.5 bg-[#2F8556] text-white text-sm font-medium py-3 rounded-xl shadow-sm hover:brightness-95 transition"
                 >
                   <Check size={14} /> Mark COD Payment Collected
                 </button>
@@ -512,7 +529,7 @@ export default function OrdersPage() {
               {(selected.status === "Rejected" || selected.status === "Failed") && selected.deliveryStatus !== "Refunded" && (
                 <button
                   onClick={() => handleDeliveryStatusChange(selected, "Refunded")}
-                  className="flex items-center justify-center gap-1.5 bg-[#6A3B96] text-white text-sm font-medium py-2 rounded-lg"
+                  className="flex items-center justify-center gap-1.5 bg-[#6A3B96] text-white text-sm font-medium py-3 rounded-xl shadow-sm hover:brightness-95 transition"
                 >
                   <Check size={14} /> Mark Refunded
                 </button>
@@ -522,7 +539,7 @@ export default function OrdersPage() {
                 <select
                   value={selected.status}
                   onChange={(e) => handleStatusChange(selected, e.target.value)}
-                  className="flex-1 border border-[#EDE7DC] rounded-lg text-sm py-2 px-2 text-[#2B2620] bg-white"
+                  className="flex-1 border border-[#E8E9DE] rounded-lg text-sm py-2 px-2 text-[#343B32] bg-white"
                 >
                   {ALL_STATUSES.map((s) => (
                     <option key={s} value={s}>{s}</option>
@@ -542,18 +559,18 @@ export default function OrdersPage() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setPrintTarget({ ...selected, printMode: "bill" })}
-                  className="flex items-center justify-center gap-1.5 border border-[#EDE7DC] text-[#2B2620] text-sm py-2 rounded-lg"
+                  className="flex items-center justify-center gap-1.5 border border-[#E8E9DE] text-[#343B32] text-sm py-2.5 rounded-xl hover:bg-[#F4F7EE] transition"
                 >
                   <Printer size={14} /> Print Bill
                 </button>
                 <button
                   onClick={() => setPrintTarget({ ...selected, printMode: "barcode" })}
-                  className="flex items-center justify-center gap-1.5 border border-[#EDE7DC] text-[#2B2620] text-sm py-2 rounded-lg"
+                  className="flex items-center justify-center gap-1.5 border border-[#E8E9DE] text-[#343B32] text-sm py-2.5 rounded-xl hover:bg-[#F4F7EE] transition"
                 >
                   <FileText size={14} /> Print Barcode
                 </button>
               </div>
-              <button className="flex items-center justify-center gap-1.5 text-[#5C5548] text-xs py-1.5">
+              <button className="flex items-center justify-center gap-1.5 text-[#697267] text-xs py-1.5">
                 <FileText size={13} /> View Invoice
               </button>
             </div>

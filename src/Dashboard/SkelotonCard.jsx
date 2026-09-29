@@ -1,14 +1,14 @@
 import React from "react";
 
 /**
- * Shared shimmering placeholders, used across every page while its order
- * data is loading (driven by the `loading` flag from useOrders()).
+ * Premium Survaya Naturals loading placeholders.
+ * Drop-in replacement for the existing ./SkelotonCard module.
+ * All original named exports and component props are preserved.
  */
-
 const shimmerStyle = {
-  background: "linear-gradient(90deg, #EDE7DC 25%, #F5F0E4 37%, #EDE7DC 63%)",
-  backgroundSize: "400% 100%",
-  animation: "survaya-shimmer 1.4s ease infinite",
+  background: "linear-gradient(105deg, #EDEEE5 8%, #F9F8F2 28%, #DCEAD8 45%, #F9F8F2 62%, #EDEEE5 82%)",
+  backgroundSize: "240% 100%",
+  animation: "survaya-shimmer 2s ease-in-out infinite",
 };
 
 export function ShimmerKeyframes() {
@@ -18,27 +18,41 @@ export function ShimmerKeyframes() {
         0% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
       }
+      @media (prefers-reduced-motion: reduce) {
+        [data-survaya-shimmer] { animation: none !important; }
+      }
     `}</style>
   );
 }
 
 function Bar({ w, h = 14, radius = 8, style = {} }) {
-  return <div style={{ width: w, height: h, borderRadius: radius, ...shimmerStyle, ...style }} />;
+  return (
+    <div
+      data-survaya-shimmer
+      aria-hidden="true"
+      style={{ width: w, height: h, borderRadius: radius, flexShrink: 0, ...shimmerStyle, ...style }}
+    />
+  );
 }
 
-// A thin stat-card row placeholder — matches the icon-circle + label + value
-// layout your StatCard components already use.
+const cardClass =
+  "relative overflow-hidden rounded-[22px] border border-[#E7EADF] bg-[#FFFEFB] shadow-[0_8px_28px_rgba(23,51,31,0.05)]";
+
+/** Icon, label and metric placeholders for dashboard stat rows. */
 export function SkeletonStatRow({ count = 4 }) {
   return (
     <>
       <ShimmerKeyframes />
-      <div className="px-8 flex gap-3 flex-wrap">
+      <div role="status" aria-label="Loading statistics" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 px-4 sm:px-8">
         {Array.from({ length: count }).map((_, i) => (
-          <div key={i} className="flex-1 min-w-[190px] bg-white rounded-xl border border-[#EDE7DC] p-4 flex items-center gap-3">
-            <div style={{ width: 44, height: 44, borderRadius: "9999px", ...shimmerStyle }} />
-            <div className="flex-1 flex flex-col gap-2">
-              <Bar w="60%" h={10} />
-              <Bar w="40%" h={16} />
+          <div key={i} className={`${cardClass} flex min-w-0 items-center gap-4 p-5 sm:p-6`}>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#EAF2E8]">
+              <Bar w={25} h={25} radius={9} />
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-3">
+              <Bar w="62%" h={10} radius={99} />
+              <Bar w={i % 2 ? "52%" : "44%"} h={23} radius={7} />
+              <Bar w="35%" h={7} radius={99} style={{ opacity: 0.75 }} />
             </div>
           </div>
         ))}
@@ -47,17 +61,19 @@ export function SkeletonStatRow({ count = 4 }) {
   );
 }
 
-// Drops shimmer bars into <tr>/<td> cells, so the table's real <thead> and
-// column widths never change — only the row content swaps in/out.
+/** Render inside an existing <tbody> to preserve real table column widths. */
 export function SkeletonTableRows({ rows = 6, columns = 6 }) {
   return (
     <>
       <ShimmerKeyframes />
       {Array.from({ length: rows }).map((_, r) => (
-        <tr key={r} className="border-b border-[#F3EFE6]">
+        <tr key={r} className="border-b border-[#EFF0E9] last:border-b-0" aria-hidden="true">
           {Array.from({ length: columns }).map((_, c) => (
-            <td key={c} className="px-4 py-3">
-              <Bar w={c === 0 ? "70%" : "85%"} h={13} />
+            <td key={c} className="px-4 py-[18px]">
+              <div className="flex flex-col gap-2">
+                <Bar w={c === 0 ? "72%" : c === columns - 1 ? "45%" : "85%"} h={12} radius={99} />
+                {c === 1 && <Bar w="48%" h={8} radius={99} style={{ opacity: 0.7 }} />}
+              </div>
             </td>
           ))}
         </tr>
@@ -66,30 +82,31 @@ export function SkeletonTableRows({ rows = 6, columns = 6 }) {
   );
 }
 
-// A generic rectangular placeholder — for chart panels, donut charts, or
-// any block whose real content isn't a simple bar/card.
+/** Flexible placeholder for charts, maps and other large content. */
 export function SkeletonBlock({ width = "100%", height = 160, radius = 12 }) {
   return (
     <>
       <ShimmerKeyframes />
-      <div style={{ width, height, borderRadius: radius, ...shimmerStyle }} />
+      <div data-survaya-shimmer aria-hidden="true" style={{ width, height, borderRadius: radius, ...shimmerStyle }} />
     </>
   );
 }
 
-// Matches the "label + horizontal bar" rows used in Reports panels.
+/** Placeholder for the label + progress-bar rows used in Reports. */
 export function SkeletonBarList({ rows = 5 }) {
   return (
     <>
       <ShimmerKeyframes />
-      <div className="space-y-3">
+      <div role="status" aria-label="Loading report details" className="space-y-5">
         {Array.from({ length: rows }).map((_, i) => (
-          <div key={i}>
-            <div className="flex justify-between mb-1">
-              <Bar w="35%" h={10} />
-              <Bar w={20} h={10} />
+          <div key={i} className="space-y-2.5">
+            <div className="flex items-center justify-between gap-3">
+              <Bar w={`${38 + (i % 3) * 9}%`} h={11} radius={99} />
+              <Bar w={28} h={10} radius={99} />
             </div>
-            <Bar w="100%" h={10} radius={999} />
+            <div className="h-2.5 overflow-hidden rounded-full bg-[#EAF2E8]">
+              <Bar w="100%" h={10} radius={999} />
+            </div>
           </div>
         ))}
       </div>
@@ -97,20 +114,28 @@ export function SkeletonBarList({ rows = 5 }) {
   );
 }
 
+/** Universal editorial-style card placeholder. */
 export function SkeletonCard() {
   return (
-    <div className="bg-white rounded-xl border border-[#EDE7DC] p-4 flex flex-col gap-3">
+    <div className={`${cardClass} flex min-h-[190px] flex-col gap-4 p-5 sm:p-6`} aria-hidden="true">
       <div className="flex items-center gap-3">
-        <div style={{ width: 40, height: 40, borderRadius: "9999px", ...shimmerStyle }} />
-        <Bar w="40%" h={12} />
+        <div className="rounded-2xl bg-[#EAF2E8] p-2">
+          <Bar w={30} h={30} radius={11} />
+        </div>
+        <div className="flex flex-1 flex-col gap-2.5">
+          <Bar w="57%" h={12} radius={99} />
+          <Bar w="32%" h={8} radius={99} />
+        </div>
+        <Bar w={32} h={18} radius={999} />
       </div>
-      <Bar w="100%" h={16} />
-      <div className="flex gap-2">
-        <Bar w="30%" h={22} radius={999} />
-        <Bar w="30%" h={22} radius={999} />
-        <Bar w="30%" h={22} radius={999} />
+      <div className="h-px bg-[#F0F0E9]" />
+      <Bar w="94%" h={13} radius={99} />
+      <Bar w="72%" h={11} radius={99} />
+      <div className="mt-auto flex items-center gap-2 pt-1">
+        <Bar w="29%" h={25} radius={999} />
+        <Bar w="25%" h={25} radius={999} />
+        <Bar w="20%" h={25} radius={999} />
       </div>
-      <Bar w="100%" h={14} />
     </div>
   );
 }
@@ -119,7 +144,7 @@ export function SkeletonGrid({ count = 6 }) {
   return (
     <>
       <ShimmerKeyframes />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-8 py-6">
+      <div role="status" aria-label="Loading content" className="grid grid-cols-1 gap-4 px-4 py-6 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:gap-5">
         {Array.from({ length: count }).map((_, i) => <SkeletonCard key={i} />)}
       </div>
     </>

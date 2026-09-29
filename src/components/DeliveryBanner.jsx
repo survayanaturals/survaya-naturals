@@ -1,102 +1,115 @@
-import { motion } from 'framer-motion'
-import { Leaf, Ban, ShieldCheck, Flame, Box, Truck } from 'lucide-react'
-import { features } from '../data/products'
+import { motion, useReducedMotion } from 'framer-motion';
+import { Leaf, Ban, ShieldCheck, Flame, Box, Truck, ArrowUpRight } from 'lucide-react';
+import { features } from '../data/products';
 
-// Map professional SVG icons with unique, contextual brand accent colors and glows
+// The labels still come from your existing products.js file.
 const iconMap = {
-  "🌿": {
-    element: <Leaf className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 transition-colors group-hover:text-emerald-700" />,
-    bg: "bg-emerald-50/70 group-hover:bg-emerald-100/60 shadow-[0_0_12px_rgba(16,185,129,0.08)] group-hover:shadow-[0_0_16px_rgba(16,185,129,0.22)]"
-  },
-  "🚫": {
-    element: <Ban className="w-5 h-5 md:w-6 md:h-6 text-rose-500 transition-colors group-hover:text-rose-600" />,
-    bg: "bg-rose-50/70 group-hover:bg-rose-100/60 shadow-[0_0_12px_rgba(244,63,94,0.08)] group-hover:shadow-[0_0_16px_rgba(244,63,94,0.22)]"
-  },
-  "🛡️": {
-    element: <ShieldCheck className="w-5 h-5 md:w-6 md:h-6 text-blue-500 transition-colors group-hover:text-blue-600" />,
-    bg: "bg-blue-50/70 group-hover:bg-blue-100/60 shadow-[0_0_12px_rgba(59,130,246,0.08)] group-hover:shadow-[0_0_16px_rgba(59,130,246,0.22)]"
-  },
-  "🔥": {
-    element: <Flame className="w-5 h-5 md:w-6 md:h-6 text-amber-500 transition-colors group-hover:text-amber-600" />,
-    bg: "bg-amber-50/70 group-hover:bg-amber-100/60 shadow-[0_0_12px_rgba(245,158,11,0.08)] group-hover:shadow-[0_0_16px_rgba(245,158,11,0.22)]"
-  },
-  "📦": {
-    element: <Box className="w-5 h-5 md:w-6 md:h-6 text-orange-600 transition-colors group-hover:text-orange-700" />,
-    bg: "bg-orange-50/70 group-hover:bg-orange-100/60 shadow-[0_0_12px_rgba(234,88,12,0.08)] group-hover:shadow-[0_0_16px_rgba(234,88,12,0.22)]"
-  },
-  "🚚": {
-    element: <Truck className="w-5 h-5 md:w-6 md:h-6 text-indigo-500 transition-colors group-hover:text-indigo-600" />,
-    bg: "bg-indigo-50/70 group-hover:bg-indigo-100/60 shadow-[0_0_12px_rgba(99,102,241,0.08)] group-hover:shadow-[0_0_16px_rgba(99,102,241,0.22)]"
-  },
-}
+  '🌿': Leaf,
+  '🚫': Ban,
+  '🛡️': ShieldCheck,
+  '🔥': Flame,
+  '📦': Box,
+  '🚚': Truck,
+};
+
+const container = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.075 } },
+};
+
+const reveal = {
+  hidden: { opacity: 0, y: 22 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+};
 
 export default function DeliveryBanner() {
-  // Container motion variant for staggering elements smoothly
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.06 }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 12 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 14 } }
-  }
+  const reduceMotion = useReducedMotion();
 
   return (
-    <section className="w-full py-10 md:py-16 bg-cream-50/40 border-y border-cream-300 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 space-y-10">
-        
-        {/* Hello UI Header Introduction Section */}
-        <div className="text-center space-y-2.5">
-          <span className="inline-block text-[10px] md:text-xs uppercase font-lato font-extrabold tracking-widest text-olive-700 bg-olive-50 border border-olive-200/40 px-3.5 py-1 rounded-full shadow-2xs">
-            Hello & Welcome ✨
-          </span>
-          <h2 className="font-playfair font-bold text-bark-800 text-2xl md:text-3xl lg:text-4xl tracking-tight">
-            Our Wholesome Promise
-          </h2>
-          <p className="font-lato text-bark-500 text-xs md:text-sm max-w-md mx-auto leading-relaxed">
-            Every bite is baked with home-inspired care, pure natural ingredients, and absolutely zero compromises.
-          </p>
-        </div>
+    <section
+      aria-labelledby="survaya-promise-heading"
+      className="relative isolate overflow-hidden border-y border-[#E8DDC9] bg-[#FCF8F2] py-16 text-[#493324] sm:py-20 lg:py-24"
+    >
+      {/* Decorative accents only; no content is obscured. */}
+      <div aria-hidden="true" className="pointer-events-none absolute -left-32 top-8 h-80 w-80 rounded-full bg-[#E9E6D8]/60 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-[#DCE4D4]/50 blur-3xl" />
 
-        {/* Features Card Layout Grid */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-40px" }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 justify-center items-center"
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mx-auto mb-12 max-w-2xl text-center lg:mb-16"
         >
-          {features.map((f, idx) => {
-            const currentIcon = iconMap[f.icon] || {
-              element: <Leaf className="w-5 h-5 text-emerald-600" />,
-              bg: "bg-cream-50"
-            };
+          <div className="mb-5 flex items-center justify-center gap-3">
+            <span className="h-px w-9 bg-[#B99D6E]" />
+            <span className="font-lato text-[10px] font-bold uppercase tracking-[0.3em] text-[#92744D] sm:text-xs">
+              The Survaya Naturals Standard
+            </span>
+            <span className="h-px w-9 bg-[#B99D6E]" />
+          </div>
 
+          <h2
+            id="survaya-promise-title"
+            className="font-playfair text-[clamp(2.35rem,5vw,4.5rem)] font-normal leading-[1.12] tracking-[-0.035em]"
+          >
+            A little more care in
+            <span className="block italic text-[#71805A]">everything we make.</span>
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl font-lato text-sm leading-7 text-[#786651] sm:text-base">
+            Thoughtful ingredients, familiar recipes and homemade care — the details
+            that make every Survaya Naturals treat special.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={reduceMotion ? undefined : container}
+          initial={reduceMotion ? false : 'hidden'}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.12 }}
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-6"
+        >
+          {features.map((feature, index) => {
+            const Icon = iconMap[feature.icon] || Leaf;
             return (
               <motion.div
-                key={idx}
-                variants={itemVariants}
-                whileHover={{ scale: 1.03, y: -2 }}
-                className="group flex flex-col items-center justify-center p-4 text-center bg-white rounded-2xl border border-cream-200/80 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)] hover:shadow-md transition-all duration-300 min-h-[120px]"
+                key={`${feature.label}-${index}`}
+                variants={reduceMotion ? undefined : reveal}
+                whileHover={reduceMotion ? undefined : { y: -5 }}
+                className="group relative flex min-h-[190px] flex-col items-center overflow-hidden rounded-[22px] border border-[#E7DCC8] bg-[#FFFDF8] px-3 pb-6 pt-7 text-center shadow-[0_8px_28px_rgba(73,51,36,0.045)] transition-[border-color,box-shadow] duration-300 hover:border-[#B9C3A9] hover:shadow-[0_18px_40px_rgba(73,51,36,0.10)] sm:min-h-[215px] sm:px-4 sm:pt-9"
               >
-                {/* Circular SVG Icon Wrapper with Tailored Color-Glow Effect */}
-                <div className={`w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3.5 transition-all duration-300 transform group-hover:scale-110 ${currentIcon.bg}`}>
-                  {currentIcon.element}
-                </div>
-                
-                {/* Feature Label Text */}
-                <span className="font-lato font-bold text-bark-700 text-xs md:text-sm tracking-tight leading-tight max-w-[130px]">
-                  {f.label}
+                {/* Subtle gold detail and sequence number */}
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 mx-auto h-[3px] w-14 rounded-b-full bg-[#C6AB77] transition-all duration-300 group-hover:w-24" />
+                <span aria-hidden="true" className="absolute right-3 top-3 font-playfair text-xs italic text-[#C8BAA2]">
+              
+                </span>
+
+                <span className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border border-[#DCE3D2] bg-[#EFF2E9] text-[#4C6748] transition-all duration-300 group-hover:border-[#B7C5A7] group-hover:bg-[#E6ECD9] sm:h-[72px] sm:w-[72px]">
+                  <Icon size={28} strokeWidth={1.45} aria-hidden="true" />
+                </span>
+
+                <span className="font-playfair text-[17px] font-semibold leading-snug text-[#493324] sm:text-[19px]">
+                  {feature.label}
+                </span>
+                <span aria-hidden="true" className="mt-auto pt-5">
+                  <span className="block h-px w-8 bg-[#D1BE98] transition-all duration-300 group-hover:w-12" />
                 </span>
               </motion.div>
             );
           })}
         </motion.div>
+
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-3 text-center sm:mt-14">
+          <span className="h-px w-9 bg-[#C8C6AF] sm:w-16" />
+          <Leaf size={16} strokeWidth={1.5} className="text-[#82946C]" aria-hidden="true" />
+          <span className="font-lato text-[10px] font-bold uppercase tracking-[0.2em] text-[#89765C] sm:text-xs">
+            From our home to yours
+          </span>
+          <Leaf size={16} strokeWidth={1.5} className="-scale-x-100 text-[#82946C]" aria-hidden="true" />
+          <span className="h-px w-9 bg-[#C8C6AF] sm:w-16" />
+        </div>
       </div>
     </section>
-  )
+  );
 }

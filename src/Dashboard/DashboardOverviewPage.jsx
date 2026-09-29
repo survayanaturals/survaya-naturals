@@ -29,32 +29,32 @@ import { useOrders } from "../data/useOrders";
 import { SkeletonGrid, SkeletonStatRow } from "./SkelotonCard";
 
 const STATUS_STYLES = {
-  "Order Received": { bg: "#FBEBD8", fg: "#B9691E", dot: "#E8935B" },
-  "Order Accepted": { bg: "#DCE9F5", fg: "#2A5C8A", dot: "#4A7FB0" },
-  Confirmed:        { bg: "#DCE9F5", fg: "#2A5C8A", dot: "#4A7FB0" },
-  Preparing:        { bg: "#EAE0D0", fg: "#7A5230", dot: "#B08A5A" },
-  Dispatched:       { bg: "#E9E0F5", fg: "#6B4C9A", dot: "#C9A227" },
-  Shipped:          { bg: "#E5DEF2", fg: "#5B3E96", dot: "#8B6BAE" },
-  Delivered:        { bg: "#DCEBE1", fg: "#2F6F4E", dot: "#2F6F4E" },
-  Cancelled:        { bg: "#F5DCDC", fg: "#B23A3A", dot: "#C1443C" },
-  Failed:           { bg: "#F5DCDC", fg: "#B23A3A", dot: "#C1443C" },
-  Rejected:         { bg: "#F5DCDC", fg: "#B23A3A", dot: "#C1443C" },
+  "Order Received": { bg: "#FBEBD8", fg: "#B9691E", dot: "#C78C61" },
+  "Order Accepted": { bg: "#EAF0F5", fg: "#6686A1", dot: "#86A5BD" },
+  Confirmed:        { bg: "#EAF0F5", fg: "#6686A1", dot: "#86A5BD" },
+  Preparing:        { bg: "#F3EADD", fg: "#8B6E4B", dot: "#BE9D71" },
+  Dispatched:       { bg: "#F2ECF7", fg: "#8A75A6", dot: "#B9965C" },
+  Shipped:          { bg: "#F0EBF6", fg: "#816B9E", dot: "#A492BE" },
+  Delivered:        { bg: "#EAF1E6", fg: "#688967", dot: "#688967" },
+  Cancelled:        { bg: "#F8E9E5", fg: "#B56D64", dot: "#B96D61" },
+  Failed:           { bg: "#F8E9E5", fg: "#B56D64", dot: "#B96D61" },
+  Rejected:         { bg: "#F8E9E5", fg: "#B56D64", dot: "#B96D61" },
 };
-const FALLBACK_STATUS_STYLE = { bg: "#EFEDE7", fg: "#6B6459", dot: "#B7B2A4" };
+const FALLBACK_STATUS_STYLE = { bg: "#F1EFE9", fg: "#777064", dot: "#C5BBAA" };
 
 function StatCard({ icon: Icon, label, value, tint, trend }) {
   return (
-    <div className="flex-1 min-w-[220px] bg-white rounded-xl border border-[#EDE7DC] p-4 flex items-center gap-3">
+    <div className="flex-1 min-w-0 bg-[#FFFEFC] rounded-[22px] shadow-[0_8px_28px_rgba(89,73,46,0.035)] border border-[#EAE3D6] p-4 flex items-center gap-3">
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+        className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
         style={{ background: tint.bg }}
       >
         <Icon size={20} color={tint.fg} />
       </div>
       <div>
-        <div className="text-xs text-[#8A8477]">{label}</div>
-        <div className="text-2xl font-semibold text-[#2B2620]">{value}</div>
-        {trend && <div className="text-[11px] text-[#2F6F4E] mt-0.5">↑ {trend}</div>}
+        <div className="text-xs text-[#938B7E]">{label}</div>
+        <div className="text-[26px] font-semibold tracking-tight text-[#352F27]">{value}</div>
+        {trend && <div className="text-[11px] text-[#688967] mt-0.5">↑ {trend}</div>}
       </div>
     </div>
   );
@@ -63,17 +63,17 @@ function StatCard({ icon: Icon, label, value, tint, trend }) {
 function MiniTile({ icon: Icon, tint, value, label, trend, danger }) {
   return (
     <div
-      className="flex-1 min-w-[220px] rounded-xl p-4 flex items-center gap-3"
+      className="flex-1 min-w-0 rounded-[22px] border border-white/70 p-5 flex items-center gap-3"
       style={{ background: tint.tileBg }}
     >
-      <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ background: tint.bg }}>
+      <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ background: tint.bg }}>
         <Icon size={18} color={tint.fg} />
       </div>
       <div>
-        <div className="text-xl font-semibold text-[#2B2620]">{value}</div>
-        <div className="text-xs text-[#5C5748]">{label}</div>
+        <div className="text-xl font-semibold text-[#352F27]">{value}</div>
+        <div className="text-xs text-[#665D50]">{label}</div>
         {trend && (
-          <div className={`text-[11px] mt-0.5 ${danger ? "text-[#B23A3A] font-medium" : "text-[#2F6F4E]"}`}>
+          <div className={`text-[11px] mt-0.5 ${danger ? "text-[#B56D64] font-medium" : "text-[#688967]"}`}>
             {trend}
           </div>
         )}
@@ -153,10 +153,10 @@ export default function DashboardOverviewPage({ onNavigate }) {
 
   if (loading) {
     return (
-      <main className="flex-1 flex flex-col min-w-0 bg-[#FAF7F2]">
-        <header className="px-8 py-5">
-          <h1 className="text-3xl font-serif text-[#1F3D2C] flex items-center gap-2">Dashboard 🌿</h1>
-          <p className="text-xs text-[#8A8477] mt-0.5">Loading your overview…</p>
+      <main className="flex-1 flex flex-col min-w-0 bg-[#FBFAF7]">
+        <header className="px-4 sm:px-7 xl:px-10 py-7">
+          <h1 className="text-3xl sm:text-[35px] font-playfair font-normal tracking-tight text-[#4E684C] flex items-center gap-2">Dashboard 🌿</h1>
+          <p className="text-xs text-[#938B7E] mt-0.5">Loading your overview…</p>
         </header>
         <SkeletonStatRow count={4} />
         <SkeletonGrid count={3} />
@@ -165,45 +165,45 @@ export default function DashboardOverviewPage({ onNavigate }) {
   }
 
   return (
-    <main className="flex-1 flex flex-col min-w-0 bg-[#FAF7F2]">
-      <header className="px-8 py-5 flex items-start justify-between flex-wrap gap-4">
+    <main className="flex-1 flex flex-col min-w-0 bg-[#FBFAF7]">
+      <header className="px-4 sm:px-7 xl:px-10 py-7 flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-serif text-[#1F3D2C] flex items-center gap-2">Dashboard 🌿</h1>
-          <p className="text-xs text-[#8A8477] mt-0.5">Overview of your business</p>
+          <h1 className="text-3xl sm:text-[35px] font-playfair font-normal tracking-tight text-[#4E684C] flex items-center gap-2">Dashboard 🌿</h1>
+          <p className="text-xs text-[#938B7E] mt-0.5">Overview of your business</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 text-xs border border-[#EDE7DC] rounded-lg px-3 py-2 bg-white text-[#2B2620]">
+          <button className="flex items-center gap-2 text-xs border border-[#EAE3D6] rounded-xl px-3.5 py-2.5 bg-[#FFFEFC] text-[#352F27]">
             <Calendar size={14} /> 23 Jun – 23 Jun 2026 <ChevronDown size={14} />
           </button>
-          <button className="relative w-9 h-9 rounded-full bg-white border border-[#EDE7DC] flex items-center justify-center">
+          <button className="relative w-9 h-9 rounded-full bg-white border border-[#EAE3D6] flex items-center justify-center">
             <Bell size={16} />
-            <span className="absolute -top-1 -right-1 bg-[#C1443C] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-[#B96D61] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
               3
             </span>
           </button>
           <div className="flex items-center gap-2">
-            <UserCircle2 size={30} className="text-[#2B2620]" />
+            <UserCircle2 size={30} className="text-[#352F27]" />
             <div className="text-xs">
-              <div className="font-semibold text-[#2B2620]">Survaya Naturals</div>
-              <div className="text-[#8A8477]">Admin</div>
+              <div className="font-semibold text-[#352F27]">Survaya Naturals</div>
+              <div className="text-[#938B7E]">Admin</div>
             </div>
           </div>
         </div>
       </header>
 
-      <section className="px-8 flex gap-3 flex-wrap">
-        <StatCard icon={ShoppingBag} label="Total Orders" value={orders.length} tint={{ bg: "#E3EFE6", fg: "#1F3D2C" }} trend="25% vs last 7 days" />
-        <StatCard icon={Clock} label="Pending Orders" value={pending} tint={{ bg: "#FBEAD9", fg: "#E8935B" }} trend="12% vs last 7 days" />
-        <StatCard icon={IndianRupee} label="Total Sales" value={`₹${totalSales.toLocaleString("en-IN")}`} tint={{ bg: "#FBF0CE", fg: "#C9A227" }} trend="18% vs last 7 days" />
-        <StatCard icon={CheckCircle2} label="Delivered Orders" value={delivered} tint={{ bg: "#E3EFE6", fg: "#2F6F4E" }} trend="8% vs last 7 days" />
+      <section className="px-4 sm:px-7 xl:px-10 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatCard icon={ShoppingBag} label="Total Orders" value={orders.length} tint={{ bg: "#EAF1E6", fg: "#5A7657" }} trend="25% vs last 7 days" />
+        <StatCard icon={Clock} label="Pending Orders" value={pending} tint={{ bg: "#FBF0E3", fg: "#C78C61" }} trend="12% vs last 7 days" />
+        <StatCard icon={IndianRupee} label="Total Sales" value={`₹${totalSales.toLocaleString("en-IN")}`} tint={{ bg: "#FAF1DA", fg: "#B9965C" }} trend="18% vs last 7 days" />
+        <StatCard icon={CheckCircle2} label="Delivered Orders" value={delivered} tint={{ bg: "#EAF1E6", fg: "#688967" }} trend="8% vs last 7 days" />
       </section>
 
-      <section className="px-8 pt-6 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5 items-start">
+      <section className="px-4 sm:px-7 xl:px-10 pt-7 grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5 items-start">
         {/* Recent orders */}
-        <div className="bg-white rounded-xl border border-[#EDE7DC] flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE7DC]">
-            <div className="text-sm font-semibold text-[#2B2620]">Recent Orders</div>
-            <button onClick={() => onNavigate && onNavigate("Orders")} className="text-xs text-[#16311F] flex items-center gap-1 border border-[#EDE7DC] rounded-lg px-3 py-1.5">
+        <div className="bg-[#FFFEFC] rounded-[24px] border border-[#EAE3D6] shadow-[0_12px_36px_rgba(89,73,46,0.045)] flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#F0EADF]">
+            <div className="text-sm font-semibold text-[#352F27]">Recent Orders</div>
+            <button onClick={() => onNavigate && onNavigate("Orders")} className="text-xs text-[#647F5A] flex items-center gap-1 border border-[#EAE3D6] rounded-full px-3.5 py-2">
               View All <ArrowRight size={12} />
             </button>
           </div>
@@ -211,26 +211,26 @@ export default function DashboardOverviewPage({ onNavigate }) {
             {recent.map((o) => {
               const s = STATUS_STYLES[o.status] || FALLBACK_STATUS_STYLE;
               return (
-                <div key={o.orderId} className="flex items-center gap-3 px-4 py-3 border-b border-[#F3EFE6] text-sm">
-                  <div className="w-9 h-9 rounded-lg bg-[#EEF3EC] flex items-center justify-center shrink-0">
-                    <ShoppingBag size={15} className="text-[#4C7A5D]" />
+                <div key={o.orderId} className="flex items-center gap-3 px-4 py-3 border-b border-[#F2EDE5] text-sm">
+                  <div className="w-9 h-9 rounded-lg bg-[#F1F5EC] flex items-center justify-center shrink-0">
+                    <ShoppingBag size={15} className="text-[#718D68]" />
                   </div>
-                  <div className="font-medium text-[#2B2620] w-14">#{o.orderId.slice(-4)}</div>
+                  <div className="font-medium text-[#352F27] w-14">#{o.orderId.slice(-4)}</div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[#2B2620] truncate">{o.customer}</div>
-                    <div className="text-[11px] text-[#8A8477]">{o.dateTime}</div>
+                    <div className="text-[#352F27] truncate">{o.customer}</div>
+                    <div className="text-[11px] text-[#938B7E]">{o.dateTime}</div>
                   </div>
-                  <div className="text-[#2B2620] w-20 text-right shrink-0">₹{o.total}</div>
+                  <div className="text-[#352F27] w-20 text-right shrink-0">₹{o.total}</div>
                   <span className="ml-2 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap shrink-0" style={{ background: s.bg, color: s.fg }}>
                     {o.status}
                   </span>
                 </div>
               );
             })}
-            {recent.length === 0 && <div className="text-center py-10 text-[#8A8477] text-sm">No orders yet.</div>}
+            {recent.length === 0 && <div className="text-center py-10 text-[#938B7E] text-sm">No orders yet.</div>}
           </div>
           <div className="p-4 text-center">
-            <button onClick={() => onNavigate && onNavigate("Orders")} className="text-xs border border-[#EDE7DC] rounded-lg px-4 py-2 bg-white text-[#2B2620]">
+            <button onClick={() => onNavigate && onNavigate("Orders")} className="text-xs border border-[#EAE3D6] rounded-full px-5 py-2.5 bg-white text-[#352F27]">
               View All Orders →
             </button>
           </div>
@@ -238,35 +238,35 @@ export default function DashboardOverviewPage({ onNavigate }) {
 
         {/* Sales overview + status donut */}
         <div className="flex flex-col gap-5">
-          <div className="bg-white rounded-xl border border-[#EDE7DC] p-4">
+          <div className="bg-[#FFFEFC] rounded-[24px] border border-[#EAE3D6] shadow-[0_12px_36px_rgba(89,73,46,0.045)] p-4">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm font-semibold text-[#2B2620]">Sales Overview</div>
-              <button className="text-xs border border-[#EDE7DC] rounded-lg px-3 py-1.5 flex items-center gap-1">
+              <div className="text-sm font-semibold text-[#352F27]">Sales Overview</div>
+              <button className="text-xs border border-[#EAE3D6] rounded-full px-3.5 py-2 flex items-center gap-1">
                 This Week <ChevronDown size={12} />
               </button>
             </div>
-            <div className="text-xs text-[#8A8477]">Total Sales</div>
-            <div className="text-2xl font-semibold text-[#2B2620]">₹{totalSales.toLocaleString("en-IN")}</div>
+            <div className="text-xs text-[#938B7E]">Total Sales</div>
+            <div className="text-[26px] font-semibold tracking-tight text-[#352F27]">₹{totalSales.toLocaleString("en-IN")}</div>
             <div className="h-44 mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={salesTrend} margin={{ top: 5, right: 5, bottom: 0, left: -20 }}>
                   <defs>
                     <linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#2F6F4E" stopOpacity={0.25} />
-                      <stop offset="100%" stopColor="#2F6F4E" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#688967" stopOpacity={0.25} />
+                      <stop offset="100%" stopColor="#688967" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#8A8477" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "#8A8477" }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v}`} />
+                  <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#938B7E" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "#938B7E" }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v}`} />
                   <Tooltip formatter={(v) => [`₹${v}`, "Sales"]} />
-                  <Area type="monotone" dataKey="total" stroke="#2F6F4E" strokeWidth={2} fill="url(#salesFill)" />
+                  <Area type="monotone" dataKey="total" stroke="#688967" strokeWidth={2} fill="url(#salesFill)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#EDE7DC] p-4">
-            <div className="text-sm font-semibold text-[#2B2620] mb-3">Orders by Status</div>
+          <div className="bg-[#FFFEFC] rounded-[24px] border border-[#EAE3D6] shadow-[0_12px_36px_rgba(89,73,46,0.045)] p-4">
+            <div className="text-sm font-semibold text-[#352F27] mb-3">Orders by Status</div>
             <div className="flex items-center gap-4">
               <div className="w-28 h-28 shrink-0 relative">
                 <ResponsiveContainer width="100%" height="100%">
@@ -279,8 +279,8 @@ export default function DashboardOverviewPage({ onNavigate }) {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <div className="text-lg font-bold text-[#2B2620]">{orders.length}</div>
-                  <div className="text-[10px] text-[#8A8477]">Total</div>
+                  <div className="text-lg font-bold text-[#352F27]">{orders.length}</div>
+                  <div className="text-[10px] text-[#938B7E]">Total</div>
                 </div>
               </div>
               <div className="flex-1 space-y-1.5 text-xs">
@@ -288,9 +288,9 @@ export default function DashboardOverviewPage({ onNavigate }) {
                   <div key={s.status} className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />
-                      <span className="text-[#2B2620] truncate">{s.status}</span>
+                      <span className="text-[#352F27] truncate">{s.status}</span>
                     </div>
-                    <span className="text-[#8A8477] shrink-0">
+                    <span className="text-[#938B7E] shrink-0">
                       {s.count} ({s.pct}%)
                     </span>
                   </div>
@@ -304,28 +304,28 @@ export default function DashboardOverviewPage({ onNavigate }) {
       {/* Bottom stat tiles — customer/dispatch numbers derived from order
           data where possible. "Custom Orders" has no matching field in your
           current sheet columns, so it's left at 0 until you add one. */}
-      <section className="px-8 py-6 flex gap-3 flex-wrap">
+      <section className="px-4 sm:px-7 xl:px-10 py-7 flex gap-3 flex-wrap">
         <MiniTile
           icon={Users}
-          tint={{ bg: "#DCEBE1", fg: "#2F6F4E", tileBg: "#EFF6F1" }}
+          tint={{ bg: "#EAF1E6", fg: "#688967", tileBg: "#F2F6EE" }}
           value={customerStats.uniqueCustomers}
           label="Unique Customers"
         />
         <MiniTile
           icon={ShoppingCart}
-          tint={{ bg: "#FBEAD9", fg: "#E8935B", tileBg: "#FDF3E9" }}
+          tint={{ bg: "#FBF0E3", fg: "#C78C61", tileBg: "#FCF4E9" }}
           value={customerStats.repeatCustomers}
           label="Repeat Customers"
         />
         <MiniTile
           icon={Gift}
-          tint={{ bg: "#EAE0F5", fg: "#6B4C9A", tileBg: "#F4EFFA" }}
+          tint={{ bg: "#F1ECF6", fg: "#8A75A6", tileBg: "#F7F3FA" }}
           value={0}
           label="Custom Orders (add a field to track this)"
         />
         <MiniTile
           icon={AlarmClock}
-          tint={{ bg: "#F5DCDC", fg: "#C1443C", tileBg: "#FBEEEE" }}
+          tint={{ bg: "#F8E9E5", fg: "#B96D61", tileBg: "#FDF2EF" }}
           value={dueToday}
           label="Orders To Dispatch"
           trend="Due Today"
@@ -333,7 +333,7 @@ export default function DashboardOverviewPage({ onNavigate }) {
         />
       </section>
 
-      <footer className="text-center text-[11px] text-[#A39D8E] py-4">
+      <footer className="text-center text-[11px] text-[#A69D8D] py-4">
         © {new Date().getFullYear()} Survaya Naturals. All rights reserved.
       </footer>
     </main>

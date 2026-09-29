@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingCart, Check, ChevronDown, Clock, Leaf, X } from 'lucide-react'
+import { ShoppingBag, Check, ChevronDown, Clock, Leaf, X, ArrowUpRight } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import toast from 'react-hot-toast'
 
@@ -55,13 +55,17 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
   )
   const discount = originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0
   const ingredients = parseIngredients(product.ingredients)
-  const cardNumber = String(product.cardNumber ?? index + 1).padStart(2, '0')
+  // Product numbers are intentionally omitted for a cleaner editorial design.
 
   const pillWeights = weights.length > MAX_PILLS ? weights.slice(0, MAX_PILLS) : weights
   const extraWeights = weights.length > MAX_PILLS ? weights.slice(MAX_PILLS) : []
   const extraSelected = selectedWeightIdx >= MAX_PILLS
 
   useEffect(() => { setImgLoaded(false) }, [product.image])
+  useEffect(() => {
+    setSelectedLabel(selectionCache.get(productKey) ?? weights[0]?.label)
+    setWeightMenuOpen(false)
+  }, [productKey])
 
   useEffect(() => {
     if (!isAnimating) return
@@ -78,6 +82,13 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
     return () => document.removeEventListener('pointerdown', close)
   }, [weightMenuOpen])
 
+  useEffect(() => {
+    if (!ingredientsOpen) return
+    const onEscape = e => { if (e.key === 'Escape') setIngredientsOpen(false) }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [ingredientsOpen])
+
   const handleAddToCart = () => {
     if (isComingSoon || !selectedWeight) return
     addItem(product, selectedWeight)
@@ -89,56 +100,57 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
     })
   }
 
-  const pillBase = 'min-w-0 flex-1 rounded-full border px-1.5 py-2 font-lato text-[12px] font-semibold transition-colors sm:text-[13px] disabled:opacity-50'
-  const pillOn = 'border-[#17331F] bg-[#17331F] text-white'
-  const pillOff = 'border-[#e7e4da] text-[#6c6a61] hover:border-[#5C7A54]'
+  const pillBase = 'min-w-0 flex-1 rounded-xl border px-1.5 py-2.5 font-lato text-[11px] font-bold transition-all sm:text-[13px] disabled:opacity-50'
+  const pillOn = 'border-[#355B38] bg-[#355B38] text-[#FFF9EC] shadow-[0_3px_10px_rgba(32,67,38,.17)]'
+  const pillOff = 'border-[#DECBAF] bg-[#FFFCF5] text-[#5B4631] hover:border-[#78916C] hover:bg-[#F0F4E9]'
 
   return (
     <motion.article
       initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }} transition={{ duration: 0.4 }}
-      className="group product-card relative mx-auto flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[17px] border border-[#e9ddc9] bg-[#fffaf0] shadow-[0_5px_16px_rgba(91,68,32,.10)] transition-shadow duration-300 hover:shadow-[0_9px_26px_rgba(51,54,30,.13)]"
+      className="group product-card relative mx-auto flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[25px] border border-[#E4D2B5] bg-[#FFFCF6] shadow-[0_10px_32px_rgba(73,50,26,.09)] transition-all duration-300 hover:-translate-y-1 hover:border-[#CBB38B] hover:shadow-[0_24px_50px_rgba(59,69,37,.15)] sm:rounded-[30px]"
     >
-      <div className="relative w-full overflow-hidden bg-[#e8dfcc] aspect-[1.35/1]">
+      <div className="relative w-full overflow-hidden bg-[radial-gradient(circle_at_50%_36%,#FFF9E9_0%,#F2E6D1_62%,#E8D8BC_100%)] aspect-[1.35/1]">
         {!imgLoaded && <div className="shimmer absolute inset-0 z-10" />}
         <img src={product.image} alt={product.name} loading="lazy" onLoad={() => setImgLoaded(true)}
-          className={`h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035] ${isComingSoon ? 'grayscale-[30%] opacity-65' : ''}`} />
+          className={`h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.055] ${isComingSoon ? 'grayscale-[30%] opacity-65' : ''}`} />
+        {/* Signature serial tag — restored without changing the card layout */}
+        <div className="pointer-events-none absolute right-[5%] top-0 z-20 flex w-[34px] flex-col items-center rounded-b-full border-x border-b border-[#D7BE91] bg-[#FFF9EC]/95 px-1 pb-2 pt-3 text-[#8A683E] shadow-[0_3px_10px_rgba(53,38,19,.12)] backdrop-blur-sm sm:w-[38px]">
+          <span className="font-playfair text-[12px] leading-none tracking-[.04em] sm:text-[13px]">{String(index + 1).padStart(2, '0')}</span>
+          <Leaf size={13} strokeWidth={1.4} className="mt-1.5 rotate-[-25deg]" aria-hidden="true" />
+        </div>
         {product.badge && (
-          <span className="absolute left-[4.5%] top-[5%] z-20 rounded-full border border-[#D4A24C]/40 bg-[#17331F]/95 px-3.5 py-2 font-lato text-[11px] font-medium tracking-[.01em] text-[#F7E8C4] shadow-sm backdrop-blur-sm sm:text-[12px]">
+          <span className="absolute left-[4.5%] top-[5%] z-20 rounded-full border border-[#D5BB7F]/65 bg-[#345638]/95 px-3 py-1.5 font-lato text-[10px] font-bold uppercase tracking-[.08em] text-[#FFF4D6] shadow-sm backdrop-blur-sm sm:text-[12px]">
             {product.badge}
           </span>
         )}
-        <div className="absolute right-[2%] top-0 z-20 flex h-[58px] w-[38px] flex-col items-center justify-center rounded-b-full bg-[#FCEFD8] text-[#8A5A28] shadow-sm sm:h-[68px] sm:w-[42px]">
-          <span className="font-playfair text-[15px] leading-none sm:text-[17px]">{cardNumber}</span>
-          <BotanicalSprig className="mt-1 h-[21px] w-[16px]" />
-        </div>
         <button type="button" onClick={() => setIngredientsOpen(true)}
           aria-label={`View ingredients for ${product.name}`}
-          className="absolute bottom-[2%] right-[2%] z-20 flex h-[38px] w-[38px] items-center justify-center rounded-full border-[1.5px] border-[#D4A24C]/50 bg-[#17331F] text-[#E8C87A] shadow-[0_2px_7px_rgba(0,0,0,.28)] transition-transform hover:scale-105 sm:h-[42px] sm:w-[42px]">
+          className="absolute bottom-3 right-3 z-20 flex h-[40px] w-[40px] items-center justify-center rounded-full border border-[#D5BE8D] bg-[#FFFCF4] text-[#385C37] shadow-[0_2px_7px_rgba(0,0,0,.28)] transition-transform hover:scale-105 sm:h-[42px] sm:w-[42px]">
           <Leaf size={17} strokeWidth={1.6} />
         </button>
       </div>
 
-      <div className="relative flex flex-1 flex-col px-[5%] pb-[5%] pt-3.5 sm:pt-4">
-        <div className="border-b border-[#e9ddc9] pb-3">
-          <p className="font-playfair text-[18px] font-semibold leading-tight text-[#56371f] sm:text-[20px]">Ingredients</p>
-          <p className="mt-1 font-lato text-[11px] leading-relaxed text-[#70553e] sm:text-[12px]">
+      <div className="relative flex flex-1 flex-col px-4 pb-5 pt-4 sm:px-5 sm:pb-6 sm:pt-5">
+        <div className="border-b border-[#E7D8BE] pb-3">
+          <p className="font-lato text-[10px] font-extrabold uppercase tracking-[.2em] leading-tight text-[#7E633D] sm:text-[11px]">Ingredients</p>
+          <p className="mt-2 line-clamp-2 font-lato text-[11px] leading-relaxed text-[#705942] sm:text-[12px]">
             {ingredients.length ? ingredients.join(' · ') : 'Ingredient details coming soon'}
           </p>
         </div>
 
-        <div className="relative mt-3 min-h-[62px] pr-9 sm:mt-4 sm:min-h-[67px]">
-          <h3 className="font-playfair text-[21px] font-medium leading-[1.14] tracking-[-.025em] text-[#56371f] sm:text-[24px]">
+        <div className="relative mt-4 min-h-[54px] pr-6 sm:mt-5 sm:min-h-[60px]">
+          <h3 className="font-playfair text-[20px] leading-[1.16] tracking-[-.025em] text-[#3D2B1C] sm:text-[26px]">
             {product.displayName || product.name}
           </h3>
-          <BotanicalSprig className="pointer-events-none absolute -bottom-3 right-0 h-[67px] w-[36px] text-[#a6ad81]" />
+          <BotanicalSprig className="pointer-events-none absolute -bottom-3 right-0 h-[67px] w-[36px] text-[#B5BF98]/60" />
         </div>
 
         <div className="relative z-10 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="font-lato text-[19px] font-bold text-[#173B21] sm:text-[21px]">₹{price.toLocaleString('en-IN')}</span>
+          <span className="font-lato text-[19px] font-bold text-[#315735] sm:text-[21px]">₹{price.toLocaleString('en-IN')}</span>
           {discount > 0 && <>
             <span className="font-lato text-[13px] text-[#A99C8C] line-through">₹{originalPrice.toLocaleString('en-IN')}</span>
-            <span className="rounded-full bg-[#E8501F] px-3 py-1 font-lato text-[10px] font-bold text-white shadow-sm sm:text-[11px]">{discount}% OFF</span>
+            <span className="rounded-full bg-[#AD6735] px-3 py-1 font-lato text-[10px] font-bold text-white shadow-sm sm:text-[11px]">{discount}% OFF</span>
           </>}
         </div>
 
@@ -179,8 +191,8 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
 
         <motion.button ref={btnRef} type="button" whileHover={!isComingSoon ? { scale: 1.01 } : {}} whileTap={!isComingSoon ? { scale: .98 } : {}}
           disabled={isComingSoon || !selectedWeight} onClick={handleAddToCart}
-          className="mt-3.5 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#1F4A2C] to-[#17331F] px-4 py-3 font-lato text-[13px] font-medium tracking-[.01em] text-[#F7E8C4] shadow-[0_4px_14px_rgba(23,51,31,.35)] transition-colors hover:from-[#17331F] hover:to-[#0F2417] disabled:cursor-not-allowed disabled:bg-[#b9b8ac] sm:text-[15px]">
-          {isComingSoon ? <><Clock size={19} strokeWidth={1.6} />Coming Soon</> : isAnimating ? <><Check size={19} />Added ✓</> : <><ShoppingCart size={20} strokeWidth={1.6} />Add to Cart</>}
+          className="mt-3.5 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#355B38] px-4 py-3.5 font-lato text-[13px] font-bold tracking-[.015em] text-[#FFF8EA] shadow-[0_8px_20px_rgba(37,75,42,.22)] transition-all hover:bg-[#28492D] hover:shadow-[0_12px_26px_rgba(37,75,42,.3)] disabled:cursor-not-allowed disabled:bg-[#b9b8ac] sm:text-[15px]">
+          {isComingSoon ? <><Clock size={19} strokeWidth={1.6} />Coming Soon</> : isAnimating ? <><Check size={19} />Added ✓</> : <><ShoppingBag size={19} strokeWidth={1.8} />Add to Cart<ArrowUpRight size={17} className="ml-1" /></>}
         </motion.button>
       </div>
 
@@ -192,25 +204,25 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
             <motion.div initial={{ y: 12, scale: .97 }} animate={{ y: 0, scale: 1 }}
               exit={{ y: 12, scale: .97 }} onClick={e => e.stopPropagation()}
               role="dialog" aria-modal="true" aria-label={`${product.name} ingredients`}
-              className="w-full max-w-sm rounded-[17px] border border-[#e9ddc9] bg-[#fffaf0] p-5 shadow-xl">
+              className="w-full max-w-sm rounded-[25px] border border-[#E1CDAE] bg-[#FFFCF6] p-6 shadow-xl">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-playfair text-[23px] font-semibold text-[#56371f]">Ingredients</p>
-                  <p className="mt-1 font-lato text-xs text-[#70553e]">{product.displayName || product.name}</p>
+                  <p className="font-playfair text-[26px] font-bold text-[#3D2B1C]">Ingredients</p>
+                  <p className="mt-1 font-lato text-xs text-[#705942]">{product.displayName || product.name}</p>
                 </div>
                 <button type="button" aria-label="Close ingredients" onClick={() => setIngredientsOpen(false)}
-                  className="rounded-full border border-[#e9ddc9] p-2 text-[#56371f]"><X size={17} /></button>
+                  className="rounded-full border border-[#E1CDAE] p-2 text-[#3D2B1C]"><X size={17} /></button>
               </div>
               {ingredients.length ? (
                 <ul className="mt-4 space-y-2">
                   {ingredients.map((ingredient, i) => (
-                    <li key={`${ingredient}-${i}`} className="flex items-start gap-2 font-lato text-sm text-[#56371f]">
+                    <li key={`${ingredient}-${i}`} className="flex items-start gap-2 font-lato text-sm text-[#3D2B1C]">
                       <Leaf size={15} className="mt-0.5 shrink-0 text-[#64744b]" /><span>{ingredient}</span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="mt-4 font-lato text-sm text-[#70553e]">Ingredient details have not been added for this product yet.</p>
+                <p className="mt-4 font-lato text-sm text-[#705942]">Ingredient details have not been added for this product yet.</p>
               )}
             </motion.div>
           </motion.div>

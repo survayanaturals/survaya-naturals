@@ -1,16 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Star, PlusCircle, X, Send, Hash,
-  ShieldCheck, MessageSquareQuote
-} from 'lucide-react'
+import { Star, Plus, X, Send, Hash, ShieldCheck, MessageSquareQuote, ArrowUpRight, Quote, Leaf, CheckCircle2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { saveOrderToSheet, trackOrderFromSheet } from '../services/orderService'
 import emailjs from '@emailjs/browser'
 
-const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID  || 'YOUR_SERVICE_ID'
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID'
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID'
-const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  || 'YOUR_PUBLIC_KEY'
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY'
 
 const TESTIMONIALS_DATA = [
   {
@@ -80,85 +78,61 @@ const TESTIMONIALS_DATA = [
   },
 ]
 
-// Only first 3 shown in grid; rest in popup
 const VISIBLE_COUNT = 3
+const averageRating = TESTIMONIALS_DATA.reduce((sum, item) => sum + item.rating, 0) / TESTIMONIALS_DATA.length
 
 function StarRating({ rating, size = 14 }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          size={size}
-          className={i <= rating ? 'fill-[#F59E0B] text-[#F59E0B]' : 'fill-[#EDE8DF] text-[#EDE8DF]'}
-        />
-      ))}
-    </div>
-  )
+  return <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
+    {[1, 2, 3, 4, 5].map(i => <Star key={i} size={size} strokeWidth={1.5} className={i <= rating ? 'fill-[#C59B57] text-[#C59B57]' : 'fill-[#E9E3D7] text-[#E9E3D7]'} />)}
+  </div>
 }
 
 function ReviewCard({ t }) {
-  return (
-    <div className="bg-white rounded-2xl border border-[#EFEBE3] shadow-[0_4px_20px_rgba(229,222,209,0.5)] flex flex-col h-full">
-      {/* Top: stars + order ID */}
-      <div className="px-5 pt-5 pb-4 border-b border-[#F5F2EB]">
-        <div className="flex items-start justify-between gap-2 mb-2.5">
-          <StarRating rating={t.rating} />
-          <span className="inline-flex items-center gap-0.5 bg-[#FCFAF5] px-2 py-0.5 rounded text-[10px] font-mono font-bold text-[#C2814E] border border-[#EFEBE3] flex-shrink-0">
-            <Hash size={9} /> {t.orderId}
-          </span>
-        </div>
-
-        {/* Bold review title — NEW */}
-        <p className="font-sans font-bold text-[#2E1A0C] text-[13px] leading-snug mb-2">
-          {t.reviewTitle}
-        </p>
-
-        {/* Date + Verified Purchase badge — NEW */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-[11px] text-[#B0A296] font-sans whitespace-nowrap">
-            Reviewed in India on {t.date}
-          </span>
-          <span className="inline-flex items-center gap-1 bg-[#FFF4EC] border border-[#FDDFC4] text-[#D07020] font-sans font-bold text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap">
-            <ShieldCheck size={9} />
-            Verified Purchase
-          </span>
-        </div>
+  return <article className="group relative flex h-full flex-col overflow-hidden rounded-[26px] border border-[#E5DFD2] bg-white p-5 shadow-[0_18px_45px_-32px_rgba(44,57,35,.32)] transition-all duration-300 hover:-translate-y-1 hover:border-[#B6A47E] hover:shadow-[0_20px_48px_-22px_rgba(44,57,35,.28)] sm:p-6">
+    <Quote size={34} strokeWidth={1} className="absolute right-5 top-5 text-[#E9E7DB] transition-colors group-hover:text-[#DCD8BF]" aria-hidden="true" />
+    <div className="relative mb-5 flex items-center justify-between gap-2 border-b border-[#F0EAE0] pb-4">
+      <StarRating rating={t.rating} />
+      <span className="rounded-full bg-[#F3F5EE] px-2.5 py-1 font-lato text-[9px] font-bold uppercase tracking-[.12em] text-[#526746]">A NOTE FROM OUR TABLE</span>
+    </div>
+    <h3 className="relative mb-3 pr-3 font-playfair text-[20px] font-medium leading-snug text-[#352C21] sm:text-[20px]">{t.reviewTitle}</h3>
+    <p className="mb-6 flex-1 font-lato text-[13px] leading-[1.9] text-[#70695E]">“{t.text}”</p>
+    <div className="border-t border-[#EDE8DC] pt-4">
+      <div className="mb-3 flex flex-wrap items-center gap-2 text-[10px] text-[#8A8173]">
+        <span className="inline-flex items-center gap-1 font-medium text-[#4B7046]"><ShieldCheck size={12} /> Verified purchase</span>
+        <span className="h-1 w-1 rounded-full bg-[#D1C6B3]" />
+        <span>{t.date}</span>
       </div>
-
-      {/* Review body */}
-      <div className="px-5 py-4 flex-1">
-        <p className="text-[#655345] text-[13px] font-sans leading-relaxed">
-          "{t.text}"
-        </p>
-      </div>
-
-      {/* Footer: avatar */}
-      <div className="px-5 pb-5 flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center font-sans font-bold text-sm flex-shrink-0"
-          style={{ backgroundColor: t.avatarBg, color: t.avatarText }}
-        >
-          {t.initials}
-        </div>
-        <div>
-          <p className="font-sans font-bold text-[#2E1A0C] text-[13px] leading-none">{t.name}</p>
-          <p className="text-[#A19286] text-xs font-sans mt-0.5">{t.location}</p>
-        </div>
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white font-playfair text-sm font-bold shadow-sm" style={{ backgroundColor: t.avatarBg, color: t.avatarText }}>{t.initials}</div>
+        <div className="min-w-0 flex-1"><p className="truncate font-lato text-[13px] font-bold text-[#393326]">{t.name}</p><p className="font-lato text-[11px] text-[#9A8E7E]">{t.location}</p></div>
+        <span title={`Order ${t.orderId}`} className="inline-flex items-center gap-0.5 text-[9px] text-[#B0A494]"><Hash size={10}/>{t.orderId}</span>
       </div>
     </div>
-  )
+  </article>
+}
+
+function Modal({ children, onClose, wide = false }) {
+  useEffect(() => {
+    const onKeyDown = e => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKeyDown)
+    const oldOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', onKeyDown); document.body.style.overflow = oldOverflow }
+  }, [onClose])
+  return <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-[99999] flex items-end justify-center p-0 sm:items-center sm:p-5" role="presentation">
+    <div className="absolute inset-0 bg-[#19291D]/65 backdrop-blur-[5px]" onClick={onClose}/>
+    <motion.div initial={{opacity:0,y:30,scale:.98}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:22,scale:.98}} transition={{type:'spring',stiffness:290,damping:28}} role="dialog" aria-modal="true" className={`relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-[26px] border border-[#E9DFCC] bg-[#FCF9F3] shadow-[0_35px_90px_rgba(0,0,0,.25)] sm:max-h-[90dvh] sm:rounded-[26px] ${wide ? 'sm:max-w-[820px]' : 'sm:max-w-[540px]'}`}>{children}</motion.div>
+  </motion.div>
 }
 
 export default function Testimonials() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
-  const [isAllReviewsOpen,  setIsAllReviewsOpen]  = useState(false)
-  const [rating,      setRating]      = useState(5)
+  const [isAllReviewsOpen, setIsAllReviewsOpen] = useState(false)
+  const [rating, setRating] = useState(5)
   const [hoverRating, setHoverRating] = useState(0)
-  const [loading,     setLoading]     = useState(false)
+  const [loading, setLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [formData,    setFormData]    = useState({ name: '', orderId: '', reviewTitle: '', text: '' })
-
+  const [formData, setFormData] = useState({ name: '', orderId: '', reviewTitle: '', text: '' })
   const handleReviewSubmit = async (e) => {
     e.preventDefault()
     const targetOrderId = formData.orderId.trim().toUpperCase()
@@ -209,313 +183,54 @@ export default function Testimonials() {
     }
   }
 
-  return (
-    <section className="bg-[#FDFBF7] py-16 px-4">
-      <div className="container mx-auto max-w-6xl">
+  const openReview = () => { setIsAllReviewsOpen(false); setIsReviewModalOpen(true) }
+  const closeReview = () => { if (!loading) setIsReviewModalOpen(false) }
 
-        {/* ── Header — identical to original, + "View All" button ── */}
-        <div className="text-center mb-10 relative">
-          <span className="text-[#5B6E31] font-sans font-bold uppercase tracking-widest text-xs block mb-2">
-            HAPPY CUSTOMERS
-          </span>
-          <h2 className="font-serif font-bold text-[#2E1A0C] text-3xl md:text-4xl mb-4 flex items-center justify-center gap-2">
-            Made with Love, Loved by All <span className="text-amber-500">❤️❤️</span>
-          </h2>
-
-          {/* View All Reviews — bottom-right of header */}
-          {TESTIMONIALS_DATA.length > VISIBLE_COUNT && (
-            <button
-              onClick={() => setIsAllReviewsOpen(true)}
-              className="mt-1 inline-flex items-center gap-1.5 text-[#5B6E31] font-sans font-bold text-xs border border-[#C5D4A8] bg-[#F0F4E8] hover:bg-[#E5EDD8] px-4 py-1.5 rounded-full transition-all"
-            >
-              <MessageSquareQuote size={12} />
-              View All {TESTIMONIALS_DATA.length} Reviews
-            </button>
-          )}
+  return <section className="relative isolate overflow-hidden bg-[#FDFBF6] px-4 py-16 sm:py-20 lg:py-24">
+    <div className="pointer-events-none absolute -left-32 top-10 h-80 w-80 rounded-full bg-[#E4E9D8]/55 blur-[85px]" />
+    <div className="pointer-events-none absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-[#F4E9D5]/65 blur-[90px]" />
+    <div className="relative mx-auto max-w-[1240px]">
+      <motion.div initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.3}} transition={{duration:.6}} className="mb-9 flex flex-col gap-5 border-b border-[#D8D0BF] pb-9 sm:mb-11 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-[730px]">
+          <div className="mb-4 flex items-center gap-2.5"><span className="h-px w-8 bg-[#B89A64]"/><Leaf size={14} className="text-[#657D52]"/><span className="font-lato text-[10px] font-bold uppercase tracking-[.28em] text-[#667A53] sm:text-xs">THE SURVAYA JOURNAL · CUSTOMER NOTES</span></div>
+          <h2 className="font-playfair text-[34px] font-medium leading-[1.13] tracking-[-.035em] text-[#293E2C] sm:text-[46px] lg:text-[54px]">Little moments. <span className="italic font-normal text-[#A77E45]">Lasting impressions.</span></h2>
+          <p className="mt-4 max-w-xl font-lato text-[13px] leading-7 text-[#756D60] sm:text-[14px]">From everyday tea breaks to unforgettable celebrations, discover the little stories behind every Survaya treat.</p>
         </div>
-
-        {/* ── Cards Grid — same as original, always 3 visible + add card ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-          {TESTIMONIALS_DATA.slice(0, VISIBLE_COUNT).map((t, idx) => (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.05 }}
-            >
-              <ReviewCard t={t} />
-            </motion.div>
-          ))}
-
-          {/* Add Review Card — same as original */}
-          <motion.div
-            onClick={() => setIsReviewModalOpen(true)}
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15 }}
-            className="bg-[#F9F6F0] rounded-2xl p-6 border-2 border-dashed border-[#D2C8B6] flex flex-col items-center justify-center text-center gap-3 cursor-pointer group hover:border-[#5B6E31] hover:bg-white transition-all duration-300 min-h-[250px]"
-          >
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#5B6E31] shadow-sm border border-[#EFEBE3] group-hover:bg-[#5B6E31] group-hover:text-white transition-all duration-300">
-              <PlusCircle size={20} />
-            </div>
-            <div>
-              <h4 className="font-sans font-bold text-[#2E1A0C] text-sm">Share Your Feedback</h4>
-              <p className="text-[#CD7F43] text-xs font-sans max-w-[190px] mx-auto mt-1 leading-normal">
-                Loved our treats? Let our baking team know your thoughts.
-              </p>
-            </div>
-          </motion.div>
-        </div>
+        <button type="button" onClick={() => setIsAllReviewsOpen(true)} className="group inline-flex w-fit shrink-0 items-center gap-3 rounded-full border border-[#A5B296] bg-[#F1F4EA] px-5 py-3 font-lato text-[11px] font-bold uppercase tracking-[.12em] text-[#34543A] transition-all hover:border-[#34543A] hover:bg-[#34543A] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#34543A] sm:text-xs">Read every story ({TESTIMONIALS_DATA.length}) <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"/></button>
+      </motion.div>
+      <div className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-2 font-lato text-xs text-[#776D5E]"><div className="flex items-center gap-2"><span className="font-playfair text-2xl font-semibold text-[#34543A]">{averageRating.toFixed(1)}</span><StarRating rating={Math.round(averageRating)} size={13}/></div><span className="hidden h-5 w-px bg-[#D7CBB8] sm:block"/><span>{TESTIMONIALS_DATA.length} customer stories · thoughtfully shared</span></div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+        {TESTIMONIALS_DATA.slice(0,VISIBLE_COUNT).map((t,idx) => <motion.div key={t.id} initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.12}} transition={{duration:.5,delay:idx*.09}} className="h-full"><ReviewCard t={t}/></motion.div>)}
+        <motion.button type="button" onClick={openReview} initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.12}} transition={{duration:.5,delay:.27}} className="group relative flex min-h-[310px] flex-col items-start justify-between overflow-hidden rounded-[26px] border border-[#2B4933] bg-[#294833] p-6 text-left text-[#FFF9E9] shadow-[0_18px_42px_-28px_rgba(30,60,30,.5)] transition-all hover:-translate-y-1 hover:bg-[#203B2A] sm:p-7">
+          <div className="pointer-events-none absolute -right-10 -top-12 h-48 w-48 rounded-full border border-white/10"/><div className="pointer-events-none absolute -right-2 -top-5 h-32 w-32 rounded-full border border-white/10"/>
+          <span className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#E2CC9D]/50 bg-white/10 text-[#E7D4AA] transition-transform group-hover:rotate-90"><Plus size={23} strokeWidth={1.5}/></span>
+          <div className="relative mt-10"><p className="mb-3 font-lato text-[10px] font-bold uppercase tracking-[.25em] text-[#DDC99E]">A SEAT AT OUR TABLE</p><h3 className="font-playfair text-[28px] font-medium leading-tight">Every bite<br/><span className="italic text-[#E5C991]">has a story.</span></h3><p className="mt-3 max-w-[220px] font-lato text-xs leading-6 text-[#E1E8D9]">Tell us about your favourite Survaya moment. Your words make our kitchen brighter.</p></div>
+          <span className="relative mt-7 inline-flex items-center gap-2 border-b border-[#E5C991] pb-1 font-lato text-[11px] font-bold uppercase tracking-[.15em] text-[#F0DBB3]">Share your experience <ArrowUpRight size={15}/></span>
+        </motion.button>
       </div>
+    </div>
 
-      {/* ════════════════════════════════════════════
-          ALL REVIEWS POPUP — scrollable
-      ════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {isAllReviewsOpen && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsAllReviewsOpen(false)}
-              className="absolute inset-0 bg-black/30 backdrop-blur-[3px]"
-            />
+    {createPortal(
+    <AnimatePresence>
+      {isAllReviewsOpen && <Modal wide onClose={() => setIsAllReviewsOpen(false)}>
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[#E7DFD0] px-5 py-5 sm:px-8 sm:py-6"><div><span className="font-lato text-[10px] font-bold uppercase tracking-[.25em] text-[#9D8256]">Survaya stories</span><h3 className="mt-1 font-playfair text-[29px] text-[#304B34] sm:text-[35px]">All customer reviews</h3><p className="mt-1 font-lato text-xs text-[#8D8170]">{TESTIMONIALS_DATA.length} customer stories · {averageRating.toFixed(1)} average rating</p></div><button type="button" onClick={() => setIsAllReviewsOpen(false)} aria-label="Close reviews" className="rounded-full border border-[#E4DAC9] bg-white p-2 text-[#51624B] hover:bg-[#EAEFE3]"><X size={19}/></button></div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-8"><div className="mb-6 flex items-center gap-5 rounded-2xl border border-[#E5DCCB] bg-white px-5 py-4"><div><span className="font-playfair text-[37px] font-semibold text-[#304B34]">{averageRating.toFixed(1)}</span><StarRating rating={Math.round(averageRating)} size={13}/></div><div className="flex-1 space-y-1.5">{[5,4,3,2,1].map(star => {const count=TESTIMONIALS_DATA.filter(t=>t.rating===star).length;const pct=Math.round(count/TESTIMONIALS_DATA.length*100);return <div key={star} className="flex items-center gap-2 font-lato text-[10px] text-[#8E8273]"><span className="w-3">{star}</span><div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#EAE5DC]"><div className="h-full rounded-full bg-[#C59B57]" style={{width:`${pct}%`}}/></div><span className="w-8 text-right">{pct}%</span></div>})}</div></div><div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{TESTIMONIALS_DATA.map(t=><ReviewCard key={t.id} t={t}/>)}</div><button type="button" onClick={openReview} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-[#9DAF93] bg-[#E9F0E3] px-5 py-3 font-lato text-xs font-bold uppercase tracking-wider text-[#34563C] hover:bg-[#DCE8D6]"><Plus size={16}/> Share your experience</button></div>
+      </Modal>}
+    </AnimatePresence>, document.body)}
 
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 40 }}
-              transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-              className="relative bg-[#FDFBF7] w-full sm:max-w-2xl rounded-t-3xl sm:rounded-2xl shadow-2xl border border-[#EFEBE3] z-10 flex flex-col max-h-[90vh]"
-            >
-              {/* Sticky header */}
-              <div className="flex-shrink-0 px-6 py-4 border-b border-[#F0EBE2] bg-[#FDFBF7] rounded-t-3xl sm:rounded-t-2xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-[#F0F4E8] flex items-center justify-center">
-                      <MessageSquareQuote size={15} className="text-[#5B6E31]" />
-                    </div>
-                    <div>
-                      <h3 className="font-serif font-bold text-[#2E1A0C] text-lg leading-none">All Reviews</h3>
-                      <p className="text-[#B0A296] text-[11px] font-sans mt-0.5">
-                        {TESTIMONIALS_DATA.length} verified purchases · 5.0 ⭐ average
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setIsAllReviewsOpen(false)}
-                    className="p-1.5 rounded-lg text-[#9C8A7C] hover:bg-[#F0EBE2] hover:text-[#4A2D16] transition-all"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                {/* Rating breakdown */}
-                <div className="flex items-center gap-4 bg-white border border-[#EFEBE3] rounded-xl px-4 py-3">
-                  <div className="text-center flex-shrink-0">
-                    <p className="font-serif font-bold text-[#2E1A0C] text-3xl leading-none">5.0</p>
-                    <StarRating rating={5} size={12} />
-                    <p className="text-[#B0A296] text-[10px] font-sans mt-1">out of 5</p>
-                  </div>
-                  <div className="flex-1 space-y-1.5">
-                    {[5, 4, 3, 2, 1].map((star) => {
-                      const count = TESTIMONIALS_DATA.filter((r) => r.rating === star).length
-                      const pct = Math.round((count / TESTIMONIALS_DATA.length) * 100)
-                      return (
-                        <div key={star} className="flex items-center gap-2">
-                          <span className="text-[10px] font-sans text-[#B0A296] w-3">{star}</span>
-                          <div className="flex-1 h-1.5 bg-[#F0EBE2] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#F59E0B] rounded-full" style={{ width: `${pct}%` }} />
-                          </div>
-                          <span className="text-[10px] font-sans text-[#B0A296] w-6 text-right">{pct}%</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Scrollable list */}
-              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-                {TESTIMONIALS_DATA.map((t, idx) => (
-                  <motion.div
-                    key={t.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.04 }}
-                  >
-                    <ReviewCard t={t} />
-                  </motion.div>
-                ))}
-
-                {/* Write a review CTA at bottom of popup */}
-                <div className="pt-1 pb-2">
-                  <button
-                    onClick={() => { setIsAllReviewsOpen(false); setIsReviewModalOpen(true) }}
-                    className="w-full py-3 rounded-xl border-2 border-dashed border-[#D2C8B6] text-[#5B6E31] font-sans font-bold text-xs uppercase tracking-widest hover:bg-white hover:border-[#5B6E31] transition-all flex items-center justify-center gap-2"
-                  >
-                    <PlusCircle size={14} /> Write Your Review
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* ════════════════════════════════════════════
-          WRITE REVIEW MODAL
-      ════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {isReviewModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => !loading && setIsReviewModalOpen(false)}
-              className="absolute inset-0 bg-black/25 backdrop-blur-[2px]"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-              className="relative bg-[#FFFDF9] w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-[#EFEBE3] z-10"
-            >
-              {/* Header */}
-              <div className="px-6 py-4 border-b border-[#F5F2EB] flex items-center justify-between bg-[#FCFAF5]">
-                <div>
-                  <h3 className="font-serif font-bold text-[#4A2D16] text-lg flex items-center gap-2">
-                    🍰 🍪 Review Our Products ⭐
-                  </h3>
-                  <p className="text-[#B0A296] text-[11px] font-sans mt-0.5">Your feedback is the secret ingredient to our success</p>
-                </div>
-                <button
-                  disabled={loading}
-                  onClick={() => setIsReviewModalOpen(false)}
-                  className="p-1 rounded-lg text-[#9C8A7C] hover:text-[#4A2D16] transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="p-6">
-                {isSubmitted ? (
-                  <div className="flex flex-col items-center justify-center text-center py-8 space-y-2">
-                    <span className="text-4xl animate-bounce">✨</span>
-                    <h4 className="font-serif font-bold text-[#2E1A0C] text-xl">Review Submitted!</h4>
-                    <p className="text-[#655345] text-sm font-sans">Thank you for helping our bakery community grow.</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleReviewSubmit} className="space-y-5">
-
-                    {/* Star rating */}
-                    <div className="flex flex-col items-center justify-center pb-4 border-b border-dashed border-[#E5E0D5]">
-                      <span className="text-[11px] font-sans font-bold text-[#CD7F43] uppercase tracking-wider mb-2">
-                        SELECT RATING
-                      </span>
-                      <div className="flex gap-1.5">
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <button
-                            key={num} type="button"
-                            onClick={() => setRating(num)}
-                            onMouseEnter={() => setHoverRating(num)}
-                            onMouseLeave={() => setHoverRating(0)}
-                            className="focus:outline-none transition-transform active:scale-90 hover:scale-110"
-                          >
-                            <Star
-                              size={28}
-                              className={`transition-colors duration-150 ${
-                                num <= (hoverRating || rating)
-                                  ? 'fill-[#FFC72C] text-[#FFC72C]'
-                                  : 'text-[#EFEBE3]'
-                              }`}
-                            />
-                          </button>
-                        ))}
-                      </div>
-                      <span className="text-[11px] text-[#CD7F43] font-sans font-semibold mt-1.5">
-                        {['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent!'][(hoverRating || rating)]}
-                      </span>
-                    </div>
-
-                    {/* Name + Order ID */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[11px] font-sans font-bold text-[#CD7F43] uppercase tracking-wider mb-1.5">YOUR NAME</label>
-                        <input
-                          type="text" required placeholder="Meena Krishnan"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full px-4 py-2.5 text-sm bg-white border border-[#EADFC9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#5B6E31] text-[#2E1A0C] font-sans placeholder-[#9C8A7C]/60 shadow-inner"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-sans font-bold text-[#CD7F43] uppercase tracking-wider mb-1.5">ORDER ID</label>
-                        <input
-                          type="text" required placeholder="SN2606XXXXX"
-                          value={formData.orderId}
-                          onChange={(e) => setFormData({ ...formData, orderId: e.target.value })}
-                          className="w-full px-4 py-2.5 text-sm bg-white border border-[#EADFC9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#5B6E31] text-[#2E1A0C] font-mono placeholder-[#9C8A7C]/60 shadow-inner"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Review headline — NEW field */}
-                    <div>
-                      <label className="block text-[11px] font-sans font-bold text-[#CD7F43] uppercase tracking-wider mb-1.5">REVIEW HEADLINE</label>
-                      <input
-                        type="text" required placeholder="e.g. Absolutely delicious and healthy!"
-                        value={formData.reviewTitle}
-                        onChange={(e) => setFormData({ ...formData, reviewTitle: e.target.value })}
-                        className="w-full px-4 py-2.5 text-sm bg-white border border-[#EADFC9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#5B6E31] text-[#2E1A0C] font-sans font-medium placeholder-[#9C8A7C]/60 shadow-inner"
-                      />
-                    </div>
-
-                    {/* Review body */}
-                    <div>
-                      <label className="block text-[11px] font-sans font-bold text-[#CD7F43] uppercase tracking-wider mb-1.5">YOUR REVIEW</label>
-                      <textarea
-                        required rows={4}
-                        placeholder="Tell us how the cake tasted, about its moisture level, freshness, or design customisation..."
-                        value={formData.text}
-                        onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-                        className="w-full px-4 py-3 text-sm bg-white border border-[#EADFC9] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#5B6E31] text-[#2E1A0C] font-sans resize-none leading-relaxed placeholder-[#9C8A7C]/60 shadow-inner"
-                      />
-                    </div>
-
-                    {/* Verified Purchase note */}
-                    <div className="flex items-center gap-2 bg-[#FFF8F0] border border-[#FDDFC4] rounded-xl px-3.5 py-2.5">
-                      <ShieldCheck size={13} className="text-[#D07020] flex-shrink-0" />
-                      <p className="text-[11px] text-[#B06020] font-sans leading-snug">
-                        Your review will show a <span className="font-bold text-[#D07020]">Verified Purchase</span> badge once your Order ID is confirmed.
-                      </p>
-                    </div>
-
-                    {/* Submit */}
-                    <button
-                      type="submit" disabled={loading}
-                      className="w-full py-3.5 bg-[#3B4D1A] hover:bg-[#2D3C13] text-white font-sans font-bold text-xs uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 shadow-md transition-all duration-150 disabled:opacity-50"
-                    >
-                      {loading
-                        ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        : <Send size={13} className="-rotate-12" />
-                      }
-                      {loading ? 'Sending...' : 'SEND PRODUCT REVIEW'}
-                    </button>
-                  </form>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </section>
-  )
+    {createPortal(
+    <AnimatePresence>
+      {isReviewModalOpen && <Modal onClose={closeReview}>
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-[#E7DFD0] px-5 py-5 sm:px-7"><div><span className="font-lato text-[10px] font-bold uppercase tracking-[.25em] text-[#9D8256]">Your Survaya experience</span><h3 className="mt-1 font-playfair text-[28px] text-[#304B34]">Share your story</h3><p className="mt-1 font-lato text-xs text-[#8B8071]">Every thoughtful word means the world to us.</p></div><button type="button" disabled={loading} onClick={closeReview} aria-label="Close review form" className="rounded-full border border-[#E4DAC9] bg-white p-2 text-[#51624B] disabled:opacity-50"><X size={19}/></button></div>
+        <div className="min-h-0 overflow-y-auto px-5 py-6 sm:px-7">{isSubmitted ? <div className="flex flex-col items-center py-12 text-center"><div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#E8EFE2] text-[#436D45]"><CheckCircle2 size={34}/></div><h4 className="font-playfair text-3xl text-[#304B34]">Thank you, truly.</h4><p className="mt-3 max-w-xs font-lato text-sm leading-7 text-[#817666]">Your review has been submitted. Thank you for sharing a little love with our community.</p></div> : <form onSubmit={handleReviewSubmit} className="space-y-5">
+          <div className="rounded-2xl border border-[#E7DECD] bg-white px-4 py-5 text-center"><p className="mb-3 font-lato text-[10px] font-bold uppercase tracking-[.23em] text-[#9D8256]">Rate your experience</p><div className="flex justify-center gap-2">{[1,2,3,4,5].map(num=><button type="button" key={num} onClick={()=>setRating(num)} onMouseEnter={()=>setHoverRating(num)} onMouseLeave={()=>setHoverRating(0)} aria-label={`Rate ${num} stars`} className="rounded-lg p-1 transition-transform hover:scale-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#34563C]"><Star size={30} className={num<=(hoverRating||rating)?'fill-[#C59B57] text-[#C59B57]':'text-[#D7D0C2]'}/></button>)}</div><p className="mt-2 font-lato text-xs text-[#806F56]">{['','Poor','Fair','Good','Great','Excellent!'][hoverRating||rating]}</p></div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"><label className="block font-lato text-[10px] font-bold uppercase tracking-[.14em] text-[#5B6B4D]">Your name<input type="text" required maxLength={80} placeholder="Your name" value={formData.name} onChange={e=>setFormData({...formData,name:e.target.value})} className="mt-2 w-full rounded-xl border border-[#DDD4C3] bg-white px-3.5 py-3 font-lato text-[13px] font-normal normal-case tracking-normal text-[#342D22] outline-none focus:border-[#65835D] focus:ring-2 focus:ring-[#65835D]/15"/></label><label className="block font-lato text-[10px] font-bold uppercase tracking-[.14em] text-[#5B6B4D]">Order ID<input type="text" required maxLength={50} placeholder="SN2606XXXXX" value={formData.orderId} onChange={e=>setFormData({...formData,orderId:e.target.value})} className="mt-2 w-full rounded-xl border border-[#DDD4C3] bg-white px-3.5 py-3 font-mono text-[13px] font-normal normal-case tracking-normal text-[#342D22] outline-none focus:border-[#65835D] focus:ring-2 focus:ring-[#65835D]/15"/></label></div>
+          <label className="block font-lato text-[10px] font-bold uppercase tracking-[.14em] text-[#5B6B4D]">Review headline<input type="text" required maxLength={120} placeholder="What did you love most?" value={formData.reviewTitle} onChange={e=>setFormData({...formData,reviewTitle:e.target.value})} className="mt-2 w-full rounded-xl border border-[#DDD4C3] bg-white px-3.5 py-3 font-lato text-[13px] font-normal normal-case tracking-normal text-[#342D22] outline-none focus:border-[#65835D] focus:ring-2 focus:ring-[#65835D]/15"/></label>
+          <label className="block font-lato text-[10px] font-bold uppercase tracking-[.14em] text-[#5B6B4D]">Your review<textarea required rows={4} maxLength={1500} placeholder="Tell us about the taste, freshness and your favourite little moments..." value={formData.text} onChange={e=>setFormData({...formData,text:e.target.value})} className="mt-2 w-full resize-none rounded-xl border border-[#DDD4C3] bg-white px-3.5 py-3 font-lato text-[13px] font-normal leading-6 normal-case tracking-normal text-[#342D22] outline-none focus:border-[#65835D] focus:ring-2 focus:ring-[#65835D]/15"/></label>
+          <div className="flex items-start gap-2 rounded-xl border border-[#DDE5D6] bg-[#EFF3EA] p-3 font-lato text-[11px] leading-5 text-[#55704C]"><ShieldCheck size={17} className="mt-0.5 shrink-0"/><span>Your order ID is checked before your review is submitted.</span></div>
+          <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#34563C] px-5 py-4 font-lato text-xs font-bold uppercase tracking-[.15em] text-white shadow-[0_10px_22px_-12px_#34563C] transition-colors hover:bg-[#28452F] disabled:cursor-wait disabled:opacity-60">{loading?<span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"/>:<Send size={15}/>} {loading?'Sending your review...':'Submit your review'}</button>
+        </form>}</div>
+      </Modal>}
+    </AnimatePresence>, document.body)}
+  </section>
 }

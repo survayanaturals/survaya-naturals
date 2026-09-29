@@ -1,190 +1,178 @@
-import { createContext, useContext, useReducer, useEffect, useRef, useState, useCallback } from 'react'
+import {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react'
 import { WHATSAPP_NUMBER } from '../data/products'
 
 const CartContext = createContext(null)
+const STORAGE_KEY = 'survaya_cart'
 
-const cartReducer = (state, action) => {
+const initialState = { items: [], isOpen: false }
+
+function cartReducer(state, action) {
   switch (action.type) {
     case 'ADD_ITEM': {
       const { product, selectedWeight } = action.payload
+      if (!product || !selectedWeight) return state
       const itemKey = `${product.id}-${selectedWeight.label}`
-      const existing = state.items.find(i => i.itemKey === itemKey)
-      if (existing) {
-        return {
-          ...state,
-          items: state.items.map(i =>
-            i.itemKey === itemKey ? { ...i, qty: i.qty + 1 } : i
-          ),
-        }
-      }
+      const existing = state.items.some(item => item.itemKey === itemKey)
       return {
         ...state,
-        items: [
-          ...state.items,
-          {
-            itemKey,
-            product,
-            selectedWeight,
-            qty: 1,
-          },
-        ],
+        isOpen: true,
+        items: existing
+          ? state.items.map(item => item.itemKey === itemKey ? { ...item, qty: item.qty + 1 } : item)
+          : [...state.items, { itemKey, product, selectedWeight, qty: 1 }],
       }
     }
     case 'REMOVE_ITEM':
-      return {
-        ...state,
-        items: state.items.filter(i => i.itemKey !== action.payload.itemKey),
-      }
+      return { ...state, items: state.items.filter(item => item.itemKey !== action.payload.itemKey) }
     case 'UPDATE_QTY': {
       const { itemKey, qty } = action.payload
-      if (qty <= 0) {
-        return { ...state, items: state.items.filter(i => i.itemKey !== itemKey) }
-      }
+      const nextQty = Math.max(0, Math.floor(Number(qty) || 0))
       return {
         ...state,
-        items: state.items.map(i => (i.itemKey === itemKey ? { ...i, qty } : i)),
+        items: nextQty === 0
+          ? state.items.filter(item => item.itemKey !== itemKey)
+          : state.items.map(item => item.itemKey === itemKey ? { ...item, qty: nextQty } : item),
       }
     }
-    case 'CLEAR_CART':
-      return { ...state, items: [] }
-    case 'TOGGLE_CART':
-      return { ...state, isOpen: !state.isOpen }
-    case 'OPEN_CART':
-      return { ...state, isOpen: true }
-    case 'CLOSE_CART':
-      return { ...state, isOpen: false }
-    default:
-      return state
+    case 'CLEAR_CART': return { ...state, items: [] }
+    case 'TOGGLE_CART': return { ...state, isOpen: !state.isOpen }
+    case 'OPEN_CART': return { ...state, isOpen: true }
+    case 'CLOSE_CART': return { ...state, isOpen: false }
+    default: return state
   }
 }
 
-const loadCart = () => {
+function loadCart() {
+  if (typeof window === 'undefined') return []
   try {
-    const saved = localStorage.getItem('survaya_cart')
-    return saved ? JSON.parse(saved) : []
+    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]')
+    return Array.isArray(saved)
+      ? saved.filter(item => item?.product && item?.selectedWeight && item?.itemKey && Number(item.qty) > 0)
+      : []
   } catch {
     return []
   }
 }
 
-export function CartProvider({ children }) {
-  const [state, dispatch] = useReducer(cartReducer, {
-    items: loadCart(),
-    isOpen: false,
-  })
+function initCart() {
+  return { ...initialState, items: loadCart() }
+}
 
+export function CartProvider({ children }) {
+  const [state, dispatch] = useReducer(cartReducer, undefined, initCart)
   const cartIconRef = useRef(null)
   const [flights, setFlights] = useState([])
+  const flightTimers = useRef(new Set())
+  const skipNextToggle = useRef(false)
 
+  useEffect(() => {
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items)) }
+    catch (error) { console.warn('Unable to save cart:', error) }
+  }, [state.items])
+
+  useEffect(() => () => {
+    flightTimers.current.forEach(clearTimeout)
+    flightTimers.current.clear()
+  }, [])
+
+  // Compatible with the existing FlyToCart component and ProductCard.
   const triggerFly = useCallback((buttonEl, imageSrc) => {
     const cartEl = cartIconRef.current
     if (!buttonEl || !cartEl) return
-
-    const btnRect = buttonEl.getBoundingClientRect()
-    const cartRect = cartEl.getBoundingClientRect()
+    const button = buttonEl.getBoundingClientRect()
+    const cart = cartEl.getBoundingClientRect()
     const size = 58
-    const id = Date.now() + Math.random()
-
-    setFlights((prev) => [
-      ...prev,
-      {
-        id,
-        imageSrc,
-        start: {
-          x: btnRect.left + btnRect.width / 2 - size / 2,
-          y: btnRect.top + btnRect.height / 2 - size / 2,
-        },
-        end: {
-          x: (cartRect.left + cartRect.width / 2) - size / 2,
-          y: cartRect.top + cartRect.height / 2 - size / 2,
-        },
-        size,
-      },
-    ])
-
-    setTimeout(() => {
-      setFlights((prev) => prev.filter((f) => f.id !== id))
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    setFlights(previous => [...previous, {
+      id,
+      imageSrc,
+      size,
+      start: { x: button.left + button.width / 2 - size / 2, y: button.top + button.height / 2 - size / 2 },
+      end: { x: cart.left + cart.width / 2 - size / 2, y: cart.top + cart.height / 2 - size / 2 },
+    }])
+    const timer = setTimeout(() => {
+      setFlights(previous => previous.filter(flight => flight.id !== id))
+      flightTimers.current.delete(timer)
     }, 950)
+    flightTimers.current.add(timer)
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem('survaya_cart', JSON.stringify(state.items))
-  }, [state.items])
-
-  const totalItems = state.items.reduce((sum, i) => sum + i.qty, 0)
-  const subtotal = state.items.reduce(
-    (sum, i) => sum + i.selectedWeight.price * i.qty,
-    0
-  )
-
-  // NEW: total savings across all cart items (uses mrp when present, else 0 savings for that item)
-  const totalSavings = state.items.reduce(
-    (sum, i) =>
-      sum + ((i.selectedWeight.mrp || i.selectedWeight.price) - i.selectedWeight.price) * i.qty,
-    0
-  )
-
-  const addItem = (product, selectedWeight) => {
+  const addItem = useCallback((product, selectedWeight) => {
+    skipNextToggle.current = true
     dispatch({ type: 'ADD_ITEM', payload: { product, selectedWeight } })
-    dispatch({ type: 'OPEN_CART' })
-  }
+    // Clear after the current click, so future cart-icon clicks toggle normally.
+    queueMicrotask(() => { skipNextToggle.current = false })
+  }, [])
+  const removeItem = useCallback(itemKey => dispatch({ type: 'REMOVE_ITEM', payload: { itemKey } }), [])
+  const updateQty = useCallback((itemKey, qty) => dispatch({ type: 'UPDATE_QTY', payload: { itemKey, qty } }), [])
+  const clearCart = useCallback(() => dispatch({ type: 'CLEAR_CART' }), [])
+  const toggleCart = useCallback(() => {
+    if (skipNextToggle.current) { skipNextToggle.current = false; return }
+    dispatch({ type: 'TOGGLE_CART' })
+  }, [])
+  const openCart = useCallback(() => dispatch({ type: 'OPEN_CART' }), [])
+  const closeCart = useCallback(() => dispatch({ type: 'CLOSE_CART' }), [])
 
-  const removeItem = itemKey => dispatch({ type: 'REMOVE_ITEM', payload: { itemKey } })
+  const { totalItems, subtotal, totalSavings } = useMemo(() => state.items.reduce((totals, item) => {
+    const qty = Number(item.qty) || 0
+    const price = Number(item.selectedWeight?.price) || 0
+    const mrp = Number(item.selectedWeight?.mrp ?? item.selectedWeight?.originalPrice ?? price) || price
+    totals.totalItems += qty
+    totals.subtotal += price * qty
+    totals.totalSavings += Math.max(0, mrp - price) * qty
+    return totals
+  }, { totalItems: 0, subtotal: 0, totalSavings: 0 }), [state.items])
 
-  const updateQty = (itemKey, qty) =>
-    dispatch({ type: 'UPDATE_QTY', payload: { itemKey, qty } })
-
-  const clearCart = () => dispatch({ type: 'CLEAR_CART' })
-  const toggleCart = () => dispatch({ type: 'TOGGLE_CART' })
-  const openCart = () => dispatch({ type: 'OPEN_CART' })
-  const closeCart = () => dispatch({ type: 'CLOSE_CART' })
-
-  const sendWhatsApp = () => {
-    if (state.items.length === 0) return
-    const lines = state.items.map(
-      i => `• ${i.product.name} (${i.selectedWeight.label}) x${i.qty} = ₹${i.selectedWeight.price * i.qty}`
-    )
+  const sendWhatsApp = useCallback(() => {
+    if (!state.items.length) return
+    const number = String(WHATSAPP_NUMBER || '').replace(/\D/g, '')
+    if (!number) { console.warn('WhatsApp number is not configured.'); return }
+    const lines = state.items.map(item => {
+      const price = Number(item.selectedWeight.price) || 0
+      return `• ${item.product.name} (${item.selectedWeight.label}) x${item.qty} = ₹${(price * item.qty).toLocaleString('en-IN')}`
+    })
     const message = [
       '🛒 *New Order from Survaya Naturals Website*',
-      '',
-      ...lines,
-      '',
-      `*Total: ₹${subtotal}*`,
-      '',
-      'Please confirm availability and delivery details. Thank you! 🙏',
+      '', ...lines, '',
+      `*Total: ₹${subtotal.toLocaleString('en-IN')}*`,
+      '', 'Please confirm availability and delivery details. Thank you! 🙏',
     ].join('\n')
-    const encoded = encodeURIComponent(message)
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank')
-  }
+    window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer')
+  }, [state.items, subtotal])
 
-  return (
-    <CartContext.Provider
-      value={{
-        items: state.items,
-        isOpen: state.isOpen,
-        totalItems,
-        subtotal,
-        totalSavings,
-        cartIconRef,
-        flights,
-        triggerFly,
-        addItem,
-        removeItem,
-        updateQty,
-        clearCart,
-        toggleCart,
-        openCart,
-        closeCart,
-        sendWhatsApp,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
-  )
+  const value = useMemo(() => ({
+    items: state.items,
+    isOpen: state.isOpen,
+    totalItems,
+    subtotal,
+    totalSavings,
+    cartIconRef,
+    flights,
+    triggerFly,
+    addItem,
+    removeItem,
+    updateQty,
+    clearCart,
+    toggleCart,
+    openCart,
+    closeCart,
+    sendWhatsApp,
+  }), [state.items, state.isOpen, totalItems, subtotal, totalSavings, flights,
+    triggerFly, addItem, removeItem, updateQty, clearCart, toggleCart, openCart, closeCart, sendWhatsApp])
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }
 
-export const useCart = () => {
-  const ctx = useContext(CartContext)
-  if (!ctx) throw new Error('useCart must be used within CartProvider')
-  return ctx
+export function useCart() {
+  const context = useContext(CartContext)
+  if (!context) throw new Error('useCart must be used within CartProvider')
+  return context
 }

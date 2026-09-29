@@ -26,23 +26,23 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-[12px] font-medium text-[#5C5548]">
+      <label className="block text-[12px] font-medium text-[#687060]">
         {label}
       </label>
 
       <div
         className="
           group flex items-center gap-3
-          h-[52px]
-          rounded-xl
-          border border-[#E8E1D5]
-          bg-[#FFFEFC]
+          h-[54px]
+          rounded-2xl
+          border border-[#E7EADF]
+          bg-[#FFFEFC] shadow-[0_2px_8px_rgba(23,51,31,0.03)]
           px-4
           transition-all duration-200
-          hover:border-[#D7CCBA]
-          focus-within:border-[#1F3D2C]
+          hover:border-[#B9D2B6]
+          focus-within:border-[#1F7A3D]
           focus-within:ring-4
-          focus-within:ring-[#1F3D2C]/5
+          focus-within:ring-[#1F7A3D]/10
         "
       >
         <Icon
@@ -50,9 +50,9 @@ function Field({
           strokeWidth={1.8}
           className="
             shrink-0
-            text-[#9A9284]
+            text-[#9AA292]
             transition-colors
-            group-focus-within:text-[#1F3D2C]
+            group-focus-within:text-[#1F7A3D]
           "
         />
 
@@ -65,14 +65,14 @@ function Field({
             bg-transparent
             outline-none
             text-[14px]
-            text-[#2B2620]
-            placeholder:text-[#B0A89C]
+            text-[#1F2B21]
+            placeholder:text-[#B0B7A7]
           "
         />
       </div>
 
       {help && (
-        <p className="text-[11px] leading-4 text-[#9A9284]">
+        <p className="text-[11px] leading-4 text-[#9AA292]">
           {help}
         </p>
       )}
@@ -98,8 +98,8 @@ function Toggle({
       <div className="flex items-center gap-4 min-w-0">
         <div
           className="
-            w-10 h-10
-            rounded-full
+            w-11 h-11
+            rounded-2xl
             flex items-center justify-center
             shrink-0
           "
@@ -113,11 +113,11 @@ function Toggle({
         </div>
 
         <div className="min-w-0">
-          <div className="text-[14px] font-medium text-[#2B2620]">
+          <div className="text-[14px] font-medium text-[#1F2B21]">
             {label}
           </div>
 
-          <div className="text-[12px] text-[#8A8477] mt-0.5">
+          <div className="text-[12px] text-[#939889] mt-0.5">
             {sub}
           </div>
         </div>
@@ -135,7 +135,7 @@ function Toggle({
           transition-all duration-200
           ${
             checked
-              ? "bg-[#163B29]"
+              ? "bg-[#1F7A3D]"
               : "bg-[#D9D3C8]"
           }
         `}
@@ -175,9 +175,9 @@ function SectionHeader({
     <div className="flex items-start gap-4 mb-7">
       <div
         className="
-          w-11 h-11
-          rounded-full
-          bg-[#EEF4ED]
+          w-12 h-12
+          rounded-2xl
+          bg-[#EAF2E8]
           flex items-center justify-center
           shrink-0
         "
@@ -185,16 +185,16 @@ function SectionHeader({
         <Icon
           size={19}
           strokeWidth={1.8}
-          className="text-[#1F3D2C]"
+          className="text-[#1F7A3D]"
         />
       </div>
 
       <div>
-        <h2 className="text-[16px] font-semibold text-[#2B2620]">
+        <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#1F2B21]">
           {title}
         </h2>
 
-        <p className="text-[12px] text-[#8A8477] mt-1 leading-5">
+        <p className="text-[12px] text-[#939889] mt-1 leading-5">
           {description}
         </p>
       </div>
@@ -228,8 +228,8 @@ export default function SettingsPage() {
         flex-1
         min-w-0
         overflow-auto
-        bg-[#FAF7F2]
-        text-[#2B2620]
+        bg-[#FBFAF6]
+        text-[#1F2B21]
       "
     >
       {/* =================================================
@@ -238,10 +238,10 @@ export default function SettingsPage() {
 
       <header
         className="
-          px-6
-          md:px-8
-          pt-7
-          pb-5
+          px-5
+          md:px-9
+          pt-9
+          pb-7
           flex
           items-start
           justify-between
@@ -255,10 +255,10 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2">
             <h1
               className="
-                text-[28px]
-                md:text-[30px]
+                text-[30px]
+                md:text-[36px]
                 font-serif
-                text-[#173B29]
+                text-[#1F4A2C]
                 tracking-[-0.3px]
               "
             >
@@ -267,14 +267,14 @@ export default function SettingsPage() {
 
             <Sparkles
               size={17}
-              className="text-[#C9A227] mt-1"
+              className="text-[#D9A234] mt-1"
             />
           </div>
 
           <p
             className="
               text-[12px]
-              text-[#8A8477]
+              text-[#939889]
               mt-1.5
               max-w-[570px]
               leading-5
@@ -292,7 +292,7 @@ export default function SettingsPage() {
             flex
             items-center
             gap-3
-            rounded-2xl
+            rounded-[20px]
             border border-[#F0D9BD]
             bg-[#FFF5E9]
             px-4
@@ -313,17 +313,17 @@ export default function SettingsPage() {
           >
             <CloudOff
               size={18}
-              className="text-[#C46A2E]"
+              className="text-[#C23B3B]"
             />
           </div>
 
           <div>
-            <div className="text-[13px] font-semibold text-[#C46A2E]">
+            <div className="text-[13px] font-semibold text-[#C23B3B]">
               Not Connected
             </div>
 
             <div className="text-[11px] text-[#9A7B5A] mt-0.5">
-              Google Sheet connection required
+              Connect your Google Sheet to enable saving
             </div>
           </div>
         </div>
@@ -335,11 +335,11 @@ export default function SettingsPage() {
 
       <section
         className="
-          px-6
-          md:px-8
-          pb-10
-          max-w-[1000px]
-          space-y-5
+          px-5
+          md:px-9
+          pb-12
+          max-w-[1100px]
+          space-y-6
         "
       >
         {/* =================================================
@@ -349,11 +349,11 @@ export default function SettingsPage() {
         <div
           className="
             bg-white
-            rounded-2xl
-            border border-[#E8E1D5]
-            shadow-[0_2px_10px_rgba(52,42,30,0.025)]
-            p-5
-            md:p-7
+            rounded-[26px]
+            border border-[#E7EADF]
+            shadow-[0_14px_42px_rgba(23,51,31,0.05)]
+            p-6
+            md:p-8
           "
         >
           <SectionHeader
@@ -399,11 +399,11 @@ export default function SettingsPage() {
         <div
           className="
             bg-white
-            rounded-2xl
-            border border-[#E8E1D5]
-            shadow-[0_2px_10px_rgba(52,42,30,0.025)]
-            p-5
-            md:p-7
+            rounded-[26px]
+            border border-[#E7EADF]
+            shadow-[0_14px_42px_rgba(23,51,31,0.05)]
+            p-6
+            md:p-8
           "
         >
           <SectionHeader
@@ -412,15 +412,15 @@ export default function SettingsPage() {
             description="Manage order confirmations and notifications."
           />
 
-          <div className="divide-y divide-[#F0EBE3]">
+          <div className="divide-y divide-[#EEF0E7]">
             <Toggle
               label="Automatic order confirmation"
               sub="Automatically confirm orders after payment."
               checked={autoConfirm}
               onChange={setAutoConfirm}
               icon={Mail}
-              iconBg="#E8F2EA"
-              iconFg="#2F6F4E"
+              iconBg="#EAF2E8"
+              iconFg="#1F7A3D"
             />
 
             <Toggle
@@ -429,8 +429,8 @@ export default function SettingsPage() {
               checked={soundAlert}
               onChange={setSoundAlert}
               icon={Bell}
-              iconBg="#FFF4D8"
-              iconFg="#A27A13"
+              iconBg="#FDF1D9"
+              iconFg="#B0842A"
             />
           </div>
         </div>
@@ -441,11 +441,11 @@ export default function SettingsPage() {
 
         <div
           className="
-            rounded-2xl
-            border border-[#E6D7B4]
+            rounded-[24px]
+            border border-[#E9E1CA]
             bg-gradient-to-r
-            from-[#FFF9ED]
-            to-[#FBF7EC]
+            from-[#FCFAF3]
+            to-[#EAF2E8]
             p-5
             md:p-6
           "
@@ -467,7 +467,7 @@ export default function SettingsPage() {
                 className="
                   w-11 h-11
                   rounded-full
-                  bg-[#F0DFA3]
+                  bg-[#FDF1D9]
                   flex
                   items-center
                   justify-center
@@ -476,16 +476,16 @@ export default function SettingsPage() {
               >
                 <ShieldCheck
                   size={19}
-                  className="text-[#76572B]"
+                  className="text-[#B0842A]"
                 />
               </div>
 
               <div>
-                <div className="text-[14px] font-semibold text-[#2B2620]">
+                <div className="text-[14px] font-semibold text-[#1F2B21]">
                   Save your settings
                 </div>
 
-                <div className="text-[12px] text-[#8A8477] mt-1">
+                <div className="text-[12px] text-[#939889] mt-1">
                   Connect your Google Sheet to persist these changes.
                 </div>
               </div>
@@ -505,13 +505,13 @@ export default function SettingsPage() {
                   justify-center
                   gap-2
                   rounded-xl
-                  bg-[#163B29]
+                  bg-[#1F4A2C]
                   text-white
                   text-[13px]
                   font-semibold
-                  opacity-90
+                  opacity-55
                   cursor-not-allowed
-                  shadow-[0_4px_12px_rgba(22,59,41,0.12)]
+                  shadow-[0_4px_12px_rgba(31,74,44,0.18)]
                 "
               >
                 <Save size={16} />
@@ -526,12 +526,12 @@ export default function SettingsPage() {
                   justify-center
                   gap-1.5
                   text-[10px]
-                  text-[#8A8477]
+                  text-[#939889]
                 "
               >
                 <LockKeyhole size={11} />
 
-                Changes are local until connected
+                Preview only · Saving is unavailable until connected
               </div>
             </div>
           </div>
@@ -543,9 +543,9 @@ export default function SettingsPage() {
 
         <div
           className="
-            rounded-2xl
-            border border-[#E4E5D9]
-            bg-[#F8F9F3]
+            rounded-[20px]
+            border border-[#DCEAD8]
+            bg-[#EAF2E8]
             px-5
             py-4
             flex
@@ -555,11 +555,11 @@ export default function SettingsPage() {
         >
           <Sparkles
             size={17}
-            className="text-[#7A8D52] shrink-0 mt-0.5"
+            className="text-[#1F7A3D] shrink-0 mt-0.5"
           />
 
-          <p className="text-[11px] text-[#6E705F] leading-5">
-            <span className="font-semibold text-[#405232]">
+          <p className="text-[11px] text-[#5C6B57] leading-5">
+            <span className="font-semibold text-[#1F4A2C]">
               Tip:
             </span>{" "}
             Once connected, your settings can be saved
