@@ -28,7 +28,7 @@ export default function ProductSection({ title, emoji, products, viewAllPath }) 
           >
             View All →
           </motion.button>
-</div>
+        </div>
 
         {/* Products grid */}
         {/* 
@@ -38,11 +38,12 @@ export default function ProductSection({ title, emoji, products, viewAllPath }) 
           - 'lg:grid-cols-4' handles actual laptop screens dynamically.
         */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-          {products.map(product => (
-            <ProductCard 
-              key={product.id} 
-              product={product} 
-              compact={products.length > 5} 
+          {products.map((product, idx) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={idx}
+              compact={products.length > 5}
             />
           ))}
         </div>

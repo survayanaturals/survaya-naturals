@@ -1,28 +1,70 @@
 import React, { useState } from "react";
 import {
   Search, Plus, Pencil, Trash2, X, Tag, IndianRupee, Package,
-  Image as ImageIcon, Eye, EyeOff,
+  Image as ImageIcon, Eye, EyeOff, Hash,
 } from "lucide-react";
 import { useProducts } from "../data/UseProducts";
 import { IMAGE_REGISTRY, IMAGE_KEY_LABELS, IMAGE_KEYS } from "../data/ImageRegistry";
 import { SkeletonGrid } from "./SkelotonCard";
 
-const CATEGORIES = ["biscuits", "cakes", "chocolates"];
+// Category → ID prefix mapping, matching src/data/products.js exactly.
+// If you add a category to products.js, add it here too so the Dashboard
+// can generate matching IDs (BIS-001, TTC-002, etc.).
+const CATEGORY_CONFIG = [
+  { value: "biscuits", label: "Biscuits", prefix: "BIS" },
+  { value: "tea-time-cakes", label: "Tea-Time Cakes", prefix: "TTC" },
+  { value: "cakes", label: "Celebration Cakes & Slices", prefix: "CAK" },
+  { value: "chocolates", label: "Chocolates", prefix: "CHO" },
+  { value: "gift-boxes", label: "Gift & Snack Boxes", prefix: "BOX" },
+  { value: "millet-powders", label: "Millet Powders", prefix: "MIL" },
+  { value: "traditional-treats", label: "Traditional Treats", prefix: "TRD" },
+];
 
-const emptyDraft = () => ({
-  id: "",
-  name: "",
-  category: "biscuits",
-  deliveryZone: "",
-  emoji: "",
-  startingPrice: "",
-  originalPrice: "",
-  description: [""],
-  imageKey: IMAGE_KEYS[0] || "",
-  weights: [{ label: "", price: "", mrp: "" }],
-  badge: "",
-  active: true,
-});
+const CATEGORIES = CATEGORY_CONFIG.map((c) => c.value);
+const getCategoryConfig = (category) =>
+  CATEGORY_CONFIG.find((c) => c.value === category) || CATEGORY_CONFIG[0];
+
+// Finds the next free ID + card number for a category, based on existing
+// products already saved. E.g. if BIS-001..BIS-004 exist, returns BIS-005.
+function getNextIdentity(category, products) {
+  const { prefix } = getCategoryConfig(category);
+  const inCategory = products.filter((p) => p.category === category);
+
+  const usedNumbers = inCategory
+    .map((p) => {
+      const match = /-(\d+)$/.exec(p.id || p.sku || "");
+      return match ? parseInt(match[1], 10) : 0;
+    })
+    .filter((n) => !Number.isNaN(n));
+
+  const nextNum = (usedNumbers.length ? Math.max(...usedNumbers) : 0) + 1;
+  const padded = String(nextNum).padStart(3, "0");
+
+  return {
+    id: `${prefix}-${padded}`,
+    sku: `${prefix}-${padded}`,
+    cardNumber: String(inCategory.length + 1).padStart(2, "0"),
+  };
+}
+
+const emptyDraft = (products) => {
+  const category = CATEGORIES[0];
+  const identity = getNextIdentity(category, products);
+  return {
+    ...identity,
+    name: "",
+    category,
+    deliveryZone: "",
+    emoji: "",
+    startingPrice: "",
+    originalPrice: "",
+    description: [""],
+    imageKey: IMAGE_KEYS[0] || "",
+    weights: [{ label: "", price: "", mrp: "" }],
+    badge: "",
+    active: true,
+  };
+};
 
 function ProductCard({ product, onEdit, onToggleActive, onDelete }) {
   const img = IMAGE_REGISTRY[product.imageKey];
@@ -33,18 +75,33 @@ function ProductCard({ product, onEdit, onToggleActive, onDelete }) {
 
   return (
     <div className={`bg-white rounded-xl border border-[#EDE7DC] overflow-hidden flex flex-col ${!product.active ? "opacity-50" : ""}`}>
-      <div className="h-36 bg-[#F1ECE1] flex items-center justify-center overflow-hidden">
+      <div className="relative h-36 bg-[#F1ECE1] flex items-center justify-center overflow-hidden">
         {img ? (
           <img src={img} alt={product.name} className="w-full h-full object-cover" />
         ) : (
           <ImageIcon size={28} className="text-[#B7B0A2]" />
+        )}
+        {/* Product ID badge — matches the ID stored in products.js / your Sheet */}
+        {(product.id || product.sku) && (
+          <span className="absolute top-2 left-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-[10px] font-mono font-semibold text-[#2B2620] px-2 py-0.5 rounded-md border border-[#EDE7DC]">
+            <Hash size={10} className="text-[#8A8477]" />
+            {product.id || product.sku}
+          </span>
+        )}
+        {product.cardNumber && (
+          <span className="absolute top-2 right-2 flex items-center justify-center h-6 w-6 rounded-full bg-[#16311F] text-white text-[10px] font-semibold">
+            {product.cardNumber}
+          </span>
         )}
       </div>
       <div className="p-3 flex flex-col gap-1.5 flex-1">
         <div className="flex items-start justify-between gap-2">
           <div className="text-sm font-medium text-[#2B2620] leading-snug">{product.emoji} {product.name}</div>
         </div>
-        <div className="text-[11px] text-[#8A8477] capitalize">{product.category}{product.deliveryZone ? ` · ${product.deliveryZone}` : ""}</div>
+        <div className="text-[11px] text-[#8A8477] capitalize">
+          {getCategoryConfig(product.category).label}
+          {product.deliveryZone ? ` · ${product.deliveryZone}` : ""}
+        </div>
         <div className="flex items-center gap-2 mt-1">
           <span className="text-sm font-semibold text-[#2B2620]">₹{product.startingPrice}</span>
           {product.originalPrice > product.startingPrice && (
@@ -73,7 +130,7 @@ function ProductCard({ product, onEdit, onToggleActive, onDelete }) {
   );
 }
 
-function ProductEditModal({ draft, setDraft, onClose, onSave, saving, error }) {
+function ProductEditModal({ draft, setDraft, products, isNew, onClose, onSave, saving, error }) {
   const updateWeight = (i, field, value) => {
     const weights = draft.weights.map((w, idx) => (idx === i ? { ...w, [field]: value } : w));
     setDraft({ ...draft, weights });
@@ -88,12 +145,30 @@ function ProductEditModal({ draft, setDraft, onClose, onSave, saving, error }) {
   const addDescLine = () => setDraft({ ...draft, description: [...draft.description, ""] });
   const removeDescLine = (i) => setDraft({ ...draft, description: draft.description.filter((_, idx) => idx !== i) });
 
+  // Changing category on a NEW (unsaved) product re-generates its ID/cardNumber
+  // to match that category's numbering (e.g. switching Biscuits → Cakes
+  // renumbers BIS-005 → CAK-007). Editing an existing product never
+  // changes its ID, since cart/orders already reference it.
+  const handleCategoryChange = (category) => {
+    if (isNew) {
+      const identity = getNextIdentity(category, products);
+      setDraft({ ...draft, category, ...identity });
+    } else {
+      setDraft({ ...draft, category });
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative bg-white rounded-xl w-full max-w-lg shadow-xl max-h-[88vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#EDE7DC]">
-          <div className="text-sm font-semibold text-[#2B2620]">{draft.id ? "Edit Product" : "Add New Product"}</div>
+          <div>
+            <div className="text-sm font-semibold text-[#2B2620]">{isNew ? "Add New Product" : "Edit Product"}</div>
+            <div className="text-[11px] text-[#8A8477] font-mono mt-0.5">
+              ID: {draft.id} {isNew && <span className="text-[#B7B0A2]">(auto-generated)</span>}
+            </div>
+          </div>
           <button onClick={onClose}><X size={16} className="text-[#8A8477]" /></button>
         </div>
 
@@ -114,11 +189,16 @@ function ProductEditModal({ draft, setDraft, onClose, onSave, saving, error }) {
               <label className="text-xs text-[#8A8477] block mb-1">Category</label>
               <select
                 value={draft.category}
-                onChange={(e) => setDraft({ ...draft, category: e.target.value })}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                 className="w-full border border-[#EDE7DC] rounded-lg px-3 py-2 text-sm bg-white"
               >
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                {CATEGORY_CONFIG.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
+              {!isNew && (
+                <p className="text-[10px] text-[#B7B0A2] mt-1">
+                  Changing category keeps this product's existing ID ({draft.id}).
+                </p>
+              )}
             </div>
             <div>
               <label className="text-xs text-[#8A8477] block mb-1">Emoji</label>
@@ -244,15 +324,26 @@ export default function ProductsPage() {
   const { products, loading, saveProduct, deleteProduct } = useProducts();
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState(null);
+  const [isNewDraft, setIsNewDraft] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const filtered = products.filter((p) => {
     const q = search.trim().toLowerCase();
-    return !q || p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+    return (
+      !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      (p.id || p.sku || "").toLowerCase().includes(q)
+    );
   });
 
-  const openNew = () => { setDraft(emptyDraft()); setError(""); };
+  const openNew = () => {
+    setDraft(emptyDraft(products));
+    setIsNewDraft(true);
+    setError("");
+  };
+
   const openEdit = (product) => {
     setDraft({
       ...product,
@@ -261,6 +352,7 @@ export default function ProductsPage() {
       description: product.description.length ? product.description : [""],
       weights: product.weights.length ? product.weights.map((w) => ({ label: w.label, price: String(w.price), mrp: w.mrp !== undefined ? String(w.mrp) : "" })) : [{ label: "", price: "", mrp: "" }],
     });
+    setIsNewDraft(false);
     setError("");
   };
 
@@ -269,6 +361,8 @@ export default function ProductsPage() {
     setError("");
     const payload = {
       ...draft,
+      // Keep id/sku in sync — both should always match for this product.
+      sku: draft.id,
       startingPrice: Number(draft.startingPrice) || 0,
       originalPrice: draft.originalPrice === "" ? null : Number(draft.originalPrice),
       description: draft.description.filter((d) => d.trim()),
@@ -289,7 +383,7 @@ export default function ProductsPage() {
   };
 
   const handleDelete = async (product) => {
-    if (!window.confirm(`Delete "${product.name}"? This can't be undone.`)) return;
+    if (!window.confirm(`Delete "${product.name}" (${product.id || product.sku})? This can't be undone.`)) return;
     await deleteProduct(product.id);
   };
 
@@ -318,7 +412,7 @@ export default function ProductsPage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search products…"
+              placeholder="Search by name, ID, or category…"
               className="text-sm outline-none bg-transparent w-full placeholder:text-[#B7B0A2]"
             />
           </div>
@@ -329,23 +423,44 @@ export default function ProductsPage() {
       </header>
 
       <section className="flex-1 px-8 py-6 min-h-0 overflow-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} onEdit={openEdit} onToggleActive={handleToggleActive} onDelete={handleDelete} />
-          ))}
-          {filtered.length === 0 && (
-            <div className="col-span-full text-center py-16 text-[#8A8477] text-sm">
-              <Package size={28} className="mx-auto mb-2 opacity-50" />
-              No products yet — click "Add Product" to create your first one.
-            </div>
-          )}
-        </div>
+        {filtered.length === 0 ? (
+          <div className="text-center py-16 text-[#8A8477] text-sm">
+            <Package size={28} className="mx-auto mb-2 opacity-50" />
+            {search ? "No products match your search." : 'No products yet — click "Add Product" to create your first one.'}
+          </div>
+        ) : (
+          CATEGORY_CONFIG.map(({ value, label, prefix }) => {
+            const categoryProducts = filtered.filter((p) => p.category === value);
+            if (categoryProducts.length === 0) return null;
+
+            return (
+              <div key={value} className="mb-8 last:mb-0">
+                <div className="flex items-center gap-2 mb-3">
+                  <h2 className="text-sm font-semibold text-[#1F3D2C]">{label}</h2>
+                  <span className="text-[10px] font-mono text-[#B7B0A2] bg-[#F1ECE1] px-1.5 py-0.5 rounded">
+                    {prefix}
+                  </span>
+                  <span className="text-[11px] text-[#8A8477]">
+                    {categoryProducts.length} product{categoryProducts.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {categoryProducts.map((p) => (
+                    <ProductCard key={p.id} product={p} onEdit={openEdit} onToggleActive={handleToggleActive} onDelete={handleDelete} />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
       </section>
 
       {draft && (
         <ProductEditModal
           draft={draft}
           setDraft={setDraft}
+          products={products}
+          isNew={isNewDraft}
           onClose={() => setDraft(null)}
           onSave={handleSave}
           saving={saving}

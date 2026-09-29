@@ -35,9 +35,11 @@ import S2 from "../components/Banner/Snack BOX 2.webp";
 import S3 from "../components/Banner/Snack BOX 3.webp";
 import S4 from "../components/Banner/Snack BOX 4.webp";
 
+// Stable IDs are used by cart/orders; cardNumber restarts in each section.
+
 export const biscuits = [
   {
-    id: "b1",
+    id: "BIS-001",
     name: "Golden Almond Ragi Cookies",
     category: "biscuits",
     deliveryZone: "Rajahmundry",
@@ -48,14 +50,21 @@ export const biscuits = [
       "Wholesome ragi biscuits loaded with badam (almonds). Crunchy, nutritious, and made with love.",
     image: B1,
     weights: [
-      { label: "200g", price: 169, mrp: 199 },
-      { label: "400g", price: 319, mrp: 375 },
-      { label: "800g", price: 599, mrp: 705 },
+      { label: "200g", price: 169, mrp: 199, originalPrice: 199 },
+      { label: "400g", price: 319, mrp: 375, originalPrice: 375 },
+      { label: "800g", price: 599, mrp: 705, originalPrice: 705 },
     ],
     badge: "Bestseller",
+    cardNumber: "01",
+    sku: "BIS-001",
+    benefits: [
+      { label: "Ragi Goodness", icon: "wheat" },
+      { label: "Made with Almonds", icon: "nut" },
+      { label: "Homemade", icon: "heart" },
+    ],
   },
   {
-    id: "b2",
+    id: "BIS-002",
     name: "Rustic Ragi Delights ( Biscuits )",
     category: "biscuits",
     deliveryZone: "Rajahmundry",
@@ -66,13 +75,21 @@ export const biscuits = [
       "Classic homemade ragi biscuits. Healthy, crispy, and perfect with your morning chai.",
     image: B2,
     weights: [
-      { label: "250g", price: 149, mrp: 199 },
-      { label: "500g", price: 298, mrp: 397 },
+      { label: "250g", price: 149, mrp: 199, originalPrice: 199 },
+      { label: "500g", price: 298, mrp: 397, originalPrice: 397 },
     ],
     badge: "Bestseller",
+    cardNumber: "02",
+    sku: "BIS-002",
+    benefits: [
+      { label: "Made with Ragi", icon: "wheat" },
+      { label: "Crispy Texture", icon: "leaf" },
+      { label: "Tea-Time Snack", icon: "heart" },
+    ],
+    displayName: "Rustic Ragi Delights",
   },
   {
-    id: "b3",
+    id: "BIS-003",
     name: "Coconut Millet Crunch",
     category: "biscuits",
     deliveryZone: "Rajahmundry",
@@ -83,13 +100,20 @@ export const biscuits = [
       "Ragi biscuits with the tropical goodness of coconut. A delightful healthy treat.",
     image: B3,
     weights: [
-      { label: "250g", price: 149, mrp: 199 },
-      { label: "500g", price: 298, mrp: 397 },
+      { label: "250g", price: 149, mrp: 199, originalPrice: 199 },
+      { label: "500g", price: 298, mrp: 397, originalPrice: 397 },
     ],
     badge: "Bestseller",
+    cardNumber: "03",
+    sku: "BIS-003",
+    benefits: [
+      { label: "Ragi & Coconut", icon: "nut" },
+      { label: "Coconut Flavour", icon: "leaf" },
+      { label: "Homemade", icon: "heart" },
+    ],
   },
   {
-    id: "b4",
+    id: "BIS-004",
     name: "Choco Millet Magic",
     category: "biscuits",
     deliveryZone: "Rajahmundry",
@@ -100,80 +124,20 @@ export const biscuits = [
       "Healthy ragi meets indulgent chocolate chips. Kids love these guilt-free treats!",
     image: B4,
     weights: [
-      { label: "250g", price: 149, mrp: 199 },
-      { label: "500g", price: 298, mrp: 397 },
+      { label: "250g", price: 149, mrp: 199, originalPrice: 199 },
+      { label: "500g", price: 298, mrp: 397, originalPrice: 397 },
     ],
     badge: null,
+    cardNumber: "04",
+    sku: "BIS-004",
+    benefits: [
+      { label: "Made with Ragi", icon: "wheat" },
+      { label: "Chocolate Chips", icon: "heart" },
+      { label: "Homemade", icon: "leaf" },
+    ],
   },
   {
-    id: "b5",
-    name: "Healthy Bites Collection",
-    category: "biscuits",
-    deliveryZone: "Rajahmundry",
-    emoji: "🎁",
-    startingPrice: 149,
-    originalPrice: 199,
-    description: [
-      "Golden Almond Ragi Cookies [6 pcs]",
-      "Rustic Ragi Delights [6 pcs]",
-      "Coconut Millet Crunch [6 pcs]",
-      "Choco Millet Magic [6 pcs]",
-    ],
-    image: S1,
-    weights: [
-      { label: "250g", price: 149, mrp: 199 },
-      { label: "500g", price: 298, mrp: 397 },
-    ],
-    badge: "Combo Save 15% Off",
-  },
-  {
-    id: "b11",
-    name: "Aam Papad",
-    category: "chocolates",
-    deliveryZone: "Rajahmundry",
-    emoji: "💝",
-    startingPrice: 169,
-    originalPrice: 199,
-    description: "The Taste of Real Mangos.",
-    image: B11,
-    weights: [
-      { label: "1Kg", price: 169, mrp: 199 },
-      { label: "2Kg", price: 298, mrp: 351 },
-    ],
-    badge: "Summer Special",
-  },
-  {
-    id: "b7",
-    name: "Nutty Cocoa Indulgence",
-    category: "chocolates",
-    emoji: "🥜",
-    startingPrice: 149,
-    description:
-      "Creamy, premium homemade chocolates layered generously with roasted nuts.",
-    image: B6,
-    weights: [
-      { label: "250g", price: 149 },
-      { label: "500g", price: 298 },
-    ],
-    badge: " ",
-  },
-  {
-    id: "b8",
-    name: "Dry Fruit Chocolate Royale",
-    category: "chocolates",
-    emoji: "🍇",
-    startingPrice: 149,
-    description:
-      "Premium dark rich chocolate blend matching flawlessly with naturally sweet dried fruits.",
-    image: B7,
-    weights: [
-      { label: "250g", price: 149 },
-      { label: "500g", price: 298 },
-    ],
-    badge: "Coming Soon",
-  },
-  {
-    id: "b9",
+    id: "BIS-005",
     name: "Golden Almond Ragi Cookies (Bulk)",
     category: "biscuits",
     emoji: "🌰",
@@ -186,46 +150,21 @@ export const biscuits = [
       { label: "2Kg", price: 1889 },
     ],
     badge: "Coming Soon",
-  },
-  {
-    id: "b10",
-    name: "Premium Cocoa Indulgence Pack",
-    category: "chocolates",
-    emoji: "🍬",
-    startingPrice: 1049,
-    description:
-      "Artisan homemade chocolates crafted with premium cocoa and natural ingredients.",
-    image: B6,
-    weights: [
-      { label: "1Kg", price: 1049 },
-      { label: "2Kg", price: 1889 },
+    cardNumber: "05",
+    sku: "BIS-005",
+    benefits: [
+      { label: "Ragi Goodness", icon: "wheat" },
+      { label: "Almonds", icon: "nut" },
+      { label: "Bulk Pack", icon: "heart" },
     ],
-    badge: "Coming Soon",
-  },
-  {
-    id: "m1",
-    name: "All Millet Mix Powder",
-    category: "biscuits",
-    emoji: "🌰",
-    deliveryZone: "Rajahmundry",
-    startingPrice: 449,
-    originalPrice: 599,
-    description:
-      "Artisan homemade chocolates crafted with premium cocoa and natural ingredients.",
-    image: M1,
-    weights: [
-      { label: "1Kg", price: 449, mrp: 599 },
-      { label: "2Kg", price: 899, mrp: 1199 },
-    ],
-    badge: "Bestseller",
   },
 ];
 
-export const cakes = [
+export const teaTimeCakes = [
   {
-    id: "c1",
+    id: "TTC-001",
     name: "Tea Time Treat Collection",
-    category: "cakes",
+    category: "tea-time-cakes",
     emoji: "☕",
     startingPrice: 129,
     deliveryZone: "Rajahmundry",
@@ -236,12 +175,19 @@ export const cakes = [
       { label: "250g", price: 129 },
       { label: "500g", price: 258 },
     ],
-    badge: " ",
+    badge: null,
+    cardNumber: "01",
+    sku: "TTC-001",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c2",
+    id: "TTC-002",
     name: "Banana Bliss Cake",
-    category: "cakes",
+    category: "tea-time-cakes",
     emoji: "🍌",
     startingPrice: 179,
     description:
@@ -251,12 +197,19 @@ export const cakes = [
       { label: "500g", price: 179 },
       { label: "1kg", price: 358 },
     ],
-    badge: " ",
+    badge: null,
+    cardNumber: "02",
+    sku: "TTC-002",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c3",
+    id: "TTC-003",
     name: "Golden Grain Cake",
-    category: "cakes",
+    category: "tea-time-cakes",
     emoji: "🌾",
     startingPrice: 229,
     description:
@@ -267,11 +220,18 @@ export const cakes = [
       { label: "1kg", price: 458 },
     ],
     badge: "Coming Soon",
+    cardNumber: "03",
+    sku: "TTC-003",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c4",
+    id: "TTC-004",
     name: "Golden Grain Cake Slices",
-    category: "cakes",
+    category: "tea-time-cakes",
     emoji: "🍰",
     startingPrice: 120,
     description:
@@ -281,12 +241,19 @@ export const cakes = [
       { label: "250g", price: 120 },
       { label: "500g", price: 230 },
     ],
-    badge: " ",
+    badge: null,
+    cardNumber: "04",
+    sku: "TTC-004",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c5",
+    id: "TTC-005",
     name: "Millet Magic Cake",
-    category: "cakes",
+    category: "tea-time-cakes",
     emoji: "✨",
     startingPrice: 220,
     description:
@@ -297,11 +264,19 @@ export const cakes = [
       { label: "1kg", price: 420 },
     ],
     badge: "Coming Soon",
+    cardNumber: "05",
+    sku: "TTC-005",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
+    displayName: "Millet Magic Cake (Whole Wheat)",
   },
   {
-    id: "c6",
+    id: "TTC-006",
     name: "Millet Magic Cake Slices",
-    category: "cakes",
+    category: "tea-time-cakes",
     emoji: "🍰",
     startingPrice: 115,
     description:
@@ -312,9 +287,20 @@ export const cakes = [
       { label: "500g", price: 220 },
     ],
     badge: "Coming Soon",
+    cardNumber: "06",
+    sku: "TTC-006",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
+    displayName: "Millet Magic Cake Slices (Whole Wheat)",
   },
+];
+
+export const cakes = [
   {
-    id: "c7",
+    id: "CAK-001",
     name: "Chocolate Dream Cake",
     category: "cakes",
     emoji: "🎂",
@@ -327,9 +313,16 @@ export const cakes = [
       { label: "1kg", price: 999 },
     ],
     badge: "Coming Soon",
+    cardNumber: "01",
+    sku: "CAK-001",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c8",
+    id: "CAK-002",
     name: "Chocolate Dream Slices",
     category: "cakes",
     emoji: "🍫",
@@ -341,9 +334,16 @@ export const cakes = [
       { label: "1kg", price: 620 },
     ],
     badge: "Coming Soon",
+    cardNumber: "02",
+    sku: "CAK-002",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c9",
+    id: "CAK-003",
     name: "Vanilla Dream Cake",
     category: "cakes",
     emoji: "🤍",
@@ -356,9 +356,16 @@ export const cakes = [
       { label: "1kg", price: 580 },
     ],
     badge: "Coming Soon",
+    cardNumber: "03",
+    sku: "CAK-003",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c10",
+    id: "CAK-004",
     name: "Vanilla Dream Slices",
     category: "cakes",
     emoji: "🍰",
@@ -371,9 +378,16 @@ export const cakes = [
       { label: "500g", price: 290 },
     ],
     badge: "Coming Soon",
+    cardNumber: "04",
+    sku: "CAK-004",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c11",
+    id: "CAK-005",
     name: "Rose Velvet Delight",
     category: "cakes",
     emoji: "🌹",
@@ -386,9 +400,16 @@ export const cakes = [
       { label: "1kg", price: 540 },
     ],
     badge: "Coming Soon",
+    cardNumber: "05",
+    sku: "CAK-005",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c12",
+    id: "CAK-006",
     name: "Rose Velvet Slices",
     category: "cakes",
     emoji: "🍰",
@@ -401,61 +422,259 @@ export const cakes = [
       { label: "500g", price: 280 },
     ],
     badge: "Coming Soon",
+    cardNumber: "06",
+    sku: "CAK-006",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
+  },
+];
+
+export const chocolates = [
+  {
+    id: "CHO-001",
+    name: "Nutty Cocoa Indulgence",
+    category: "chocolates",
+    emoji: "🥜",
+    startingPrice: 149,
+    description:
+      "Creamy, premium homemade chocolates layered generously with roasted nuts.",
+    image: B6,
+    weights: [
+      { label: "250g", price: 149 },
+      { label: "500g", price: 298 },
+    ],
+    badge: null,
+    cardNumber: "01",
+    sku: "CHO-001",
+    benefits: [
+      { label: "Chocolate", icon: "heart" },
+      { label: "Rich Flavour", icon: "leaf" },
+      { label: "Homemade", icon: "sprout" },
+    ],
   },
   {
-    id: "c13",
+    id: "CHO-002",
+    name: "Dry Fruit Chocolate Royale",
+    category: "chocolates",
+    emoji: "🍇",
+    startingPrice: 149,
+    description:
+      "Premium dark rich chocolate blend matching flawlessly with naturally sweet dried fruits.",
+    image: B7,
+    weights: [
+      { label: "250g", price: 149 },
+      { label: "500g", price: 298 },
+    ],
+    badge: "Coming Soon",
+    cardNumber: "02",
+    sku: "CHO-002",
+    benefits: [
+      { label: "Chocolate", icon: "heart" },
+      { label: "Rich Flavour", icon: "leaf" },
+      { label: "Homemade", icon: "sprout" },
+    ],
+  },
+  {
+    id: "CHO-003",
+    name: "Premium Cocoa Indulgence Pack",
+    category: "chocolates",
+    emoji: "🍬",
+    startingPrice: 1049,
+    description:
+      "Artisan homemade chocolates crafted with premium cocoa and natural ingredients.",
+    image: B6,
+    weights: [
+      { label: "1Kg", price: 1049 },
+      { label: "2Kg", price: 1889 },
+    ],
+    badge: "Coming Soon",
+    cardNumber: "03",
+    sku: "CHO-003",
+    benefits: [
+      { label: "Chocolate", icon: "heart" },
+      { label: "Rich Flavour", icon: "leaf" },
+      { label: "Homemade", icon: "sprout" },
+    ],
+  },
+];
+
+export const giftBoxes = [
+  {
+    id: "BOX-001",
+    name: "Healthy Bites Collection",
+    category: "gift-boxes",
+    deliveryZone: "Rajahmundry",
+    emoji: "🎁",
+    startingPrice: 149,
+    originalPrice: 199,
+    description:
+      "Golden Almond Ragi Cookies (6 pcs), Rustic Ragi Delights (6 pcs), Coconut Millet Crunch (6 pcs), Choco Millet Magic (6 pcs).",
+    image: S1,
+    weights: [
+      { label: "250g", price: 149, mrp: 199, originalPrice: 199 },
+      { label: "500g", price: 298, mrp: 397, originalPrice: 397 },
+    ],
+    badge: "Combo Save 15% Off",
+    cardNumber: "01",
+    sku: "BOX-001",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Made with Care", icon: "leaf" },
+      { label: "Thoughtful Treat", icon: "sprout" },
+    ],
+  },
+  {
+    id: "BOX-002",
     name: "Bakery Delights Box",
-    category: "cakes",
+    category: "gift-boxes",
     emoji: "🍰",
     startingPrice: 145,
     description: `Marble Cake Slice [4]
-                  Puff Pastry[2]
-                  Chocolate Muffin / Cupcake[3]
-                  Vanilla Muffin / Plain Cupcake[3]`,
+                    Puff Pastry[2]
+                    Chocolate Muffin / Cupcake[3]
+                    Vanilla Muffin / Plain Cupcake[3]`,
     image: S2,
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
     ],
     badge: "Coming Soon",
+    cardNumber: "02",
+    sku: "BOX-002",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c14",
+    id: "BOX-003",
     name: "Signature Bakery Box",
-    category: "cakes",
+    category: "gift-boxes",
     emoji: "🍰",
     startingPrice: 145,
     description: `Donuts [2]
-                  Chocolate Muffins [4]
-                  Stuffed Bun [2]
-                  Marble Cake Slice[4]`,
+                    Chocolate Muffins [4]
+                    Stuffed Bun [2]
+                    Marble Cake Slice[4]`,
     image: S3,
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
     ],
     badge: "Coming Soon",
+    cardNumber: "03",
+    sku: "BOX-003",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
   {
-    id: "c15",
+    id: "BOX-004",
     name: "Gourmet Cookie Box",
-    category: "cakes",
+    category: "gift-boxes",
     emoji: "🍰",
     startingPrice: 145,
     description: `Muffins [4 ]
-                  Red Velvet Cookies [4]
-                  Chocolate Chip Cookies [4]
-                  Brownies[4]`,
+                    Red Velvet Cookies [4]
+                    Chocolate Chip Cookies [4]
+                    Brownies[4]`,
     image: S4,
     weights: [
       { label: "250g", price: 145 },
       { label: "500g", price: 280 },
     ],
     badge: "Coming Soon",
+    cardNumber: "04",
+    sku: "BOX-004",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Freshly Prepared", icon: "leaf" },
+      { label: "Made with Care", icon: "sprout" },
+    ],
   },
 ];
 
-export const allProducts = [...biscuits, ...cakes];
+export const milletPowders = [
+  {
+    id: "MIL-001",
+    name: "All Millet Mix Powder",
+    category: "millet-powders",
+    emoji: "🌰",
+    deliveryZone: "Rajahmundry",
+    startingPrice: 449,
+    originalPrice: 599,
+    description: "Mixed millet powder for everyday cooking and recipes.",
+    image: M1,
+    weights: [
+      { label: "1Kg", price: 449, mrp: 599, originalPrice: 599 },
+      { label: "2Kg", price: 899, mrp: 1199, originalPrice: 1199 },
+    ],
+    badge: "Bestseller",
+    cardNumber: "01",
+    sku: "MIL-001",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Made with Care", icon: "leaf" },
+      { label: "Thoughtful Treat", icon: "sprout" },
+    ],
+  },
+];
+
+export const traditionalTreats = [
+  {
+    id: "TRD-001",
+    name: "Aam Papad",
+    category: "traditional-treats",
+    deliveryZone: "Rajahmundry",
+    emoji: "💝",
+    startingPrice: 169,
+    originalPrice: 199,
+    description: "The Taste of Real Mangos.",
+    image: B11,
+    weights: [
+      { label: "1Kg", price: 169, mrp: 199, originalPrice: 199 },
+      { label: "2Kg", price: 298, mrp: 351, originalPrice: 351 },
+    ],
+    badge: "Summer Special",
+    cardNumber: "01",
+    sku: "TRD-001",
+    benefits: [
+      { label: "Homemade", icon: "heart" },
+      { label: "Made with Care", icon: "leaf" },
+      { label: "Thoughtful Treat", icon: "sprout" },
+    ],
+  },
+];
+
+export const allProducts = [
+  ...biscuits,
+  ...teaTimeCakes,
+  ...cakes,
+  ...chocolates,
+  ...giftBoxes,
+  ...milletPowders,
+  ...traditionalTreats,
+];
+
+export const productSections = [
+  { id: "biscuits", title: "Healthy Biscuits", products: biscuits },
+  { id: "tea-time-cakes", title: "Tea-Time Cakes", products: teaTimeCakes },
+  { id: "cakes", title: "Celebration Cakes & Slices", products: cakes },
+  { id: "chocolates", title: "Homemade Chocolates", products: chocolates },
+  { id: "gift-boxes", title: "Gift & Snack Boxes", products: giftBoxes },
+  { id: "millet-powders", title: "Millet Powders", products: milletPowders },
+  {
+    id: "traditional-treats",
+    title: "Traditional Treats",
+    products: traditionalTreats,
+  },
+];
 
 export const testimonials = [
   {
