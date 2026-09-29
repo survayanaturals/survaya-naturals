@@ -129,7 +129,7 @@ export default function Shop() {
               transition={{ duration: 0.24 }}
               className={GRID}
             >
-              {products.map(product => <ProductCard key={product.id} product={product} />)}
+              {products.map(product => <ProductCard key={product.id} product={product} index={index} />)}
             </motion.div>
           </AnimatePresence>
         ) : (

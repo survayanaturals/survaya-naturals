@@ -33,7 +33,7 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
   const [isAnimating, setIsAnimating] = useState(false)
   const [ingredientsOpen, setIngredientsOpen] = useState(false)
   const [weightMenuOpen, setWeightMenuOpen] = useState(false)
-  const { addItem, toggleCart, triggerFly } = useCart()
+  const { addItem, openCart, triggerFly } = useCart()
   const btnRef = useRef(null)
   const weightMenuRef = useRef(null)
 
@@ -94,7 +94,7 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
     addItem(product, selectedWeight)
     setIsAnimating(true)
     triggerFly?.(btnRef.current, product.image)
-    toggleCart?.()
+    openCart?.()
     toast.success(`${product.name} (${selectedWeight.label}) added to cart!`, {
       className: 'toast-bakery', icon: '🛒', duration: 2000, position: 'bottom-right',
     })

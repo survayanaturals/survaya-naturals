@@ -68,7 +68,7 @@ function CollectionSection({ id, eyebrow, title, blurb, icon: Icon, products = [
         ) : shown.length > 0 ? (
           <div className={GRID}>
             {shown.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} index={index} />
             ))}
           </div>
         ) : (
