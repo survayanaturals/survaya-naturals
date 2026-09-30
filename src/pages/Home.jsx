@@ -67,7 +67,7 @@ function CollectionSection({ id, eyebrow, title, blurb, icon: Icon, products = [
           <ProductGridSkeleton count={HOME_LIMIT} columns={SKELETON_COLUMNS} />
         ) : shown.length > 0 ? (
           <div className={GRID}>
-            {shown.map(product => (
+            {shown.map((product, index) => (
               <ProductCard key={product.id} product={product} index={index} />
             ))}
           </div>
