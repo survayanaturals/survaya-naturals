@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
-  ArrowRight, CakeSlice, Check, CheckCircle2, Gift, Heart,
+  ArrowRight, CakeSlice, Check, CheckCircle2, Heart,
   Leaf, MessageCircle, Minus, Plus, ShoppingBag, Sparkles,
-  Truck, ShieldCheck, Coffee, ChevronLeft, ChevronRight,
+  Truck, ShieldCheck, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import { useLiveProducts } from '../data/useLiveProducts'
@@ -35,16 +35,16 @@ const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior:
 
 export default function Cakes() {
   const { addItem, closeCart } = useCart()
-  const { cakes = [], loading } = useLiveProducts()
+  // Tea-time cakes and celebration cakes are separate categories in the sheet; show both here.
+  const { cakes: celebrationCakes = [], teaTimeCakes = [], loading } = useLiveProducts()
+  const cakes = [...teaTimeCakes, ...celebrationCakes]
+
   const [selectedCakeId, setSelectedCakeId] = useState(cakeOptions[0].id)
   const [size, setSize] = useState('half')
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
-  const [favorites, setFavorites] = useState([])
   const [collectionPage, setCollectionPage] = useState(0)
-  const toggleFavorite = (id) => setFavorites((prev) =>
-    prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-  )
+
   const visibleCakes = cakes.slice(collectionPage * 5, collectionPage * 5 + 5)
   const totalPages = Math.max(1, Math.ceil(cakes.length / 5))
   const selectedCake = cakeOptions.find((cake) => cake.id === selectedCakeId) || cakeOptions[0]
@@ -113,28 +113,28 @@ export default function Cakes() {
           </div>
           {/* Stamp remains separate from the image so it scales cleanly on mobile. */}
           <div
-  aria-label="Freshly baked"
-  className="
-    relative z-20 mt-5 mr-5
-    flex h-24 w-24 shrink-0
-    rotate-[-12deg]
-    flex-col items-center justify-center self-end
-    rounded-full border-[3px] border-dashed
-    border-[#A9824E]
-    bg-[#FFF9EA]/95 text-[#8B6639]
+            aria-label="Freshly baked"
+            className="
+              relative z-20 mt-5 mr-5
+              flex h-24 w-24 shrink-0
+              rotate-[-12deg]
+              flex-col items-center justify-center self-end
+              rounded-full border-[3px] border-dashed
+              border-[#A9824E]
+              bg-[#FFF9EA]/95 text-[#8B6639]
 
-    sm:absolute sm:right-[3%] sm:top-[48%]
-    sm:mt-0 sm:mr-0 sm:h-32 sm:w-32
+              sm:absolute sm:right-[3%] sm:top-[48%]
+              sm:mt-0 sm:mr-0 sm:h-32 sm:w-32
 
-    lg:right-[15%] lg:top-[43%]
-    lg:h-28 lg:w-28
+              lg:right-[15%] lg:top-[43%]
+              lg:h-28 lg:w-28
 
-    xl:right-[14%] xl:top-[43%]
-    xl:h-28 xl:w-28
+              xl:right-[14%] xl:top-[43%]
+              xl:h-28 xl:w-28
 
-    lg:shadow-[0_12px_30px_rgba(86,65,38,0.13)]
-  "
->
+              lg:shadow-[0_12px_30px_rgba(86,65,38,0.13)]
+            "
+          >
             <div className="flex h-[88%] w-[88%] flex-col items-center justify-center rounded-full border border-[#A9824E]">
               <span className="text-[10px] font-black tracking-[0.12em] sm:text-[13px] lg:text-[11px] xl:text-[12px]">FRESHLY</span><CakeSlice size={27} strokeWidth={1.6} className="my-1 lg:my-0.5 sm:h-[35px] sm:w-[35px] lg:h-[27px] lg:w-[27px] xl:h-[30px] xl:w-[30px]"/><span className="text-[10px] font-black tracking-[0.16em] sm:text-[13px] lg:text-[11px] xl:text-[12px]">BAKED</span>
             </div>
@@ -167,22 +167,22 @@ export default function Cakes() {
         </div>
       </section>
 
-      {/* LIVE COLLECTION: existing ProductCard keeps your current product data and cart behavior. */}
+      {/* LIVE COLLECTION: ProductCard keeps your current product data and cart behavior. */}
       <section id="cake-collection" className="mx-auto max-w-[1390px] scroll-mt-10 px-4 pb-16 sm:px-8 lg:pb-20">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.24em] text-[#768C65]">Made with love</p><h2 className="font-playfair text-3xl font-bold sm:text-5xl">Our Cake Collection <span className="text-[#8CA27B]">✳</span></h2><p className="mt-2 text-sm text-[#8A7566]">Discover our cakes, slices and tea-time favourites.</p></div><button type="button" onClick={() => scrollTo('custom-cakes')} className="inline-flex items-center gap-2 rounded-full border border-[#DDE2D4] px-5 py-2.5 text-xs font-bold hover:bg-[#F0F4E9]">Custom order <ArrowRight size={15} /></button></div>
-        {loading ? <ProductGridSkeleton count={8} columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4" /> : cakes.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-5">
-            {visibleCakes.map((cake) => (
+        {loading ? (
+          <ProductGridSkeleton count={8} columns="grid-cols-2 sm:grid-cols-3 md:grid-cols-4" />
+        ) : cakes.length ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-5">
+            {visibleCakes.map((cake, index) => (
               <div key={cake.id} className="relative min-w-0">
-                <ProductCard product={cake} />
-                {/* Visual favourite toggle. ProductCard keeps its own cart behaviour. */}
-                <button type="button" aria-label={favorites.includes(cake.id) ? `Unlike ${cake.name}` : `Like ${cake.name}`}
-                  aria-pressed={favorites.includes(cake.id)} onClick={() => toggleFavorite(cake.id)}
-                  className="absolute right-2 top-2 z-20 grid h-9 w-9 place-items-center rounded-full bg-white/95 shadow-md transition hover:scale-105">
-                  <Heart size={18} className={favorites.includes(cake.id) ? 'fill-red-500 text-red-500' : 'text-[#75442E]'} />
-                </button>
+                <ProductCard product={cake} index={index} />
               </div>
             ))}
-          </div> : <div className="rounded-2xl border border-dashed border-[#DDE2D4] bg-white p-12 text-center"><CakeSlice className="mx-auto mb-3 text-[#7C925B]" /><p className="font-playfair text-xl font-bold">Fresh cakes coming soon</p></div>}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-[#DDE2D4] bg-white p-12 text-center"><CakeSlice className="mx-auto mb-3 text-[#7C925B]" /><p className="font-playfair text-xl font-bold">Fresh cakes coming soon</p></div>
+        )}
         {cakes.length > 5 && !loading && (
           <div className="mt-6 flex justify-center gap-3">
             <button type="button" aria-label="Previous cakes" disabled={collectionPage === 0}

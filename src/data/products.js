@@ -1,8 +1,5 @@
 export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "";
 /* Banner Images*/
-import D1 from "../components/Banner/D1.webp";
-import D2 from "../components/Banner/D2.webp";
-import D3 from "../components/Banner/D3.webp";
 /* Biscuits images import list   */
 import B1 from "../components/Banner/Ragi Badam Biscuits.webp";
 import B2 from "../components/Banner/Ragi Biscuits.webp";
@@ -11,9 +8,7 @@ import B4 from "../components/Banner/Ragi Choco Chip Biscuits.webp";
 
 import B6 from "../components/Banner/Chocolates Nutes.webp";
 import B7 from "../components/Banner/Chocolates Dry fruits.webp";
-import B11 from "../components/Banner/Aam papad.webp";
 /* Millets power image import list */
-import M1 from "../components/Banner/Six millets mixed power.webp";
 
 /* Cakes image import list */
 import C1 from "../components/Banner/Tea Time Cakes.webp";
@@ -30,10 +25,6 @@ import C11 from "../components/Banner/Rose milk Cake.webp";
 import C12 from "../components/Banner/Rose milk Cake Slice.webp";
 
 /* Scacks Box import list */
-import S1 from "../components/Banner/Snack BOX 1.webp";
-import S2 from "../components/Banner/Snack BOX 2.webp";
-import S3 from "../components/Banner/Snack BOX 3.webp";
-import S4 from "../components/Banner/Snack BOX 4.webp";
 
 // Stable IDs are used by cart/orders; cardNumber restarts in each section.
 
@@ -501,165 +492,11 @@ export const chocolates = [
   },
 ];
 
-export const giftBoxes = [
-  {
-    id: "BOX-001",
-    name: "Healthy Bites Collection",
-    category: "gift-boxes",
-    deliveryZone: "Rajahmundry",
-    emoji: "🎁",
-    startingPrice: 149,
-    originalPrice: 199,
-    description:
-      "Golden Almond Ragi Cookies (6 pcs), Rustic Ragi Delights (6 pcs), Coconut Millet Crunch (6 pcs), Choco Millet Magic (6 pcs).",
-    image: S1,
-    weights: [
-      { label: "250g", price: 149, mrp: 199, originalPrice: 199 },
-      { label: "500g", price: 298, mrp: 397, originalPrice: 397 },
-    ],
-    badge: "Combo Save 15% Off",
-    cardNumber: "01",
-    sku: "BOX-001",
-    benefits: [
-      { label: "Homemade", icon: "heart" },
-      { label: "Made with Care", icon: "leaf" },
-      { label: "Thoughtful Treat", icon: "sprout" },
-    ],
-  },
-  {
-    id: "BOX-002",
-    name: "Bakery Delights Box",
-    category: "gift-boxes",
-    emoji: "🍰",
-    startingPrice: 145,
-    description: `Marble Cake Slice [4]
-                    Puff Pastry[2]
-                    Chocolate Muffin / Cupcake[3]
-                    Vanilla Muffin / Plain Cupcake[3]`,
-    image: S2,
-    weights: [
-      { label: "250g", price: 145 },
-      { label: "500g", price: 280 },
-    ],
-    badge: "Coming Soon",
-    cardNumber: "02",
-    sku: "BOX-002",
-    benefits: [
-      { label: "Homemade", icon: "heart" },
-      { label: "Freshly Prepared", icon: "leaf" },
-      { label: "Made with Care", icon: "sprout" },
-    ],
-  },
-  {
-    id: "BOX-003",
-    name: "Signature Bakery Box",
-    category: "gift-boxes",
-    emoji: "🍰",
-    startingPrice: 145,
-    description: `Donuts [2]
-                    Chocolate Muffins [4]
-                    Stuffed Bun [2]
-                    Marble Cake Slice[4]`,
-    image: S3,
-    weights: [
-      { label: "250g", price: 145 },
-      { label: "500g", price: 280 },
-    ],
-    badge: "Coming Soon",
-    cardNumber: "03",
-    sku: "BOX-003",
-    benefits: [
-      { label: "Homemade", icon: "heart" },
-      { label: "Freshly Prepared", icon: "leaf" },
-      { label: "Made with Care", icon: "sprout" },
-    ],
-  },
-  {
-    id: "BOX-004",
-    name: "Gourmet Cookie Box",
-    category: "gift-boxes",
-    emoji: "🍰",
-    startingPrice: 145,
-    description: `Muffins [4 ]
-                    Red Velvet Cookies [4]
-                    Chocolate Chip Cookies [4]
-                    Brownies[4]`,
-    image: S4,
-    weights: [
-      { label: "250g", price: 145 },
-      { label: "500g", price: 280 },
-    ],
-    badge: "Coming Soon",
-    cardNumber: "04",
-    sku: "BOX-004",
-    benefits: [
-      { label: "Homemade", icon: "heart" },
-      { label: "Freshly Prepared", icon: "leaf" },
-      { label: "Made with Care", icon: "sprout" },
-    ],
-  },
-];
-
-export const milletPowders = [
-  {
-    id: "MIL-001",
-    name: "All Millet Mix Powder",
-    category: "millet-powders",
-    emoji: "🌰",
-    deliveryZone: "Rajahmundry",
-    startingPrice: 449,
-    originalPrice: 599,
-    description: "Mixed millet powder for everyday cooking and recipes.",
-    image: M1,
-    weights: [
-      { label: "1Kg", price: 449, mrp: 599, originalPrice: 599 },
-      { label: "2Kg", price: 899, mrp: 1199, originalPrice: 1199 },
-    ],
-    badge: "Bestseller",
-    cardNumber: "01",
-    sku: "MIL-001",
-    benefits: [
-      { label: "Homemade", icon: "heart" },
-      { label: "Made with Care", icon: "leaf" },
-      { label: "Thoughtful Treat", icon: "sprout" },
-    ],
-  },
-];
-
-export const traditionalTreats = [
-  {
-    id: "TRD-001",
-    name: "Aam Papad",
-    category: "traditional-treats",
-    deliveryZone: "Rajahmundry",
-    emoji: "💝",
-    startingPrice: 169,
-    originalPrice: 199,
-    description: "The Taste of Real Mangos.",
-    image: B11,
-    weights: [
-      { label: "1Kg", price: 169, mrp: 199, originalPrice: 199 },
-      { label: "2Kg", price: 298, mrp: 351, originalPrice: 351 },
-    ],
-    badge: "Summer Special",
-    cardNumber: "01",
-    sku: "TRD-001",
-    benefits: [
-      { label: "Homemade", icon: "heart" },
-      { label: "Made with Care", icon: "leaf" },
-      { label: "Thoughtful Treat", icon: "sprout" },
-    ],
-  },
-];
-
 export const allProducts = [
   ...biscuits,
   ...teaTimeCakes,
   ...cakes,
   ...chocolates,
-  ...giftBoxes,
-  ...milletPowders,
-  ...traditionalTreats,
 ];
 
 export const productSections = [
@@ -667,13 +504,6 @@ export const productSections = [
   { id: "tea-time-cakes", title: "Tea-Time Cakes", products: teaTimeCakes },
   { id: "cakes", title: "Celebration Cakes & Slices", products: cakes },
   { id: "chocolates", title: "Homemade Chocolates", products: chocolates },
-  { id: "gift-boxes", title: "Gift & Snack Boxes", products: giftBoxes },
-  { id: "millet-powders", title: "Millet Powders", products: milletPowders },
-  {
-    id: "traditional-treats",
-    title: "Traditional Treats",
-    products: traditionalTreats,
-  },
 ];
 
 export const testimonials = [
@@ -718,34 +548,4 @@ export const features = [
   { icon: "🔥", label: "Freshly Baked" },
   { icon: "📦", label: "Secure Packaging" },
   { icon: "🚚", label: "Pan India Delivery" },
-];
-
-export const heroSlides = [
-  {
-    id: 1,
-    image: D1,
-    title: "Wholesome Treats,",
-    titleLine2: "Feel Good Snack Better.",
-    subtitle:
-      "Made with natural ingredients and no preservatives, our homemade cookies bring you delicious snacking with zero guilt and more goodness.",
-    cta: "Shop Our Goodness",
-  },
-  {
-    id: 2,
-    image: D2,
-    title: "Tea Time Cakes.",
-    titleLine2: "Made for Feel-Good Moments.",
-    subtitle:
-      "Homemade goodness made with wholesome ingredients, perfect for your everyday tea-time moments.",
-    cta: "Explore Cakes",
-  },
-  {
-    id: 3,
-    image: D3,
-    title: "Make Every Celebration",
-    titleLine2: "Feel Extra Special.",
-    subtitle:
-      "Beautiful homemade cakes made with care, bringing more joy to birthdays, milestones, and special moments.",
-    cta: "Order Your Cake",
-  },
 ];

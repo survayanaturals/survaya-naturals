@@ -112,7 +112,8 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
     >
       <div className="relative w-full overflow-hidden bg-[radial-gradient(circle_at_50%_36%,#FFF9E9_0%,#F2E6D1_62%,#E8D8BC_100%)] aspect-[1.35/1]">
         {!imgLoaded && <div className="shimmer absolute inset-0 z-10" />}
-        <img src={product.image} alt={product.name} loading="lazy" onLoad={() => setImgLoaded(true)}
+        {/* First four cards load immediately; the rest load as you scroll. */}
+        <img src={product.image} alt={product.name} loading={index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={() => setImgLoaded(true)}
           className={`h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.055] ${isComingSoon ? 'grayscale-[30%] opacity-65' : ''}`} />
         {/* Signature serial tag — restored without changing the card layout */}
         <div className="pointer-events-none absolute right-[5%] top-0 z-20 flex w-[34px] flex-col items-center rounded-b-full border-x border-b border-[#D7BE91] bg-[#FFF9EC]/95 px-1 pb-2 pt-3 text-[#8A683E] shadow-[0_3px_10px_rgba(53,38,19,.12)] backdrop-blur-sm sm:w-[38px]">

@@ -39,10 +39,11 @@ function BotanicalAccent({ className = '' }) {
 export default function Shop() {
   const reduceMotion = useReducedMotion()
   const [active, setActive] = useState('All')
-  const { allProducts, biscuits, cakes, loading } = useLiveProducts()
-  const products = active === 'All' ? allProducts : active === 'Biscuits' ? biscuits : cakes
+const { allProducts, biscuits, cakes, teaTimeCakes, loading } = useLiveProducts()
+const cakeProducts = [...teaTimeCakes, ...cakes]
+const products = active === 'All' ? allProducts : active === 'Biscuits' ? biscuits : cakeProducts
 
-  const counts = { All: allProducts?.length ?? 0, Biscuits: biscuits?.length ?? 0, Cakes: cakes?.length ?? 0 }
+const counts = { All: allProducts?.length ?? 0, Biscuits: biscuits?.length ?? 0, Cakes: cakeProducts.length }
 
   return (
     <main style={THEME} className="min-h-screen overflow-hidden bg-[var(--pearl)] font-lato text-[var(--text)]">
@@ -129,7 +130,7 @@ export default function Shop() {
               transition={{ duration: 0.24 }}
               className={GRID}
             >
-              {products.map(product => <ProductCard key={product.id} product={product} index={index} />)}
+              {products.map((product, index) => <ProductCard key={product.id} product={product} index={index} />)}
             </motion.div>
           </AnimatePresence>
         ) : (
