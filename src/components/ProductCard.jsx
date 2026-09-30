@@ -93,8 +93,7 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
     if (isComingSoon || !selectedWeight) return
     addItem(product, selectedWeight)
     setIsAnimating(true)
-    triggerFly?.(btnRef.current, product.image)
-    openCart?.()
+    triggerFly?.(btnRef.current)
     toast.success(`${product.name} (${selectedWeight.label}) added to cart!`, {
       className: 'toast-bakery', icon: '🛒', duration: 2000, position: 'bottom-right',
     })

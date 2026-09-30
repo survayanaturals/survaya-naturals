@@ -24,7 +24,7 @@ function cartReducer(state, action) {
       const existing = state.items.some(item => item.itemKey === itemKey)
       return {
         ...state,
-        isOpen: true,
+        // No longer forces isOpen: true — adding an item never auto-opens the drawer.
         items: existing
           ? state.items.map(item => item.itemKey === itemKey ? { ...item, qty: item.qty + 1 } : item)
           : [...state.items, { itemKey, product, selectedWeight, qty: 1 }],
@@ -71,7 +71,6 @@ export function CartProvider({ children }) {
   const cartIconRef = useRef(null)
   const [flights, setFlights] = useState([])
   const flightTimers = useRef(new Set())
-  const skipNextToggle = useRef(false)
 
   useEffect(() => {
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items)) }
@@ -83,41 +82,37 @@ export function CartProvider({ children }) {
     flightTimers.current.clear()
   }, [])
 
-  // Compatible with the existing FlyToCart component and ProductCard.
-  const triggerFly = useCallback((buttonEl, imageSrc) => {
-    const cartEl = cartIconRef.current
-    if (!buttonEl || !cartEl) return
-    const button = buttonEl.getBoundingClientRect()
-    const cart = cartEl.getBoundingClientRect()
-    const size = 58
+  // In-place "added" burst: pops and fades right at the button, no longer
+  // travels toward the cart icon. cartIconRef/imageSrc kept for compatibility
+  // but only the button's position is used now.
+  const triggerFly = useCallback((buttonEl) => {
+    if (!buttonEl) return
+    const rect = buttonEl.getBoundingClientRect()
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
     setFlights(previous => [...previous, {
       id,
-      imageSrc,
-      size,
-      start: { x: button.left + button.width / 2 - size / 2, y: button.top + button.height / 2 - size / 2 },
-      end: { x: cart.left + cart.width / 2 - size / 2, y: cart.top + cart.height / 2 - size / 2 },
+end: {
+       x: rect.left + rect.width / 2 - 24,
+              y: rect.top + rect.height / 2 - 24,
+},
+     size: 48,
     }])
     const timer = setTimeout(() => {
       setFlights(previous => previous.filter(flight => flight.id !== id))
       flightTimers.current.delete(timer)
-    }, 950)
+    }, 700)
     flightTimers.current.add(timer)
   }, [])
 
+  // addItem no longer touches drawer state at all — the drawer only opens
+  // when the customer explicitly clicks the cart icon (toggleCart/openCart).
   const addItem = useCallback((product, selectedWeight) => {
-    skipNextToggle.current = true
     dispatch({ type: 'ADD_ITEM', payload: { product, selectedWeight } })
-    // Clear after the current click, so future cart-icon clicks toggle normally.
-    queueMicrotask(() => { skipNextToggle.current = false })
   }, [])
   const removeItem = useCallback(itemKey => dispatch({ type: 'REMOVE_ITEM', payload: { itemKey } }), [])
   const updateQty = useCallback((itemKey, qty) => dispatch({ type: 'UPDATE_QTY', payload: { itemKey, qty } }), [])
   const clearCart = useCallback(() => dispatch({ type: 'CLEAR_CART' }), [])
-  const toggleCart = useCallback(() => {
-    if (skipNextToggle.current) { skipNextToggle.current = false; return }
-    dispatch({ type: 'TOGGLE_CART' })
-  }, [])
+  const toggleCart = useCallback(() => dispatch({ type: 'TOGGLE_CART' }), [])
   const openCart = useCallback(() => dispatch({ type: 'OPEN_CART' }), [])
   const closeCart = useCallback(() => dispatch({ type: 'CLOSE_CART' }), [])
 
