@@ -6,8 +6,8 @@ import OrderDashboard from '../Dashboard/DashboardShell'
 // IMPORTANT: These client-side values are only a temporary UI gate.
 // Vite environment variables are embedded in the browser bundle and are NOT secret.
 // Replace this check with server-side authentication before production deployment.
-const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || ''
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || ''
+const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME || 'Admin'
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Survaya@123'
 const AUTH_KEY = 'sn_admin_authed'
 
 /* Palette (colors only, layout unchanged)
