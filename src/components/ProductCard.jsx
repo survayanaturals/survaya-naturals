@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingBag, Check, ChevronDown, Clock, Leaf, X, ArrowUpRight } from 'lucide-react'
 import { useCart } from '../context/CartContext'
@@ -7,9 +7,78 @@ import toast from 'react-hot-toast'
 // Remembers the chosen weight per product, even if the card remounts.
 const selectionCache = new Map()
 
-const parseIngredients = (value) =>
-  Array.isArray(value) ? value.filter(Boolean) :
-  typeof value === 'string' ? value.split(',').map(v => v.trim()).filter(Boolean) : []
+/* ------------------------------------------------------------------
+   INGREDIENT PARSING
+   Reads ingredients from, in order:
+     1. product.ingredients (array or comma-separated string), if present
+     2. the Dashboard "Description" lines, e.g. "Butter — 90 g"
+------------------------------------------------------------------ */
+const UNIT = '(?:kg|mg|g|ml|l)'
+const SINGLE_LINE = new RegExp(`^(.*?)[\\s\\u2014\\u2013:\\-]+(\\d+(?:\\.\\d+)?)\\s*(${UNIT})\\.?$`, 'i')
+const ANY_QTY = new RegExp(`\\d+(?:\\.\\d+)?\\s*${UNIT}\\b`, 'gi')
+const INLINE_ITEM = new RegExp(
+  `([A-Za-z][^\\u2014\\u2013\\-:\\d]*?)\\s*[\\u2014\\u2013\\-:]?\\s*(\\d+(?:\\.\\d+)?)\\s*(${UNIT})\\b`,
+  'gi'
+)
+const isTotalName = (name) => /^total\b/i.test(name)
+
+function getIngredientData(product) {
+  const explicit = product.ingredients
+  if (explicit) {
+    const names = Array.isArray(explicit) ? explicit : String(explicit).split(',')
+    return {
+      items: names.map((n) => ({ name: String(n).trim() })).filter((i) => i.name),
+      total: null,
+    }
+  }
+
+  const raw = product.description
+  const lines = (Array.isArray(raw) ? raw : String(raw ?? '').split(/\r?\n|\|/))
+    .map((l) => String(l).replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+
+  let total = null
+  const singles = []
+  const combined = []
+
+  for (const line of lines) {
+    const qtyCount = (line.match(ANY_QTY) || []).length
+    if (!qtyCount) continue // not an ingredient line (e.g. a marketing sentence)
+
+    if (/^total\b/i.test(line)) {
+      const m = line.match(SINGLE_LINE)
+      if (m) total = { label: m[1].trim() || 'Total', qty: `${m[2]} ${m[3]}` }
+      continue
+    }
+    if (qtyCount >= 2) { combined.push(line); continue }
+
+    const m = line.match(SINGLE_LINE)
+    if (m && m[1].trim()) singles.push({ name: m[1].trim(), qty: `${m[2]} ${m[3]}` })
+  }
+
+  // Separate lines win. If only the long combined line exists, split it up.
+  let items = singles
+  if (!items.length) {
+    items = combined.flatMap((line) =>
+      [...line.matchAll(INLINE_ITEM)].map((m) => ({ name: m[1].trim(), qty: `${m[2]} ${m[3]}` }))
+    )
+  }
+
+  if (!total) {
+    const t = items.find((i) => isTotalName(i.name))
+    if (t) total = { label: t.name, qty: t.qty }
+  }
+
+  const seen = new Set()
+  items = items.filter((i) => {
+    const key = i.name.toLowerCase()
+    if (isTotalName(i.name) || seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
+  return { items, total }
+}
 
 function BotanicalSprig({ className = '' }) {
   return (
@@ -33,7 +102,7 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
   const [isAnimating, setIsAnimating] = useState(false)
   const [ingredientsOpen, setIngredientsOpen] = useState(false)
   const [weightMenuOpen, setWeightMenuOpen] = useState(false)
-  const { addItem, openCart, triggerFly } = useCart()
+  const { addItem, triggerFly } = useCart()
   const btnRef = useRef(null)
   const weightMenuRef = useRef(null)
 
@@ -54,8 +123,12 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
     (selectedWeightIdx === 0 ? product.originalPrice : 0) ?? 0
   )
   const discount = originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0
-  const ingredients = parseIngredients(product.ingredients)
-  // Product numbers are intentionally omitted for a cleaner editorial design.
+
+  const { items: ingredientItems, total: ingredientTotal } = useMemo(
+    () => getIngredientData(product),
+    [product]
+  )
+  const hasIngredients = ingredientItems.length > 0
 
   const pillWeights = weights.length > MAX_PILLS ? weights.slice(0, MAX_PILLS) : weights
   const extraWeights = weights.length > MAX_PILLS ? weights.slice(MAX_PILLS) : []
@@ -114,7 +187,7 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
         {/* First four cards load immediately; the rest load as you scroll. */}
         <img src={product.image} alt={product.name} loading={index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={() => setImgLoaded(true)}
           className={`h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.055] ${isComingSoon ? 'grayscale-[30%] opacity-65' : ''}`} />
-        {/* Signature serial tag — restored without changing the card layout */}
+        {/* Signature serial tag */}
         <div className="pointer-events-none absolute right-[5%] top-0 z-20 flex w-[34px] flex-col items-center rounded-b-full border-x border-b border-[#D7BE91] bg-[#FFF9EC]/95 px-1 pb-2 pt-3 text-[#8A683E] shadow-[0_3px_10px_rgba(53,38,19,.12)] backdrop-blur-sm sm:w-[38px]">
           <span className="font-playfair text-[12px] leading-none tracking-[.04em] sm:text-[13px]">{String(index + 1).padStart(2, '0')}</span>
           <Leaf size={13} strokeWidth={1.4} className="mt-1.5 rotate-[-25deg]" aria-hidden="true" />
@@ -135,7 +208,7 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
         <div className="border-b border-[#E7D8BE] pb-3">
           <p className="font-lato text-[10px] font-extrabold uppercase tracking-[.2em] leading-tight text-[#7E633D] sm:text-[11px]">Ingredients</p>
           <p className="mt-2 line-clamp-2 font-lato text-[11px] leading-relaxed text-[#705942] sm:text-[12px]">
-            {ingredients.length ? ingredients.join(' · ') : 'Ingredient details coming soon'}
+            {hasIngredients ? ingredientItems.map((i) => i.name).join(' · ') : 'Ingredient details coming soon'}
           </p>
         </div>
 
@@ -204,7 +277,7 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
             <motion.div initial={{ y: 12, scale: .97 }} animate={{ y: 0, scale: 1 }}
               exit={{ y: 12, scale: .97 }} onClick={e => e.stopPropagation()}
               role="dialog" aria-modal="true" aria-label={`${product.name} ingredients`}
-              className="w-full max-w-sm rounded-[25px] border border-[#E1CDAE] bg-[#FFFCF6] p-6 shadow-xl">
+              className="max-h-full w-full max-w-sm overflow-y-auto rounded-[25px] border border-[#E1CDAE] bg-[#FFFCF6] p-6 shadow-xl">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-playfair text-[26px] font-bold text-[#3D2B1C]">Ingredients</p>
@@ -213,14 +286,27 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
                 <button type="button" aria-label="Close ingredients" onClick={() => setIngredientsOpen(false)}
                   className="rounded-full border border-[#E1CDAE] p-2 text-[#3D2B1C]"><X size={17} /></button>
               </div>
-              {ingredients.length ? (
-                <ul className="mt-4 space-y-2">
-                  {ingredients.map((ingredient, i) => (
-                    <li key={`${ingredient}-${i}`} className="flex items-start gap-2 font-lato text-sm text-[#3D2B1C]">
-                      <Leaf size={15} className="mt-0.5 shrink-0 text-[#64744b]" /><span>{ingredient}</span>
-                    </li>
-                  ))}
-                </ul>
+
+              {hasIngredients ? (
+                <>
+                  <ul className="mt-4 divide-y divide-[#EFE3CC]">
+                    {ingredientItems.map((item, i) => (
+                      <li key={`${item.name}-${i}`} className="flex items-center gap-2 py-2.5 font-lato text-sm text-[#3D2B1C]">
+                        <Leaf size={15} className="shrink-0 text-[#64744b]" />
+                        <span className="min-w-0 flex-1">{item.name}</span>
+                        {item.qty && (
+                          <span className="shrink-0 font-semibold tabular-nums text-[#5B4631]">{item.qty}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  {ingredientTotal && (
+                    <div className="mt-3 flex items-center justify-between rounded-xl bg-[#F0F4E9] px-3.5 py-2.5 font-lato text-sm font-bold text-[#28492D]">
+                      <span>{ingredientTotal.label}</span>
+                      <span className="tabular-nums">{ingredientTotal.qty}</span>
+                    </div>
+                  )}
+                </>
               ) : (
                 <p className="mt-4 font-lato text-sm text-[#705942]">Ingredient details have not been added for this product yet.</p>
               )}
