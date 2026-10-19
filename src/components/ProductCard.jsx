@@ -272,12 +272,17 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
       <AnimatePresence>
         {ingredientsOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-[#211e1a]/45 p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center
+  overflow-hidden bg-[#211e1a]/45 p-3 sm:p-4"
             onClick={() => setIngredientsOpen(false)}>
             <motion.div initial={{ y: 12, scale: .97 }} animate={{ y: 0, scale: 1 }}
               exit={{ y: 12, scale: .97 }} onClick={e => e.stopPropagation()}
               role="dialog" aria-modal="true" aria-label={`${product.name} ingredients`}
-              className="max-h-full w-full max-w-sm overflow-y-auto rounded-[25px] border border-[#E1CDAE] bg-[#FFFCF6] p-6 shadow-xl">
+              className="flex w-full max-w-sm flex-col
+  max-h-[calc(100dvh-1.5rem)]
+  overflow-hidden rounded-[25px]
+  border border-[#E1CDAE] bg-[#FFFCF6]
+  p-4 sm:p-6 shadow-xl">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-playfair text-[26px] font-bold text-[#3D2B1C]">Ingredients</p>
@@ -289,7 +294,8 @@ export default function ProductCard({ product, compact = false, index = 0 }) {
 
               {hasIngredients ? (
                 <>
-                  <ul className="mt-4 divide-y divide-[#EFE3CC]">
+                  <ul className="mt-2 flex min-h-0 flex-1 flex-col
+  justify-evenly divide-y divide-[#EFE3CC] overflow-hidden">
                     {ingredientItems.map((item, i) => (
                       <li key={`${item.name}-${i}`} className="flex items-center gap-2 py-2.5 font-lato text-sm text-[#3D2B1C]">
                         <Leaf size={15} className="shrink-0 text-[#64744b]" />
